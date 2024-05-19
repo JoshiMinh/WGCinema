@@ -2,49 +2,49 @@
 
 ## Running the Application
 
-To compile the Java files and execute the program, follow these steps:
+### Steps to Compile and Run:
 
-1. Ensure you have all the necessary Java files in the directory.
-2. Open your command line interface.
-3. Run the following commands:
+1. **Prepare Java Files:**
+   - Ensure all necessary Java files are in the directory.
 
-    ```sh
-    javac *.java
-    ```
+2. **Open Command Line Interface:**
 
-4. Set up the database connection with the following parameters:
+3. **Compile Java Files:**
+   ```sh
+   javac *.java
+   ```
 
-    ```java
-    String url = "jdbc:sqlserver://JoshiNitro5\\MSSQLSERVER02:1433;database=CinemaData";
-    String username = "AdminCinema";
-    String password = "Admin";
-    ```
+4. **Set Up Database Connection:**
+   ```java
+   String url = "jdbc:sqlserver://JoshiNitro5\\MSSQLSERVER02:1433;database=CinemaData";
+   String username = "AdminCinema";
+   String password = "Admin";
+   ```
 
-5. Run the main program:
+5. **Execute the Program:**
+   ```sh
+   java -cp ".;sqljdbc42.jar" Login
+   ```
 
-    ```sh
-    java -cp ".;sqljdbc42.jar" Booking
-    ```
+### Additional Information:
 
-## Additional Information
-
-- The database connection requires the SQL Server JDBC driver (`sqljdbc42.jar`). Ensure it is included in the classpath when running the program.
-- Depending on your environment, you may need to adjust the database URL, username, and password parameters accordingly.
+- **JDBC Driver:** Ensure the SQL Server JDBC driver (`sqljdbc42.jar`) is in the classpath.
+- **Adjust Parameters:** Modify the database URL, username, and password as needed for your environment.
 
 ## Script for Compiling Java Files
 
-You can use the following script to check for Java compiler availability and compile the files:
+Use this script to check for Java compiler availability and compile the files:
 
-    ```vbscript
-    Set objShell = CreateObject("WScript.Shell")
-    objShell.Run "cmd /c cls", 0, True
-    javacCheck = objShell.Run("javac -version", 0, True)
-    
-    If javacCheck = 0 Then
-        objShell.Run "javac *.java", 0, True
-    End If
-    
-    Set objShell = Nothing
-    ```
+```vbscript
+Set objShell = CreateObject("WScript.Shell")
+objShell.Run "cmd /c cls", 0, True
+javacCheck = objShell.Run("javac -version", 0, True)
 
-This script checks if `javac` is available and compiles the Java files if it is. You can integrate it into your workflow for easier compilation.
+If javacCheck = 0 Then
+    objShell.Run "javac *.java", 0, True
+End If
+
+Set objShell = Nothing
+```
+
+This script ensures `javac` is available and compiles the Java files if it is. Integrate it into your workflow for easier compilation.

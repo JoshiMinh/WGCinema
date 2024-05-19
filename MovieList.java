@@ -8,12 +8,15 @@ import javax.swing.*;
 public class MovieList extends JFrame {
     private JPanel moviePanel;
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
-    private static final String url = "jdbc:sqlserver://JoshiNitro5\\MSSQLSERVER02:1433;database=CinemaData";
-    private static final String username = "AdminCinema";
-    private final String password;
+    private String url;
+    private String username;
+    private String password;
 
-    public MovieList(String password) {
+    public MovieList(String url, String username, String password) {
+        this.url = url;
+        this.username = username;
         this.password = password;
+
         setupFrame();
         setupTopBar();
         setupMoviePanel();
@@ -146,7 +149,7 @@ public class MovieList extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            Booking booking = new Booking(movieId, password); // Assuming Booking class exists
+            Booking booking = new Booking(movieId, url, username, password); // Assuming Booking class exists
             booking.setVisible(true);
         }
     }

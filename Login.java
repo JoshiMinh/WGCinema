@@ -84,14 +84,13 @@ public class Login extends JFrame {
     }
 
     private void performLogin() {
-        String password = new String(passwordField.getPassword());
-        String url = "jdbc:sqlserver://JoshiNitro5\\MSSQLSERVER02:1433;database=CinemaData";
+        String url = "jdbc:sqlserver://192.168.1.15\\MSSQLSERVER02:1433;database=CinemaData";
         String username = "AdminCinema";
-        //Parsing url and user name
+        String password = new String(passwordField.getPassword());
 
         try (Connection connection = DriverManager.getConnection(url, username, password)) {
             System.out.println("Connected to the database.");
-            new MovieList(password).setVisible(true);
+            new MovieList(url, username, password).setVisible(true);
             dispose();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Password incorrect", "Error", JOptionPane.ERROR_MESSAGE);

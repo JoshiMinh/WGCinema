@@ -19,8 +19,8 @@ public class Showrooms extends JFrame {
     private JLabel infoLabel;
     private final Set < JPanel > selectedCells = new HashSet < > ();
 
-    private final String url = "jdbc:sqlserver://JoshiNitro5\\MSSQLSERVER02:1433;database=CinemaData";
-    private final String username = "AdminCinema";
+    private String url;
+    private String username;
     private String password;
 
     private int showtimeID;
@@ -34,15 +34,17 @@ public class Showrooms extends JFrame {
     private String movieRating;
     private String movieLink;
 
-    public Showrooms(String pwd, int showtimeID) {
+    public Showrooms(String url, String username, String password, int showtimeID) {
+        this.showtimeID = showtimeID;
+        this.url = url;
+        this.username = username;
+        this.password = password;
+        
         setTitle("Select Seats");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
         setSize(WIDTH, HEIGHT);
         setResizable(true);
-
-        this.showtimeID = showtimeID;
-        password = pwd;
 
         ImageIcon icon = new ImageIcon("Icons/WGLogo.png");
         setIconImage(icon.getImage());
@@ -289,7 +291,7 @@ public class Showrooms extends JFrame {
             if (selectedCells.isEmpty()) {
                 JOptionPane.showMessageDialog(Showrooms.this, "Please select at least one seat.", "No Seats Selected", JOptionPane.ERROR_MESSAGE);
             } else {
-                new Checkout(password, showroomID, time, movieId, date, movieTitle, movieRating, movieLink, showtimeID, selectedSeats, this);
+                new Checkout(url, username, password, showroomID, time, movieId, date, movieTitle, movieRating, movieLink, showtimeID, selectedSeats, this);
             }
         });
 
@@ -408,7 +410,7 @@ public class Showrooms extends JFrame {
 
     public void restartShowrooms() {
         dispose(); // Close the current frame
-        Showrooms newShowroomsFrame = new Showrooms(password, showtimeID); // Create a new instance with the current showtimeID
+        Showrooms newShowroomsFrame = new Showrooms(url, username, password, showtimeID); // Create a new instance with the current showtimeID
         newShowroomsFrame.setVisible(true); // Show the new frame
     }
 }
