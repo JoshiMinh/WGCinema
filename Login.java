@@ -84,7 +84,7 @@ public class Login extends JFrame {
     }
 
     private void performLogin() {
-        String url = "jdbc:sqlserver://192.168.1.15\\MSSQLSERVER02:1433;database=CinemaData";
+        String url = "jdbc:sqlserver://JoshiNitro5\\MSSQLSERVER02:1433;database=CinemaData";
         String username = "AdminCinema";
         String password = new String(passwordField.getPassword());
 
