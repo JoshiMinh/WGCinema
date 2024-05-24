@@ -9,16 +9,11 @@ import javax.swing.*;
 public class Booking extends JFrame {
     private final int movieId;
     private final Color bgColor = new Color(30, 30, 30);
+    private String connectionString;
 
-    private String url;
-    private String username;
-    private String password;
-
-    public Booking(int movieId, String url, String username, String password) {
+    public Booking(int movieId, String connectionString) {
         this.movieId = movieId;
-        this.url = url;
-        this.username = username;
-        this.password = password;
+        this.connectionString = connectionString;
 
         setTitle("Booking");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -64,7 +59,7 @@ public class Booking extends JFrame {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
-        try (Connection connection = DriverManager.getConnection(url, username, password);
+        try (Connection connection = DriverManager.getConnection(connectionString);
              PreparedStatement preparedStatement = connection.prepareStatement(
                      "SELECT ShowtimeID, CONVERT(VARCHAR(5), Time, 108) AS 'Time (HH:mm)' " +
                      "FROM Showtimes WHERE MovieId = ? AND Date = ? ORDER BY Time")) {
@@ -100,7 +95,7 @@ public class Booking extends JFrame {
         showtimeButton.setForeground(Color.WHITE);
         showtimeButton.setBackground(Color.DARK_GRAY);
         showtimeButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        showtimeButton.addActionListener(e -> new Showrooms(url, username, password, showtimeId)); // Assuming Showrooms class exists
+        showtimeButton.addActionListener(e -> new Showrooms(connectionString, showtimeId)); // Assuming Showrooms class exists
         return showtimeButton;
     }
 }

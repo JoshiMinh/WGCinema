@@ -19,10 +19,7 @@ public class Showrooms extends JFrame {
     private JLabel infoLabel;
     private final Set < JPanel > selectedCells = new HashSet < > ();
 
-    private String url;
-    private String username;
-    private String password;
-
+    private String connectionString;
     private int showtimeID;
     private int showroomID;
     private String chairsBooked = "";
@@ -34,11 +31,9 @@ public class Showrooms extends JFrame {
     private String movieRating;
     private String movieLink;
 
-    public Showrooms(String url, String username, String password, int showtimeID) {
+    public Showrooms(String connectionString, int showtimeID) {
         this.showtimeID = showtimeID;
-        this.url = url;
-        this.username = username;
-        this.password = password;
+        this.connectionString = connectionString;
         
         setTitle("Select Seats");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -77,7 +72,7 @@ public class Showrooms extends JFrame {
     private int getShowroomID(int showtimeID) {
         String query = "SELECT ShowroomID, Chairs_Booked, Time, MovieId, Date FROM Showtimes WHERE ShowtimeID = ?";
 
-        try (Connection conn = DriverManager.getConnection(url, username, password); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = DriverManager.getConnection(connectionString); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, showtimeID);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -99,7 +94,7 @@ public class Showrooms extends JFrame {
     private void fetchMovieInfo() {
         String query = "SELECT Title, Rating, Link FROM MovieInfo WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(url, username, password); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = DriverManager.getConnection(connectionString); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, movieId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -291,7 +286,7 @@ public class Showrooms extends JFrame {
             if (selectedCells.isEmpty()) {
                 JOptionPane.showMessageDialog(Showrooms.this, "Please select at least one seat.", "No Seats Selected", JOptionPane.ERROR_MESSAGE);
             } else {
-                new Checkout(url, username, password, showroomID, time, movieId, date, movieTitle, movieRating, movieLink, showtimeID, selectedSeats, this);
+                new Checkout(connectionString, showroomID, time, movieId, date, movieTitle, movieRating, movieLink, showtimeID, selectedSeats, this);
             }
         });
 
@@ -410,7 +405,7 @@ public class Showrooms extends JFrame {
 
     public void restartShowrooms() {
         dispose(); // Close the current frame
-        Showrooms newShowroomsFrame = new Showrooms(url, username, password, showtimeID); // Create a new instance with the current showtimeID
+        Showrooms newShowroomsFrame = new Showrooms(connectionString, showtimeID); // Create a new instance with the current showtimeID
         newShowroomsFrame.setVisible(true); // Show the new frame
     }
 }

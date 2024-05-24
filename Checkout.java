@@ -17,23 +17,18 @@ public class Checkout extends JFrame {
     private int movieId;
     private Showrooms showroomsFrame; // Reference to Showrooms frame
     private boolean bookingSuccessful = false;
-
-    private String url;
-    private String username;
-    private String password;
+    private String connectionString;
 
     private static final int REGULAR_SEAT_PRICE = 80000;
     private static final int VIP_SEAT_PRICE = 85000;
 
-    public Checkout(String url, String username, String password, int showroomID, Time time, int movieId, Date date, String movieTitle, String movieRating, String movieLink, int showtimeID, String selectedSeats, Showrooms showroomsFrame) {
+    public Checkout(String connectionString, int showroomID, Time time, int movieId, Date date, String movieTitle, String movieRating, String movieLink, int showtimeID, String selectedSeats, Showrooms showroomsFrame) {
         this.showtimeID = showtimeID;
         this.showroomsFrame = showroomsFrame;
         this.showtimeID = showtimeID;
         this.showroomID = showroomID;
         this.movieId = movieId;
-        this.url = url;
-        this.username = username;
-        this.password = password;
+        this.connectionString = connectionString;
 
         setTitle("Checkout");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -169,7 +164,7 @@ public class Checkout extends JFrame {
             public void windowClosing(WindowEvent windowEvent) {
                 if (bookingSuccessful) {
                     showroomsFrame.dispose();
-                    Showrooms newShowroomsFrame = new Showrooms(url, username, password, showtimeID);
+                    Showrooms newShowroomsFrame = new Showrooms(connectionString, showtimeID);
                     newShowroomsFrame.setVisible(true);
                 }
             }
@@ -224,7 +219,7 @@ public class Checkout extends JFrame {
             String selectedSeats = selectedSeatsLabel.getText().substring("Selected Seats: ".length()).replaceAll(",", "");
 
             // Establish database connection
-            Connection conn = DriverManager.getConnection(url, username, password);
+            Connection conn = DriverManager.getConnection(connectionString);
 
             // Check if showtime exists and seats are available
             String chairsQuery = "SELECT Chairs_Booked FROM Showtimes WHERE ShowtimeID = ?";

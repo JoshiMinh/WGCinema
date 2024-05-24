@@ -84,13 +84,18 @@ public class Login extends JFrame {
     }
 
     private void performLogin() {
-        String url = "jdbc:sqlserver://JoshiNitro5\\MSSQLSERVER02:1433;database=CinemaData";
+        String serverIp = "192.168.1.15"; // Replace with the server's public IP or hostname
+        String instanceName = "MSSQLSERVER02"; // Replace with your instance name if not default
+        String databaseName = "CinemaData";
         String username = "AdminCinema";
         String password = new String(passwordField.getPassword());
 
-        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+        String url = "jdbc:sqlserver://" + serverIp + "\\" + instanceName + ":1433;database=" + databaseName;
+        String connectionString = url + ";user=" + username + ";password=" + password;
+
+        try (Connection connection = DriverManager.getConnection(connectionString)) {
             System.out.println("Connected to the database.");
-            new MovieList(url, username, password).setVisible(true);
+            new MovieList(connectionString).setVisible(true);
             dispose();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Password incorrect", "Error", JOptionPane.ERROR_MESSAGE);
