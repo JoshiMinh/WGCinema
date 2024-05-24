@@ -8,6 +8,7 @@ public class Login extends JFrame {
     private JPasswordField passwordField;
     private JButton loginButton;
     private JLabel logoLabel;
+    private JTextField serverIPField;
 
     public Login() {
         setTitle("Admin Login");
@@ -39,6 +40,11 @@ public class Login extends JFrame {
             }
         });
 
+        // Server IP field
+        serverIPField = new JTextField(22);
+        serverIPField.setForeground(Color.BLACK);
+        serverIPField.setText("JoshiNitro5");
+
         // Login button
         loginButton = new JButton("Login");
         loginButton.setForeground(Color.WHITE);
@@ -48,8 +54,8 @@ public class Login extends JFrame {
         // Logo label
         ImageIcon logoIcon = new ImageIcon("Icons/WGLogo.png");
         Image logoImage = logoIcon.getImage();
-        logoLabel = (logoImage != null) 
-                    ? new JLabel(new ImageIcon(logoImage.getScaledInstance(60, 55, Image.SCALE_SMOOTH))) 
+        logoLabel = (logoImage != null)
+                    ? new JLabel(new ImageIcon(logoImage.getScaledInstance(60, 55, Image.SCALE_SMOOTH)))
                     : new JLabel("Logo not found");
 
         // Rectangle panel with semi-transparent background
@@ -68,11 +74,38 @@ public class Login extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 2;
         gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.CENTER;
         rectanglePanel.add(logoLabel, gbc);
         gbc.gridy = 1;
-        rectanglePanel.add(passwordField, gbc);
+        gbc.gridx = 0;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(0, 10, 0, 0);
+        JLabel ipLabel = new JLabel("IP: ");
+        ipLabel.setForeground(Color.WHITE);
+        rectanglePanel.add(ipLabel, gbc);
+        gbc.gridx = 1;
+        gbc.insets = new Insets(0, 0, 0, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+        rectanglePanel.add(serverIPField, gbc);
         gbc.gridy = 2;
+        gbc.gridx = 0;
+        gbc.insets = new Insets(0, 10, 0, 0);
+        gbc.anchor = GridBagConstraints.EAST;
+        JLabel passwordLabel = new JLabel("Password: ");
+        passwordLabel.setForeground(Color.WHITE);
+        rectanglePanel.add(passwordLabel, gbc);
+        gbc.gridx = 1;
+        gbc.insets = new Insets(0, 0, 0, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+        rectanglePanel.add(passwordField, gbc);
+        gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.CENTER;
         rectanglePanel.add(loginButton, gbc);
 
         // Add rectangle panel to main panel
@@ -84,7 +117,7 @@ public class Login extends JFrame {
     }
 
     private void performLogin() {
-        String serverIp = "192.168.1.15"; // Replace with the server's public IP or hostname
+        String serverIp = serverIPField.getText();
         String instanceName = "MSSQLSERVER02"; // Replace with your instance name if not default
         String databaseName = "CinemaData";
         String username = "AdminCinema";
