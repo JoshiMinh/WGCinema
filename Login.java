@@ -12,12 +12,12 @@ public class Login extends JFrame {
 
     public Login() {
         setTitle("Admin Login");
-        setSize(650, 450);
+        setSize(550, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setIconImage(new ImageIcon("Icons/WGLogo.png").getImage());
 
-        // Main panel with background image
+        // Create main panel with background image
         mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -27,8 +27,8 @@ public class Login extends JFrame {
         };
         mainPanel.setLayout(new GridBagLayout());
 
-        // Password field
-        passwordField = new JPasswordField(22);
+        // Initialize password field
+        passwordField = new JPasswordField(15);
         passwordField.setForeground(Color.BLACK);
         passwordField.setEchoChar('•');
         passwordField.addKeyListener(new KeyAdapter() {
@@ -40,25 +40,23 @@ public class Login extends JFrame {
             }
         });
 
-        // Server IP field
-        serverIPField = new JTextField(22);
+        // Initialize server IP field
+        serverIPField = new JTextField(15);
         serverIPField.setForeground(Color.BLACK);
         serverIPField.setText("JoshiNitro5");
 
-        // Login button
+        // Initialize login button
         loginButton = new JButton("Login");
         loginButton.setForeground(Color.WHITE);
         loginButton.setBackground(Color.DARK_GRAY);
         loginButton.addActionListener(e -> performLogin());
 
-        // Logo label
+        // Initialize logo label
         ImageIcon logoIcon = new ImageIcon("Icons/WGLogo.png");
         Image logoImage = logoIcon.getImage();
-        logoLabel = (logoImage != null)
-                    ? new JLabel(new ImageIcon(logoImage.getScaledInstance(60, 55, Image.SCALE_SMOOTH)))
-                    : new JLabel("Logo not found");
+        logoLabel = (logoImage != null) ? new JLabel(new ImageIcon(logoImage.getScaledInstance(60, 55, Image.SCALE_SMOOTH))) : new JLabel("Logo not found");
 
-        // Rectangle panel with semi-transparent background
+        // Create rectangle panel with semi-transparent background
         JPanel rectanglePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -78,29 +76,34 @@ public class Login extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.CENTER;
         rectanglePanel.add(logoLabel, gbc);
+
         gbc.gridy = 1;
         gbc.gridx = 0;
         gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.EAST;
-        gbc.insets = new Insets(0, 10, 0, 0);
+        gbc.insets = new Insets(10, 10, 0, 0); // Added top inset for gap
         JLabel ipLabel = new JLabel("IP: ");
         ipLabel.setForeground(Color.WHITE);
         rectanglePanel.add(ipLabel, gbc);
+
         gbc.gridx = 1;
-        gbc.insets = new Insets(0, 0, 0, 10);
+        gbc.insets = new Insets(10, 0, 0, 10); // Added top inset for gap
         gbc.anchor = GridBagConstraints.WEST;
         rectanglePanel.add(serverIPField, gbc);
+
         gbc.gridy = 2;
         gbc.gridx = 0;
-        gbc.insets = new Insets(0, 10, 0, 0);
+        gbc.insets = new Insets(10, 10, 0, 0); // Added top inset for gap
         gbc.anchor = GridBagConstraints.EAST;
         JLabel passwordLabel = new JLabel("Password: ");
         passwordLabel.setForeground(Color.WHITE);
         rectanglePanel.add(passwordLabel, gbc);
+
         gbc.gridx = 1;
-        gbc.insets = new Insets(0, 0, 0, 10);
+        gbc.insets = new Insets(10, 0, 0, 10); // Added top inset for gap
         gbc.anchor = GridBagConstraints.WEST;
         rectanglePanel.add(passwordField, gbc);
+
         gbc.gridy = 3;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
@@ -118,7 +121,7 @@ public class Login extends JFrame {
 
     private void performLogin() {
         String serverIp = serverIPField.getText();
-        String instanceName = "MSSQLSERVER02"; // Replace with your instance name if not default
+        String instanceName = "MSSQLSERVER02";
         String databaseName = "CinemaData";
         String username = "AdminCinema";
         String password = new String(passwordField.getPassword());
