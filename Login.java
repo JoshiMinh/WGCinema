@@ -119,6 +119,7 @@ public class Login extends JFrame {
         setVisible(true);
     }
 
+    //    $pdo = new PDO("mysql:host=localhost;dbname=cinema", "root", "", [
     private void performLogin() {
         String serverIp = serverIPField.getText();
         String instanceName = "MSSQLSERVER02";
