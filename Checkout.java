@@ -4,28 +4,22 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class Checkout extends JFrame {
     private static final int WIDTH = 410, HEIGHT = 700;
     private final JLabel selectedSeatsLabel;
-    private int showtimeID;
-    private int showroomID;
-
-    private int movieId;
-    private Showrooms showroomsFrame; // Reference to Showrooms frame
+    private int showtimeID, showroomID, movieId;
+    private Showrooms showroomsFrame;
     private boolean bookingSuccessful = false;
     private String connectionString;
-
-    private static final int REGULAR_SEAT_PRICE = 80000;
-    private static final int VIP_SEAT_PRICE = 85000;
+    private static final int REGULAR_SEAT_PRICE = 80000, VIP_SEAT_PRICE = 85000;
 
     public Checkout(String connectionString, int showroomID, Time time, int movieId, Date date, String movieTitle, String movieRating, String movieLink, int showtimeID, String selectedSeats, Showrooms showroomsFrame) {
         this.showtimeID = showtimeID;
         this.showroomsFrame = showroomsFrame;
-        this.showtimeID = showtimeID;
         this.showroomID = showroomID;
         this.movieId = movieId;
         this.connectionString = connectionString;
@@ -36,8 +30,7 @@ public class Checkout extends JFrame {
         setSize(WIDTH, HEIGHT);
         setResizable(false);
         setBackground(new Color(30, 30, 30));
-        ImageIcon icon = new ImageIcon("Icons/Payment.png");
-        setIconImage(icon.getImage());
+        setIconImage(new ImageIcon("icons/cards.png").getImage());
 
         JPanel northPanel = new JPanel(new GridBagLayout());
         northPanel.setBackground(new Color(30, 30, 30));
@@ -50,8 +43,7 @@ public class Checkout extends JFrame {
         try {
             URL moviePosterUrl = new URL(movieLink);
             ImageIcon moviePosterIcon = new ImageIcon(moviePosterUrl);
-            Image moviePosterImage = moviePosterIcon.getImage();
-            Image scaledMoviePosterImage = moviePosterImage.getScaledInstance(80, 120, Image.SCALE_SMOOTH);
+            Image scaledMoviePosterImage = moviePosterIcon.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH);
             moviePosterLabel.setIcon(new ImageIcon(scaledMoviePosterImage));
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,12 +64,12 @@ public class Checkout extends JFrame {
 
         Color ratingColor;
         switch (movieRating) {
-        case "P" -> ratingColor = new Color(50, 220, 100);
-        case "K" -> ratingColor = Color.BLUE;
-        case "T13" -> ratingColor = Color.YELLOW;
-        case "T16" -> ratingColor = Color.ORANGE;
-        case "T18" -> ratingColor = Color.RED;
-        default -> ratingColor = Color.WHITE;
+            case "P" -> ratingColor = new Color(50, 220, 100);
+            case "K" -> ratingColor = Color.BLUE;
+            case "T13" -> ratingColor = Color.YELLOW;
+            case "T16" -> ratingColor = Color.ORANGE;
+            case "T18" -> ratingColor = Color.RED;
+            default -> ratingColor = Color.WHITE;
         }
         JLabel ratingLabel = new JLabel(movieRating);
         ratingLabel.setForeground(ratingColor);
@@ -131,29 +123,26 @@ public class Checkout extends JFrame {
         JPanel innerPanel = new JPanel(new BorderLayout());
         innerPanel.setOpaque(false);
 
-        // NORTH Area
         JPanel northCenterPanel = new JPanel();
         northCenterPanel.setBackground(new Color(51, 51, 51));
         northCenterPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         JLabel priceLabel = new JLabel("Total Price: " + calculateTotalPrice(selectedSeats));
         priceLabel.setForeground(Color.GREEN);
-        priceLabel.setFont(priceLabel.getFont().deriveFont(Font.BOLD, 15)); // Bigger and bold font
+        priceLabel.setFont(priceLabel.getFont().deriveFont(Font.BOLD, 15));
         northCenterPanel.add(priceLabel);
         innerPanel.add(northCenterPanel, BorderLayout.NORTH);
 
-        // CENTER Area
-        ImageIcon qrIcon = new ImageIcon("TransferQR.png");
+        ImageIcon qrIcon = new ImageIcon("images/QR.jpg");
         JLabel qrLabel = new JLabel(qrIcon);
-        innerPanel.add(qrLabel, BorderLayout.CENTER); // Image centered
+        innerPanel.add(qrLabel, BorderLayout.CENTER);
 
-        // SOUTH Area
         JPanel southCenterPanel = new JPanel();
         southCenterPanel.setBackground(new Color(51, 51, 51));
         southCenterPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         JLabel scanLabel = new JLabel("SCAN TO PAY");
         scanLabel.setForeground(Color.GREEN);
-        scanLabel.setFont(scanLabel.getFont().deriveFont(Font.BOLD, 20)); // Bigger and bold font
+        scanLabel.setFont(scanLabel.getFont().deriveFont(Font.BOLD, 20));
         southCenterPanel.add(scanLabel);
         innerPanel.add(southCenterPanel, BorderLayout.SOUTH);
 
@@ -175,28 +164,22 @@ public class Checkout extends JFrame {
     }
 
     public static boolean checkBooked(String chairsBooked, String selectedSeats) {
-        // Split the strings into individual seats
         String[] bookedSeats = chairsBooked.split(" ");
         String[] selectedSeatArray = selectedSeats.split(" ");
-
-        // Check if any selected seat is in the booked seats array
-        for (String selectedSeat: selectedSeatArray) {
-            for (String bookedSeat: bookedSeats) {
+        for (String selectedSeat : selectedSeatArray) {
+            for (String bookedSeat : bookedSeats) {
                 if (selectedSeat.equals(bookedSeat)) {
-                    return true; // If any selected seat is already booked, return true
+                    return true;
                 }
             }
         }
-
-        // If none of the selected seats are booked, return false
         return false;
     }
 
     public static String calculateTotalPrice(String selectedSeats) {
         int totalPrice = 0;
         String[] seats = selectedSeats.split(", ");
-
-        for (String seat: seats) {
+        for (String seat : seats) {
             char row = seat.charAt(0);
             if (row >= 'A' && row <= 'F') {
                 totalPrice += REGULAR_SEAT_PRICE;
@@ -204,7 +187,6 @@ public class Checkout extends JFrame {
                 totalPrice += VIP_SEAT_PRICE;
             }
         }
-
         return formatPrice(totalPrice);
     }
 
@@ -215,13 +197,8 @@ public class Checkout extends JFrame {
 
     private void book() {
         try {
-            // Extract selected seats
             String selectedSeats = selectedSeatsLabel.getText().substring("Selected Seats: ".length()).replaceAll(",", "");
-
-            // Establish database connection
             Connection conn = DriverManager.getConnection(connectionString);
-
-            // Check if showtime exists and seats are available
             String chairsQuery = "SELECT Chairs_Booked FROM Showtimes WHERE ShowtimeID = ?";
             PreparedStatement chairsStatement = conn.prepareStatement(chairsQuery);
             chairsStatement.setInt(1, showtimeID);
@@ -247,7 +224,6 @@ public class Checkout extends JFrame {
             chairsResult.close();
             chairsStatement.close();
 
-            // Update showtime with booked seats
             String updateQuery = "UPDATE Showtimes SET ReservedChairs = ReservedChairs + ?, Chairs_Booked = CONCAT(Chairs_Booked, ?) WHERE ShowtimeID = ?";
             PreparedStatement updateStatement = conn.prepareStatement(updateQuery);
             updateStatement.setInt(1, selectedSeats.split(" ").length);
@@ -256,18 +232,14 @@ public class Checkout extends JFrame {
 
             int rowsAffected = updateStatement.executeUpdate();
             if (rowsAffected > 0) {
-                // Success message and actions
                 JOptionPane.showMessageDialog(this, "Booking Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 showSuccessImage();
                 bookingSuccessful = true;
-
-                // Insert transaction data
                 insertTransactionData(conn, selectedSeats, calculateTotalPrice(selectedSeats));
             } else {
                 System.out.println("Booking failed!");
             }
 
-            // Close resources
             updateStatement.close();
             conn.close();
         } catch (SQLException e) {
@@ -278,8 +250,6 @@ public class Checkout extends JFrame {
     private void insertTransactionData(Connection conn, String selectedSeats, String totalPrice) throws SQLException {
         String insertQuery = "INSERT INTO Transactions (TransactionDate, MovieId, Amount, SeatsPreserved, ShowroomID, account_email, ShowtimeID) VALUES (?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement insertStatement = conn.prepareStatement(insertQuery);
-
-        // Set parameters
         insertStatement.setDate(1, new java.sql.Date(System.currentTimeMillis()));
         insertStatement.setInt(2, movieId);
         insertStatement.setDouble(3, Double.parseDouble(totalPrice.replaceAll("[^\\d.]", "")));
@@ -287,36 +257,24 @@ public class Checkout extends JFrame {
         insertStatement.setInt(5, showroomID);
         insertStatement.setString(6, "Admin");
         insertStatement.setInt(7, showtimeID);
-
-        // Execute and close
         insertStatement.executeUpdate();
         insertStatement.close();
     }
 
     private void showSuccessImage() {
-        // Clear and refresh the frame
         getContentPane().removeAll();
         revalidate();
         repaint();
-
-        // Center panel setup
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setBackground(new Color(30, 30, 30));
-
-        // Load and scale the image
         JLabel imageLabel = new JLabel();
-        ImageIcon imageIcon = new ImageIcon("TicketBooked.png");
+        ImageIcon imageIcon = new ImageIcon("images/TicketBooked.png");
         Image scaledImage = imageIcon.getImage().getScaledInstance(350, 350, Image.SCALE_SMOOTH);
         imageLabel.setIcon(new ImageIcon(scaledImage));
-
-        // Add image label to the panel
         centerPanel.add(imageLabel, new GridBagConstraints());
-
-        // Add panel to the frame and refresh
         add(centerPanel, BorderLayout.CENTER);
         getContentPane().setBackground(new Color(30, 30, 30));
         revalidate();
         repaint();
     }
-
 }

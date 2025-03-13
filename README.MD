@@ -1,38 +1,21 @@
-# University Secondary Term Software Project
+<h1 style="color:rgb(0, 140, 255);" align="center">WGCinema Software</h1>
 
-## Running the Application
+### Introduction
+This software was created by me and my friends as a university project for testing. WG stands for our group name "Wonderful Guys".
 
-### Steps to Compile and Run
-
-1. **Set Up Database Connection:**
-   ```java
-   String url = "jdbc:sqlserver://JoshiNitro5\\MSSQLSERVER02:1433;database=CinemaData";
-   String username = "AdminCinema";
+### Running the Program
+There are two ways to run this program:
+1. Open CMD in the software directory and run:
+   ```cmd
+   java -cp ".;mysql-connector-j-8.4.0.jar" Login
    ```
+2. Double-click the `WGCinema.exe` file.
 
-2. **Execute the Program:**
-   ```sh
-   java -cp ".;sqljdbc42.jar" Login
-   ```
+### Database
+This software uses MySQL, preferably phpMyAdmin from XAMPP. You can find the queries in the `archives` folder for how to use the database and insert data.
 
-### VBScript to Compile and Run
+<p align="center">
+  <img src="demo.png" width="100%">
+</p>
 
-```vbscript
-Set objShell = CreateObject("WScript.Shell")
-
-' Clear the console screen
-objShell.Run "cmd /c cls", 0, True
-
-' Check if javac is available
-javacCheck = objShell.Run("javac -version", 0, True)
-
-' If javac is available, compile *.java files
-If javacCheck = 0 Then
-    objShell.Run "javac *.java", 0, True
-End If
-
-' Run the Java program
-objShell.Run "java -cp ""sqljdbc42.jar;"" Login", 0, True
-
-Set objShell = Nothing
-```
+> This software is copyrighted by Joshi Minh. You can clone it to use in your hobby or school project as long as it is not used for profit.

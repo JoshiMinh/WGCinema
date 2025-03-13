@@ -4,7 +4,6 @@ import java.net.URL;
 import java.sql.*;
 import javax.swing.*;
 
-// Displays the movie list
 public class MovieList extends JFrame {
     private JPanel moviePanel;
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
@@ -52,13 +51,12 @@ public class MovieList extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    // Load and display movies from the database
     private void loadMovieList() {
         String query = """
                 SELECT M.id, M.Link, M.Title, M.Rating 
                 FROM (SELECT MovieId 
                       FROM Showtimes 
-                      WHERE Date BETWEEN DATEADD(day, 0, CAST(GETDATE() AS DATE)) AND DATEADD(day, 6, CAST(GETDATE() AS DATE)) 
+                      WHERE Date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 DAY) 
                       GROUP BY MovieId) AS S 
                 INNER JOIN MovieInfo AS M ON S.MovieId = M.id
                 """;
@@ -81,7 +79,6 @@ public class MovieList extends JFrame {
         }
     }
 
-    // Creates a panel for a movie
     private JPanel createMoviePanel(int movieId, String imageLink, String title, String rating) throws java.net.MalformedURLException {
         JPanel moviePanel = new JPanel(new BorderLayout());
         moviePanel.setBackground(BACKGROUND_COLOR);
@@ -103,7 +100,6 @@ public class MovieList extends JFrame {
         return moviePanel;
     }
 
-    // Creates a panel for the movie title and rating
     private JPanel createTitlePanel(String title, String rating) {
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setBackground(BACKGROUND_COLOR);
@@ -134,7 +130,6 @@ public class MovieList extends JFrame {
         return titlePanel;
     }
 
-    // Handles booking button clicks
     private class BookingButtonListener implements ActionListener {
         private final int movieId;
 
@@ -144,7 +139,7 @@ public class MovieList extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            Booking booking = new Booking(movieId, connectionString); // Assuming Booking class exists
+            Booking booking = new Booking(movieId, connectionString);
             booking.setVisible(true);
         }
     }

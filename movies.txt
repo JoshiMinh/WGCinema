@@ -1,0 +1,21 @@
+CREATE TABLE `movies` (
+  `id` TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `title` VARCHAR(100) NOT NULL,
+  `director` VARCHAR(100) NOT NULL,
+  `release_date` DATE NOT NULL,
+  `duration` SMALLINT UNSIGNED NOT NULL,
+  `language` VARCHAR(50) NOT NULL,
+  `rating` VARCHAR(5) NOT NULL,
+  `link` VARCHAR(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+MoviesShowing\Gia Tài Của Ngoại.jpg - https://www.youtube.com/embed/Y_qYJ6To93k - P - 10/06/2024 - Phim hài về một gia đình khám phá ra tài sản ẩn giấu của người bà lập dị. Họ giải mã những manh mối bí ẩn và khám phá những bí mật bị chôn vùi từ lâu, từ đó gia đình càng gắn kết và học được những bài học quý giá về tình yêu, đoàn kết và ý nghĩa thật sự của sự giàu có.
+MoviesShowing\Hành Tinh Khỉ Vương Quốc Mới.jpg - https://www.youtube.com/embed/Z0EL1PDgPS0 - T13 - 08/07/2024 - Những con khỉ đấu tranh để chung sống với con người sau một cuộc chiến tàn khốc. Bộ phim theo chân lãnh đạo của loài khỉ khi anh ta điều hướng những âm mưu chính trị, sự phản bội và cuộc tìm kiếm sự hòa hợp lâu dài giữa các loài.
+MoviesShowing\Lật Mặt 7 Một Điều Ước.jpg - https://www.youtube.com/embed/d1ZHdosjNX8 - K - 12/05/2024
+MoviesShowing\Nobita Và Bản Giao Hưởng Địa Cầu.jpg - https://www.youtube.com/embed/Yug8gbDd5EQ - P
+MoviesUpcoming\Lốc Xoáy Tử Thần.jpg - https://www.youtube.com/embed/dvycs6rXILc - T13
+MoviesUpcoming\Những Mảnh Ghép Cảm Xúc 2.jpg - https://www.youtube.com/embed/AfOlW2OrzqE - P
+MoviesUpcoming\Robot Hoang Dã.jpg - https://www.youtube.com/embed/2l8_FNIBWLM - T13
+MoviesUpcoming\Transformers Một.jpg - https://www.youtube.com/embed/WLqCKr2h1BI - T13
+MoviesUpcoming\Venom The Last Dance.jpg - https://www.youtube.com/embed/STScKOUpXR8 - T18 - 05/10/2024 - Người bảo vệ chết người Venom trở lại cho trận chiến cuối cùng.
+MoviesUpcoming\Vùng Đất Câm Lặng Ngày Một.jpg - https://www.youtube.com/embed/9wVj8AxpT8A - T16
