@@ -17,7 +17,7 @@ public class Booking extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(600, 300);
         setLocationRelativeTo(null);
-        setIconImage(new ImageIcon("icons/appIcon.png").getImage());
+        setIconImage(new ImageIcon("images/icon.png").getImage());
         add(createTabbedPane(), BorderLayout.CENTER);
     }
 
@@ -59,9 +59,7 @@ public class Booking extends JFrame {
             while (resultSet.next()) {
                 String time = resultSet.getString("Time (HH:mm)");
                 Date showTimeDate = timeFormat.parse(time);
-                if (isToday && showTimeDate.before(currentTime)) {
-                    continue;
-                }
+                if (isToday && showTimeDate.before(currentTime)) continue;
                 buttonPanel.add(createShowtimeButton(time, resultSet.getInt("showtime_id")));
             }
             showtimesPanel.add(buttonPanel);

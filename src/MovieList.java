@@ -23,7 +23,7 @@ public class MovieList extends JFrame {
         setSize(900, 800);
         setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setIconImage(new ImageIcon("icons/appIcon.png").getImage());
+        setIconImage(new ImageIcon("images/icon.png").getImage());
     }
 
     private void setupTopBar() {
@@ -38,7 +38,7 @@ public class MovieList extends JFrame {
         topBar.add(showingMoviesLabel, BorderLayout.WEST);
 
         JLabel adminLoginLabel = new JLabel();
-        ImageIcon imageIcon = new ImageIcon("icons/appIcon.png");
+        ImageIcon imageIcon = new ImageIcon("images/icon.png");
         Image image = imageIcon.getImage().getScaledInstance(55, 50, Image.SCALE_SMOOTH);
         adminLoginLabel.setIcon(new ImageIcon(image));
         topBar.add(adminLoginLabel, BorderLayout.EAST);
@@ -61,13 +61,11 @@ public class MovieList extends JFrame {
         try (Connection connection = DriverManager.getConnection(connectionString);
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
-
             while (resultSet.next()) {
                 int movieId = resultSet.getInt("id");
                 String imageLink = resultSet.getString("poster");
                 String title = resultSet.getString("title");
                 String rating = resultSet.getString("age_rating");
-
                 JPanel moviePanel = createMoviePanel(movieId, imageLink, title, rating);
                 this.moviePanel.add(moviePanel);
             }

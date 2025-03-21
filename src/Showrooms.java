@@ -29,7 +29,7 @@ public class Showrooms extends JFrame {
         setLayout(new BorderLayout());
         setSize(WIDTH, HEIGHT);
         setResizable(true);
-        setIconImage(new ImageIcon("icons/appIcon.png").getImage());
+        setIconImage(new ImageIcon("images/icon.png").getImage());
         showroomID = getShowroomID(showtimeID);
         fetchMovieInfo();
         setDimensions(showroomID);
@@ -53,16 +53,17 @@ public class Showrooms extends JFrame {
     }
 
     private int getShowroomID(int showtimeID) {
-        String query = "SELECT showroom_id AS ShowroomID, chairs_booked AS Chairs_Booked, time AS Time, movie_id AS MovieId, date AS Date FROM showtimes WHERE showtime_id = ?";
-        try (Connection conn = DriverManager.getConnection(connectionString); PreparedStatement stmt = conn.prepareStatement(query)) {
+        String query = "SELECT showroom_id, chairs_booked, time, movie_id, date FROM showtimes WHERE showtime_id = ?";
+        try (Connection conn = DriverManager.getConnection(connectionString);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, showtimeID);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    date = rs.getDate("Date");
-                    chairsBooked = rs.getString("Chairs_Booked");
-                    time = rs.getTime("Time");
-                    movieId = rs.getInt("MovieId");
-                    return rs.getInt("ShowroomID");
+                    date = rs.getDate("date");
+                    chairsBooked = rs.getString("chairs_booked");
+                    time = rs.getTime("time");
+                    movieId = rs.getInt("movie_id");
+                    return rs.getInt("showroom_id");
                 }
             }
         } catch (SQLException e) {
@@ -72,14 +73,15 @@ public class Showrooms extends JFrame {
     }
 
     private void fetchMovieInfo() {
-        String query = "SELECT title AS Title, age_rating AS Rating, poster AS Link FROM movies WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(connectionString); PreparedStatement stmt = conn.prepareStatement(query)) {
+        String query = "SELECT title, age_rating, poster FROM movies WHERE id = ?";
+        try (Connection conn = DriverManager.getConnection(connectionString);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, movieId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    movieTitle = rs.getString("Title");
-                    movieRating = rs.getString("Rating");
-                    movieLink = rs.getString("Link");
+                    movieTitle = rs.getString("title");
+                    movieRating = rs.getString("age_rating");
+                    movieLink = rs.getString("poster");
                 }
             }
         } catch (SQLException e) {
@@ -173,14 +175,13 @@ public class Showrooms extends JFrame {
         movieTitleLabel.setForeground(Color.GRAY);
         movieInfoPanel.add(movieTitleLabel);
         JLabel movieRatingLabel = new JLabel(" " + movieRating);
-        Color ratingColor;
-        switch (movieRating) {
-            case "PG" -> ratingColor = new Color(102, 255, 102);
-            case "PG-13" -> ratingColor = new Color(0, 128, 255);
-            case "PG-16" -> ratingColor = Color.ORANGE;
-            case "R" -> ratingColor = Color.RED;
-            default -> ratingColor = Color.WHITE;
-        }
+        Color ratingColor = switch (movieRating) {
+            case "PG" -> new Color(102, 255, 102);
+            case "PG-13" -> new Color(0, 128, 255);
+            case "PG-16" -> Color.ORANGE;
+            case "R" -> Color.RED;
+            default -> Color.WHITE;
+        };
         movieRatingLabel.setForeground(ratingColor);
         movieInfoPanel.add(movieRatingLabel);
         gbc.gridx = 0;

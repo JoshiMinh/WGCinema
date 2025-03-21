@@ -30,7 +30,7 @@ public class Checkout extends JFrame {
         setSize(WIDTH, HEIGHT);
         setResizable(false);
         setBackground(new Color(30, 30, 30));
-        setIconImage(new ImageIcon("icons/cards.png").getImage());
+        setIconImage(new ImageIcon("images/cards.png").getImage());
 
         JPanel northPanel = new JPanel(new GridBagLayout());
         northPanel.setBackground(new Color(30, 30, 30));
@@ -62,15 +62,14 @@ public class Checkout extends JFrame {
         gbc.gridwidth = 1;
         northPanel.add(movieLabel, gbc);
 
-        Color ratingColor;
-        switch (movieRating) {
-            case "P" -> ratingColor = new Color(50, 220, 100);
-            case "K" -> ratingColor = Color.BLUE;
-            case "T13" -> ratingColor = Color.YELLOW;
-            case "T16" -> ratingColor = Color.ORANGE;
-            case "T18" -> ratingColor = Color.RED;
-            default -> ratingColor = Color.WHITE;
-        }
+        Color ratingColor = switch (movieRating) {
+            case "P" -> new Color(50, 220, 100);
+            case "K" -> Color.BLUE;
+            case "T13" -> Color.YELLOW;
+            case "T16" -> Color.ORANGE;
+            case "T18" -> Color.RED;
+            default -> Color.WHITE;
+        };
         JLabel ratingLabel = new JLabel(movieRating);
         ratingLabel.setForeground(ratingColor);
         gbc.gridx = 2;
@@ -168,9 +167,7 @@ public class Checkout extends JFrame {
         String[] selectedSeatArray = selectedSeats.split(" ");
         for (String selectedSeat : selectedSeatArray) {
             for (String bookedSeat : bookedSeats) {
-                if (selectedSeat.equals(bookedSeat)) {
-                    return true;
-                }
+                if (selectedSeat.equals(bookedSeat)) return true;
             }
         }
         return false;
@@ -181,11 +178,8 @@ public class Checkout extends JFrame {
         String[] seats = selectedSeats.split(", ");
         for (String seat : seats) {
             char row = seat.charAt(0);
-            if (row >= 'A' && row <= 'F') {
-                totalPrice += REGULAR_SEAT_PRICE;
-            } else if (row >= 'G' && row <= 'L') {
-                totalPrice += VIP_SEAT_PRICE;
-            }
+            if (row >= 'A' && row <= 'F') totalPrice += REGULAR_SEAT_PRICE;
+            else if (row >= 'G' && row <= 'L') totalPrice += VIP_SEAT_PRICE;
         }
         return formatPrice(totalPrice);
     }
@@ -199,13 +193,13 @@ public class Checkout extends JFrame {
         try {
             String selectedSeats = selectedSeatsLabel.getText().substring("Selected Seats: ".length()).replaceAll(",", "");
             Connection conn = DriverManager.getConnection(connectionString);
-            String chairsQuery = "SELECT Chairs_Booked FROM Showtimes WHERE ShowtimeID = ?";
+            String chairsQuery = "SELECT chairs_booked FROM showtimes WHERE showtime_id = ?";
             PreparedStatement chairsStatement = conn.prepareStatement(chairsQuery);
             chairsStatement.setInt(1, showtimeID);
             ResultSet chairsResult = chairsStatement.executeQuery();
 
             if (chairsResult.next()) {
-                String chairsBooked = chairsResult.getString("Chairs_Booked");
+                String chairsBooked = chairsResult.getString("chairs_booked");
                 if (checkBooked(chairsBooked, selectedSeats)) {
                     JOptionPane.showMessageDialog(this, "Some selected seats are already booked!", "Error", JOptionPane.ERROR_MESSAGE);
                     chairsResult.close();
@@ -214,7 +208,6 @@ public class Checkout extends JFrame {
                     return;
                 }
             } else {
-                System.out.println("Showtime not found!");
                 chairsResult.close();
                 chairsStatement.close();
                 conn.close();
@@ -224,7 +217,7 @@ public class Checkout extends JFrame {
             chairsResult.close();
             chairsStatement.close();
 
-            String updateQuery = "UPDATE Showtimes SET ReservedChairs = ReservedChairs + ?, Chairs_Booked = CONCAT(Chairs_Booked, ?) WHERE ShowtimeID = ?";
+            String updateQuery = "UPDATE showtimes SET reserved_chairs = reserved_chairs + ?, chairs_booked = CONCAT(chairs_booked, ?) WHERE showtime_id = ?";
             PreparedStatement updateStatement = conn.prepareStatement(updateQuery);
             updateStatement.setInt(1, selectedSeats.split(" ").length);
             updateStatement.setString(2, " " + selectedSeats);
@@ -236,8 +229,6 @@ public class Checkout extends JFrame {
                 showSuccessImage();
                 bookingSuccessful = true;
                 insertTransactionData(conn, selectedSeats, calculateTotalPrice(selectedSeats));
-            } else {
-                System.out.println("Booking failed!");
             }
 
             updateStatement.close();
@@ -248,15 +239,14 @@ public class Checkout extends JFrame {
     }
 
     private void insertTransactionData(Connection conn, String selectedSeats, String totalPrice) throws SQLException {
-        String insertQuery = "INSERT INTO Transactions (TransactionDate, MovieId, Amount, SeatsPreserved, ShowroomID, account_email, ShowtimeID) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO transactions (movie_id, amount, seats_preserved, showroom_id, account_email, showtime_id) VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement insertStatement = conn.prepareStatement(insertQuery);
-        insertStatement.setDate(1, new java.sql.Date(System.currentTimeMillis()));
-        insertStatement.setInt(2, movieId);
-        insertStatement.setDouble(3, Double.parseDouble(totalPrice.replaceAll("[^\\d.]", "")));
-        insertStatement.setString(4, selectedSeats);
-        insertStatement.setInt(5, showroomID);
-        insertStatement.setString(6, "Admin");
-        insertStatement.setInt(7, showtimeID);
+        insertStatement.setInt(1, movieId);
+        insertStatement.setBigDecimal(2, new java.math.BigDecimal(totalPrice.replaceAll("[^\\d.]", "")));
+        insertStatement.setString(3, selectedSeats);
+        insertStatement.setInt(4, showroomID);
+        insertStatement.setString(5, "admin");
+        insertStatement.setInt(6, showtimeID);
         insertStatement.executeUpdate();
         insertStatement.close();
     }
