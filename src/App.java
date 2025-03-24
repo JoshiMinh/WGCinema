@@ -28,23 +28,30 @@ public class App extends JFrame {
         };
         mainPanel.setLayout(new GridBagLayout());
 
-        passwordField = new JPasswordField(15);
+        int fieldColumns = 16;
+
+        passwordField = new JPasswordField(fieldColumns);
         passwordField.setEchoChar('•');
         passwordField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) performLogin();
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) performLogin(0);
             }
         });
 
-        usernameField = new JTextField("root", 15);
-        hostField = new JTextField("localhost:3306", 15);
-        databaseField = new JTextField("cinema_data", 15);
+        usernameField = new JTextField("root", fieldColumns);
+        hostField = new JTextField("localhost:3306", fieldColumns);
+        databaseField = new JTextField("cinema_data", fieldColumns);
 
         loginButton = new JButton("Login");
         loginButton.setForeground(Color.WHITE);
         loginButton.setBackground(Color.DARK_GRAY);
-        loginButton.addActionListener(e -> performLogin());
+        loginButton.addActionListener(e -> performLogin(1));
+
+        JButton dashboardButton = new JButton("Dashboard");
+        dashboardButton.setForeground(Color.WHITE);
+        dashboardButton.setBackground(Color.DARK_GRAY);
+        dashboardButton.addActionListener(e -> performLogin(0));
 
         ImageIcon logoIcon = new ImageIcon("images/icon.png");
         logoLabel = new JLabel(new ImageIcon(logoIcon.getImage().getScaledInstance(60, 55, Image.SCALE_SMOOTH)));
@@ -61,10 +68,11 @@ public class App extends JFrame {
         rectanglePanel.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-        gbc.insets = new Insets(10, 10, 10, 10);
         rectanglePanel.add(logoLabel, gbc);
 
         gbc.gridy = 1;
@@ -112,17 +120,21 @@ public class App extends JFrame {
         rectanglePanel.add(passwordField, gbc);
 
         gbc.gridy = 5;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        rectanglePanel.add(dashboardButton, gbc);
+
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
         rectanglePanel.add(loginButton, gbc);
 
         mainPanel.add(rectanglePanel, new GridBagConstraints());
         add(mainPanel, BorderLayout.CENTER);
+
         setVisible(true);
     }
 
-    private void performLogin() {
+    private void performLogin(int mode) {
         String host = hostField.getText();
         String database = databaseField.getText();
         String dbUsername = usernameField.getText();
@@ -131,7 +143,11 @@ public class App extends JFrame {
 
         try (Connection connection = DriverManager.getConnection(url)) {
             System.out.println("Login successful.");
-            new MovieList(url).setVisible(true);
+            if (mode == 0) {
+                new Dashboard(url).setVisible(true);
+            } else if (mode == 1) {
+                new MovieList(url).setVisible(true);
+            }
             dispose();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Database connection error", "Error", JOptionPane.ERROR_MESSAGE);
