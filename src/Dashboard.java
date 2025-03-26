@@ -24,8 +24,7 @@ public class Dashboard extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.GRAY);
         panel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
-        int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
-        int width = (screenWidth * widthPercentage) / 100;
+        int width = (Toolkit.getDefaultToolkit().getScreenSize().width * widthPercentage) / 100;
         panel.setPreferredSize(new Dimension(width, height));
         JLabel label = new JLabel(title, SwingConstants.CENTER);
         label.setForeground(Color.WHITE);
@@ -40,13 +39,14 @@ public class Dashboard extends JFrame {
         moviesPanel.setBackground(BACKGROUND_COLOR);
         try (Connection connection = DriverManager.getConnection(url);
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT title, age_rating, release_date, language FROM movies ORDER BY release_date LIMIT 20")) {
+             ResultSet resultSet = statement.executeQuery("SELECT id, title, age_rating, release_date FROM movies ORDER BY release_date LIMIT 20")) {
             while (resultSet.next()) {
                 moviesPanel.add(createMovieEntryPanel(
+                        resultSet.getInt("id"),
                         resultSet.getString("title"),
                         resultSet.getString("age_rating"),
                         resultSet.getString("release_date"),
-                        resultSet.getString("language")));
+                        url));
             }
         } catch (SQLException e) {
             JLabel errorLabel = new JLabel("Error loading movies: " + e.getMessage());
@@ -60,7 +60,7 @@ public class Dashboard extends JFrame {
         return scrollPane;
     }
 
-    private JPanel createMovieEntryPanel(String title, String ageRating, String releaseDate, String language) {
+    private JPanel createMovieEntryPanel(int id, String title, String ageRating, String releaseDate, String url) {
         JPanel movieEntryPanel = new JPanel(new BorderLayout());
         movieEntryPanel.setBackground(BACKGROUND_COLOR);
         movieEntryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -97,15 +97,9 @@ public class Dashboard extends JFrame {
         releaseDateLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         releaseDateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel languageLabel = new JLabel("Language: " + language);
-        languageLabel.setForeground(Color.LIGHT_GRAY);
-        languageLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        languageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
         textPanel.add(titleLabel);
         textPanel.add(ageRatingPanel);
         textPanel.add(releaseDateLabel);
-        textPanel.add(languageLabel);
 
         movieEntryPanel.add(textPanel, BorderLayout.CENTER);
 
@@ -113,6 +107,7 @@ public class Dashboard extends JFrame {
         editButton.setBackground(Color.DARK_GRAY);
         editButton.setForeground(Color.WHITE);
         editButton.setFont(new Font("Arial", Font.BOLD, 12));
+        editButton.addActionListener(e -> new _movieAgent(url, id).setVisible(true));
         movieEntryPanel.add(editButton, BorderLayout.EAST);
 
         return movieEntryPanel;
