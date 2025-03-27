@@ -175,14 +175,7 @@ public class Showrooms extends JFrame {
         movieTitleLabel.setForeground(Color.GRAY);
         movieInfoPanel.add(movieTitleLabel);
         JLabel movieRatingLabel = new JLabel(" " + movieRating);
-        Color ratingColor = switch (movieRating) {
-            case "PG" -> new Color(102, 255, 102);
-            case "PG-13" -> new Color(0, 128, 255);
-            case "PG-16" -> Color.ORANGE;
-            case "R" -> Color.RED;
-            default -> Color.WHITE;
-        };
-        movieRatingLabel.setForeground(ratingColor);
+        movieRatingLabel.setForeground(age_rating_color.getColorForRating(movieRating));
         movieInfoPanel.add(movieRatingLabel);
         gbc.gridx = 0;
         gbc.gridy = 0;

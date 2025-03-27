@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="WGCinema">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/WGCinema.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -96,15 +96,8 @@ public class MovieList extends JFrame {
         JLabel titleLabel = new JLabel(title);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
-        Color ratingColor = switch (rating) {
-            case "PG" -> new Color(102, 255, 102);
-            case "PG-13" -> new Color(0, 128, 255);
-            case "PG-16" -> Color.ORANGE;
-            case "R" -> Color.RED;
-            default -> Color.WHITE;
-        };
         JLabel ratingLabel = new JLabel(rating);
-        ratingLabel.setForeground(ratingColor);
+        ratingLabel.setForeground(age_rating_color.getColorForRating(rating));
         ratingLabel.setHorizontalAlignment(JLabel.CENTER);
         titlePanel.add(titleLabel, BorderLayout.NORTH);
         titlePanel.add(ratingLabel, BorderLayout.SOUTH);
