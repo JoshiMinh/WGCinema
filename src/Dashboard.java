@@ -23,6 +23,7 @@ public class Dashboard extends JFrame {
         });
         setSize(1200, 1000);
         setLocationRelativeTo(null);
+        getContentPane().setBackground(BACKGROUND_COLOR); // Set the background color
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setIconImage(new ImageIcon("images/icon.png").getImage());
 
