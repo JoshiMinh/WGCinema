@@ -1,3 +1,6 @@
+package booking;
+import utils.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;

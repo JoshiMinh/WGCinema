@@ -1,3 +1,4 @@
+package utils;
 import java.awt.Color;
 
 public class age_rating_color {

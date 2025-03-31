@@ -1,3 +1,6 @@
+package dashboard;
+import utils.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;

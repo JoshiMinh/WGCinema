@@ -1,3 +1,7 @@
+package app;
+import booking.*;
+import dashboard.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;

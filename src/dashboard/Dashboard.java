@@ -1,3 +1,6 @@
+package dashboard;
+import app.App;
+
 import java.awt.*;
 import javax.swing.*;
 
