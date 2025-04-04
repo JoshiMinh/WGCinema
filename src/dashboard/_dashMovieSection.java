@@ -5,7 +5,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 import org.jfree.chart.*;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
 public class _dashMovieSection {
@@ -137,32 +140,108 @@ public class _dashMovieSection {
         return searchBarPanel;
     }
 
-    private JPanel createChartPanel() {
-        JPanel chartPanel = new JPanel(new BorderLayout());
+    private JPanel createChartPanel() {JPanel chartPanel = new JPanel(new GridLayout(1, 3)); // Three charts side by side
+
         chartPanel.setBackground(BACKGROUND_COLOR);
-        DefaultPieDataset pieDataset = new DefaultPieDataset();
+        
+        // Age Rating Pie Chart (using numbers)
+        DefaultPieDataset ageRatingDataset = new DefaultPieDataset();
         try (Connection connection = DriverManager.getConnection(url);
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT age_rating, COUNT(*) AS count FROM movies GROUP BY age_rating")) {
             while (resultSet.next()) {
-                pieDataset.setValue(resultSet.getString("age_rating"), resultSet.getInt("count"));
+                ageRatingDataset.setValue(resultSet.getString("age_rating"), resultSet.getInt("count"));
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error loading pie chart data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error loading age rating pie chart data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-        JFreeChart pieChart = ChartFactory.createPieChart("Movies by Age Rating", pieDataset, true, true, false);
-        PiePlot plot = (PiePlot) pieChart.getPlot();
-        plot.setBackgroundPaint(BACKGROUND_COLOR);
-        plot.setOutlineVisible(false);
-        plot.setLabelBackgroundPaint(Color.DARK_GRAY);
-        plot.setLabelPaint(Color.WHITE);
-        plot.setSectionPaint("PG", age_rating_color.getColorForRating("PG"));
-        plot.setSectionPaint("PG-13", age_rating_color.getColorForRating("PG-13"));
-        plot.setSectionPaint("PG-16", age_rating_color.getColorForRating("PG-16"));
-        plot.setSectionPaint("R", age_rating_color.getColorForRating("R"));
-        ChartPanel pieChartPanel = new ChartPanel(pieChart);
-        pieChartPanel.setPreferredSize(new Dimension(800, 300));
-        chartPanel.add(pieChartPanel, BorderLayout.CENTER);
+        JFreeChart ageRatingChart = ChartFactory.createPieChart("Movies by Age Rating", ageRatingDataset, true, true, false);
+        PiePlot agePlot = (PiePlot) ageRatingChart.getPlot();
+        agePlot.setBackgroundPaint(BACKGROUND_COLOR);
+        agePlot.setOutlinePaint(new Color(100, 100, 100)); // Updated border color
+        agePlot.setLabelBackgroundPaint(new Color(100, 100, 100)); // Updated label background color
+        agePlot.setLabelPaint(Color.WHITE);
+        agePlot.setSectionPaint("PG", age_rating_color.getColorForRating("PG"));
+        agePlot.setSectionPaint("PG-13", age_rating_color.getColorForRating("PG-13"));
+        agePlot.setSectionPaint("PG-16", age_rating_color.getColorForRating("PG-16"));
+        agePlot.setSectionPaint("R", age_rating_color.getColorForRating("R"));
+        ChartPanel ageChartPanel = new ChartPanel(ageRatingChart);
+        ageChartPanel.setPreferredSize(new Dimension(300, 300));
+        chartPanel.add(ageChartPanel);
+        
+        // Language Pie Chart (using percentages)
+        DefaultPieDataset languageDataset = new DefaultPieDataset();
+        int totalMovies = 0;
+        try (Connection connection = DriverManager.getConnection(url);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT language, COUNT(*) AS count FROM movies GROUP BY language")) {
+            while (resultSet.next()) {
+                totalMovies += resultSet.getInt("count");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error loading language pie chart data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        try (Connection connection = DriverManager.getConnection(url);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT language, COUNT(*) AS count FROM movies GROUP BY language")) {
+            while (resultSet.next()) {
+                String language = resultSet.getString("language");
+                double percentage = (resultSet.getInt("count") * 100.0) / totalMovies;
+                languageDataset.setValue(language, percentage);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error calculating language percentages: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        JFreeChart languageChart = ChartFactory.createPieChart("Movies by Language", languageDataset, true, true, false);
+        PiePlot languagePlot = (PiePlot) languageChart.getPlot();
+        languagePlot.setBackgroundPaint(BACKGROUND_COLOR);
+        languagePlot.setOutlinePaint(new Color(100, 100, 100)); // Updated border color
+        languagePlot.setLabelBackgroundPaint(new Color(100, 100, 100)); // Updated label background color
+        languagePlot.setLabelPaint(Color.WHITE);
+        languagePlot.setSectionPaint("English", Color.BLUE);
+        languagePlot.setSectionPaint("Vietnamese", Color.GREEN);
+        languagePlot.setBaseSectionPaint(Color.GRAY); // Other languages in gray
+        ChartPanel languageChartPanel = new ChartPanel(languageChart);
+        languageChartPanel.setPreferredSize(new Dimension(300, 300));
+        chartPanel.add(languageChartPanel);
+        
+        // Movie Duration Histogram
+        DefaultCategoryDataset durationDataset = new DefaultCategoryDataset();
+        int shortMovies = 0, mediumMovies = 0, longMovies = 0;
+        try (Connection connection = DriverManager.getConnection(url);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT duration, COUNT(*) AS count FROM movies WHERE duration > 0 GROUP BY duration")) {
+            while (resultSet.next()) {
+                int duration = resultSet.getInt("duration");
+                int count = resultSet.getInt("count");
+                if (duration >= 50 && duration <= 90) {
+                    shortMovies += count;
+                } else if (duration >= 91 && duration <= 120) {
+                    mediumMovies += count;
+                } else {
+                    longMovies += count;
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error loading duration histogram data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        durationDataset.addValue(shortMovies, "Movies", "50-90 minutes");
+        durationDataset.addValue(mediumMovies, "Movies", "91-120 minutes");
+        durationDataset.addValue(longMovies, "Movies", "120+ minutes");
+        
+        JFreeChart durationChart = ChartFactory.createBarChart("Movie Durations", "Duration (minutes)", "Number of Movies", durationDataset, PlotOrientation.VERTICAL, false, true, false);
+        CategoryPlot durationPlot = (CategoryPlot) durationChart.getPlot();
+        durationPlot.setBackgroundPaint(BACKGROUND_COLOR);
+        durationPlot.setOutlinePaint(new Color(100, 100, 100)); // Updated border color
+        durationPlot.setRangeGridlinePaint(Color.GRAY);
+        ChartPanel durationChartPanel = new ChartPanel(durationChart);
+        durationChartPanel.setPreferredSize(new Dimension(300, 300));
+        chartPanel.add(durationChartPanel);
+        
         return chartPanel;
     }
+    
 }
