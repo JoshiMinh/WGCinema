@@ -20,4 +20,4 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo Running application...
-java -cp "%BIN_DIR%;%LIB_DIR%/*" app.App
+java -cp "%BIN_DIR%;%LIB_DIR%/*" com.joshiminh.wgcinema.App
