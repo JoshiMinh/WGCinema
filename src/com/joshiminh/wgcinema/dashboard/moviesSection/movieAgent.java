@@ -83,7 +83,7 @@ public class movieAgent extends JFrame {
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 10, 5, 10);
-        gbc.anchor = GridBagConstraints.EAST;
+        gbc.anchor = GridBagConstraints.WEST;
 
         List<JComponent> inputComponents = new ArrayList<>();
 
@@ -171,7 +171,7 @@ public class movieAgent extends JFrame {
             textArea.setFont(LABEL_FONT);
             textArea.setCaretColor(Color.WHITE);
             JScrollPane scrollPane = new JScrollPane(textArea);
-            scrollPane.setPreferredSize(new Dimension(0, 100));
+            scrollPane.setPreferredSize(new Dimension(0, 120));  // Increased from 100 to 120
             inputComponent = scrollPane;
         } else {
             JTextField textField = new JTextField(defaultValue);
