@@ -78,6 +78,7 @@ public class MovieList extends JFrame {
     private JPanel createMoviePanel(int movieId, String imageLink, String title, String rating) throws java.net.MalformedURLException {
         JPanel moviePanel = new JPanel(new BorderLayout());
         moviePanel.setBackground(BACKGROUND_COLOR);
+        @SuppressWarnings("deprecation")
         JLabel imageLabel = new JLabel(new ImageIcon(new ImageIcon(new URL(imageLink)).getImage().getScaledInstance(180, 270, Image.SCALE_SMOOTH)));
         moviePanel.add(imageLabel, BorderLayout.NORTH);
         JPanel titlePanel = createTitlePanel(title, rating);

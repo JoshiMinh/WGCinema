@@ -145,6 +145,7 @@ public class Showrooms extends JFrame {
         return panel;
     }
 
+    @SuppressWarnings("deprecation")
     private JPanel createBottomInfoPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(true);

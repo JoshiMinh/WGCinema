@@ -1,43 +1,36 @@
 package com.joshiminh.wgcinema.dashboard.moviesSection;
+
 import java.awt.*;
 import java.sql.*;
 import javax.swing.*;
-
 import com.joshiminh.wgcinema.dashboard.Dashboard;
 import com.joshiminh.wgcinema.utils.*;
 
 public class searchMovie extends JFrame {
-
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
 
     public searchMovie(String url, String query) {
         setTitle("Search: " + query);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(500, 600);
+        setSize(500, 500);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(20, 15));
         setIconImage(new ImageIcon("images/icon.png").getImage());
-
         JPanel moviesPanel = createMoviesPanel(url, query);
-
         JScrollPane scrollPane = new JScrollPane(moviesPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-        add(scrollPane, BorderLayout.CENTER);
+        setContentPane(scrollPane);
     }
 
     private JPanel createMoviesPanel(String url, String query) {
         JPanel moviesPanel = new JPanel();
         moviesPanel.setLayout(new BoxLayout(moviesPanel, BoxLayout.Y_AXIS));
         moviesPanel.setBackground(BACKGROUND_COLOR);
-
         try (Connection connection = DriverManager.getConnection(url);
              PreparedStatement preparedStatement = connection.prepareStatement(
                      "SELECT id, title, age_rating, release_date FROM movies WHERE title LIKE ? ORDER BY release_date LIMIT 20")) {
             preparedStatement.setString(1, "%" + query + "%");
             ResultSet resultSet = preparedStatement.executeQuery();
-
             while (resultSet.next()) {
                 moviesPanel.add(createMovieEntryPanel(
                         resultSet.getInt("id"),
@@ -45,13 +38,13 @@ public class searchMovie extends JFrame {
                         resultSet.getString("age_rating"),
                         resultSet.getString("release_date"),
                         url));
+                moviesPanel.add(Box.createRigidArea(new Dimension(0, 10)));
             }
         } catch (SQLException e) {
             JLabel errorLabel = new JLabel("Error loading movies: " + e.getMessage());
             errorLabel.setForeground(Color.RED);
             moviesPanel.add(errorLabel);
         }
-
         return moviesPanel;
     }
 
@@ -59,13 +52,8 @@ public class searchMovie extends JFrame {
         JPanel movieEntryPanel = new JPanel(new BorderLayout());
         movieEntryPanel.setBackground(BACKGROUND_COLOR);
         movieEntryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        JPanel textPanel = createTextPanel(title, ageRating, releaseDate);
-        movieEntryPanel.add(textPanel, BorderLayout.CENTER);
-
-        JPanel buttonPanel = createButtonPanel(id, url);
-        movieEntryPanel.add(buttonPanel, BorderLayout.EAST);
-
+        movieEntryPanel.add(createTextPanel(title, ageRating, releaseDate), BorderLayout.CENTER);
+        movieEntryPanel.add(createButtonPanel(id, url), BorderLayout.EAST);
         return movieEntryPanel;
     }
 
@@ -73,24 +61,19 @@ public class searchMovie extends JFrame {
         JPanel textPanel = new JPanel();
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
         textPanel.setBackground(BACKGROUND_COLOR);
-
         JLabel titleLabel = new JLabel(title);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
         JPanel ageRatingPanel = createAgeRatingPanel(ageRating);
-
         JLabel releaseDateLabel = new JLabel("Release Date: " + releaseDate);
         releaseDateLabel.setForeground(Color.LIGHT_GRAY);
         releaseDateLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         releaseDateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
         textPanel.add(titleLabel);
         textPanel.add(ageRatingPanel);
-        textPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Spacing
+        textPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         textPanel.add(releaseDateLabel);
-
         return textPanel;
     }
 
@@ -98,30 +81,24 @@ public class searchMovie extends JFrame {
         JLabel ageRatingLabel = new JLabel("Age Rating: ");
         ageRatingLabel.setForeground(Color.LIGHT_GRAY);
         ageRatingLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-
         JLabel ageRatingValueLabel = new JLabel(ageRating);
         ageRatingValueLabel.setForeground(age_rating_color.getColorForRating(ageRating));
         ageRatingValueLabel.setFont(new Font("Arial", Font.BOLD, 12));
-
         JPanel ageRatingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         ageRatingPanel.setBackground(BACKGROUND_COLOR);
         ageRatingPanel.add(ageRatingLabel);
         ageRatingPanel.add(ageRatingValueLabel);
         ageRatingPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
         return ageRatingPanel;
     }
 
     private JPanel createButtonPanel(int id, String url) {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(BACKGROUND_COLOR);
-
         JButton deleteButton = createDeleteButton(id, url);
         buttonPanel.add(deleteButton);
-
         JButton editButton = createEditButton(id, url);
         buttonPanel.add(editButton);
-
         return buttonPanel;
     }
 
