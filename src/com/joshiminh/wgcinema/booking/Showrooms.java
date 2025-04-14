@@ -1,15 +1,16 @@
 package com.joshiminh.wgcinema.booking;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.swing.border.Border;
-
 import com.joshiminh.wgcinema.utils.*;
 
 public class Showrooms extends JFrame {
@@ -93,31 +94,31 @@ public class Showrooms extends JFrame {
     }
 
     private void setDimensions(int showroomID) {
-        switch (showroomID) {
-            case 1 -> {
-                CELL_SIZE = 60;
-                sideWidths = 500;
-                ROWS = 10;
-                COLS = 10;
+        final int totalWidth = 1450;
+        String query = "SELECT rowCount, collumnCount, max_chairs FROM showrooms WHERE showroom_id = ?";
+        try (Connection conn = DriverManager.getConnection(connectionString);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, showroomID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    ROWS = rs.getInt("rowCount");
+                    COLS = rs.getInt("collumnCount");
+                    int maxChairs = rs.getInt("max_chairs");
+                    CELL_SIZE = maxChairs > 250 ? 50 : 60;
+                    sideWidths = totalWidth - (CELL_SIZE * COLS);
+                } else {
+                    CELL_SIZE = 60;
+                    ROWS = 10;
+                    COLS = 10;
+                    sideWidths = totalWidth - (CELL_SIZE * COLS);
+                }
             }
-            case 2, 3 -> {
-                CELL_SIZE = 60;
-                sideWidths = 225;
-                ROWS = 10;
-                COLS = 20;
-            }
-            case 4 -> {
-                CELL_SIZE = 50;
-                sideWidths = 175;
-                ROWS = 12;
-                COLS = 25;
-            }
-            default -> {
-                CELL_SIZE = 60;
-                sideWidths = 500;
-                ROWS = 10;
-                COLS = 10;
-            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            CELL_SIZE = 60;
+            ROWS = 10;
+            COLS = 10;
+            sideWidths = totalWidth - (CELL_SIZE * COLS);
         }
     }
 
@@ -230,25 +231,19 @@ public class Showrooms extends JFrame {
         gbcButton.gridx = 0;
         gbcButton.gridy = 0;
         gbcButton.anchor = GridBagConstraints.CENTER;
-        gbcButton.insets = new Insets(0, 0, 0, 0);
         eastPanel.add(bookButton, gbcButton);
         panel.add(eastPanel, BorderLayout.EAST);
         return panel;
     }
 
     private String updateMessage() {
-        StringBuilder message = new StringBuilder("No seats selected");
-        if (!selectedCells.isEmpty()) {
-            ArrayList<String> selectedSeatsList = new ArrayList<>();
-            for (JPanel cell : selectedCells) {
-                selectedSeatsList.add(((JLabel) cell.getComponent(0)).getText());
-            }
-            String selectedSeatsString = String.join(", ", selectedSeatsList);
-            String sortedSelectedSeats = sortSelectedSeats(selectedSeatsString);
-            message = new StringBuilder("You have selected " + selectedCells.size() + " seats: ");
-            message.append(sortedSelectedSeats);
+        if (selectedCells.isEmpty()) return "No seats selected";
+        List<String> selectedSeatsList = new ArrayList<>();
+        for (JPanel cell : selectedCells) {
+            selectedSeatsList.add(((JLabel) cell.getComponent(0)).getText());
         }
-        return message.toString();
+        String sortedSelectedSeats = sortSelectedSeats(String.join(", ", selectedSeatsList));
+        return "You have selected " + selectedCells.size() + " seats: " + sortedSelectedSeats;
     }
 
     public static String sortSelectedSeats(String selectedSeats) {
@@ -256,13 +251,10 @@ public class Showrooms extends JFrame {
         Arrays.sort(seats, (s1, s2) -> {
             char row1 = s1.charAt(0);
             char row2 = s2.charAt(0);
-            if (row1 != row2) {
-                return Character.compare(row1, row2);
-            } else {
-                int number1 = Integer.parseInt(s1.substring(1));
-                int number2 = Integer.parseInt(s2.substring(1));
-                return Integer.compare(number1, number2);
-            }
+            if (row1 != row2) return Character.compare(row1, row2);
+            int number1 = Integer.parseInt(s1.substring(1));
+            int number2 = Integer.parseInt(s2.substring(1));
+            return Integer.compare(number1, number2);
         });
         return String.join(", ", seats);
     }
@@ -289,9 +281,7 @@ public class Showrooms extends JFrame {
                 label.setForeground(isBooked ? Color.GRAY : Color.WHITE);
                 label.setHorizontalAlignment(JLabel.CENTER);
                 box.add(label);
-                if (!isBooked) {
-                    box.addMouseListener(new BoxClickListener(box));
-                }
+                if (!isBooked) box.addMouseListener(new BoxClickListener(box));
                 gridPanel.add(box);
             }
         }
@@ -309,11 +299,9 @@ public class Showrooms extends JFrame {
 
     private class BoxClickListener extends MouseAdapter {
         private final JPanel box;
-
         BoxClickListener(JPanel box) {
             this.box = box;
         }
-
         @Override
         public void mouseClicked(MouseEvent e) {
             if (selectedCells.contains(box)) {
@@ -331,7 +319,6 @@ public class Showrooms extends JFrame {
 
     public void restartShowrooms() {
         dispose();
-        Showrooms newShowroomsFrame = new Showrooms(connectionString, showtimeID);
-        newShowroomsFrame.setVisible(true);
+        new Showrooms(connectionString, showtimeID).setVisible(true);
     }
 }
