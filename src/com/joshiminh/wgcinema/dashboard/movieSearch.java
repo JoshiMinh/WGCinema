@@ -1,15 +1,15 @@
-package com.joshiminh.wgcinema.dashboard.moviesSection;
+package com.joshiminh.wgcinema.dashboard;
 
 import java.awt.*;
 import java.sql.*;
 import javax.swing.*;
-import com.joshiminh.wgcinema.dashboard.Dashboard;
+
 import com.joshiminh.wgcinema.utils.*;
 
-public class searchMovie extends JFrame {
+public class movieSearch extends JFrame {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
 
-    public searchMovie(String url, String query) {
+    public movieSearch(String url, String query) {
         setTitle("Search: " + query);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(500, 500);

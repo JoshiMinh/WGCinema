@@ -2,9 +2,6 @@ package com.joshiminh.wgcinema.dashboard;
 import java.awt.*;
 import javax.swing.*;
 import com.joshiminh.wgcinema.App;
-import com.joshiminh.wgcinema.dashboard.moviesSection.movies;
-import com.joshiminh.wgcinema.dashboard.showroomsSection.showrooms;
-import com.joshiminh.wgcinema.dashboard.showtimesSection.showtimes;
 
 public class Dashboard extends JFrame {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
@@ -33,9 +30,9 @@ public class Dashboard extends JFrame {
         tabbedPane.setBackground(BACKGROUND_COLOR);
         tabbedPane.setForeground(Color.WHITE);
 
-        tabbedPane.addTab("Movies", new movies(url).getMoviesSection());
-        tabbedPane.addTab("Showrooms", new showrooms(url).getShowroomsPanel());
-        tabbedPane.addTab("Showtimes", new showtimes(url).getShowtimesPanel());
+        tabbedPane.addTab("Movies", new dashboardMovies(url).getMoviesSection());
+        tabbedPane.addTab("Showrooms", new dashboardShowrooms(url).getShowroomsPanel());
+        tabbedPane.addTab("Showtimes", new dashboardShowtimes(url).getShowtimesPanel());
 
         gbc.gridx = 0;
         gbc.gridy = 0;

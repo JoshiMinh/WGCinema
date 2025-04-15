@@ -1,4 +1,4 @@
-package com.joshiminh.wgcinema.dashboard.showroomsSection;
+package com.joshiminh.wgcinema.dashboard;
 
 import java.awt.*;
 import java.sql.*;
@@ -6,9 +6,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 
-import com.joshiminh.wgcinema.dashboard.Dashboard;
 import com.joshiminh.wgcinema.utils.table_style;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -17,11 +15,11 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-public class showrooms {
+public class dashboardShowrooms {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
     private JPanel showroomsPanel;
 
-    public showrooms(String url) {
+    public dashboardShowrooms(String url) {
         showroomsPanel = new JPanel(new BorderLayout());
         showroomsPanel.setBackground(BACKGROUND_COLOR);
 
@@ -135,82 +133,5 @@ public class showrooms {
 
     public JPanel getShowroomsPanel() {
         return showroomsPanel;
-    }
-}
-
-class ButtonRenderer extends JButton implements TableCellRenderer {
-    public ButtonRenderer() {
-        setOpaque(true);
-    }
-
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        setText((value == null) ? "Delete" : value.toString());
-        setBackground(Color.RED);
-        setForeground(Color.WHITE);
-        setFont(new Font("Arial", Font.BOLD, 12));
-        return this;
-    }
-}
-
-class ButtonEditor extends DefaultCellEditor {
-    private final JButton button;
-    private boolean isPushed;
-    private int row;
-    private final JTable table;
-    private final String url;
-
-    public ButtonEditor(JCheckBox checkBox, String url, JTable table) {
-        super(checkBox);
-        this.table = table;
-        this.url = url;
-        button = new JButton();
-        button.setOpaque(true);
-        button.setBackground(Color.RED);
-        button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.BOLD, 12));
-        button.addActionListener(e -> fireEditingStopped());
-    }
-
-    @Override
-    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        this.row = row;
-        button.setText((value == null) ? "Delete" : value.toString());
-        isPushed = true;
-        return button;
-    }
-
-    @Override
-    public Object getCellEditorValue() {
-        if (isPushed) {
-            int showroomId = (int) table.getValueAt(row, 0);
-            int confirmation = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this showroom?", "Delete Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (confirmation == JOptionPane.YES_OPTION) {
-                try (Connection connection = DriverManager.getConnection(url);
-                     PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM showrooms WHERE showroom_id = ?")) {
-                    preparedStatement.setInt(1, showroomId);
-                    int result = preparedStatement.executeUpdate();
-                    if (result > 0) {
-                        JOptionPane.showMessageDialog(null, "Showroom deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                        ((DefaultTableModel) table.getModel()).removeRow(row);
-                        Window win = SwingUtilities.getWindowAncestor(table);
-                        if (win instanceof JFrame) {
-                            ((JFrame) win).dispose();
-                            new Dashboard(url).setVisible(true);
-                        }
-                    }
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, "Error deleting showroom: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-        isPushed = false;
-        return "Delete";
-    }
-
-    @Override
-    public boolean stopCellEditing() {
-        isPushed = false;
-        return super.stopCellEditing();
     }
 }

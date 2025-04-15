@@ -1,4 +1,4 @@
-package com.joshiminh.wgcinema.dashboard.moviesSection;
+package com.joshiminh.wgcinema.dashboard;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
@@ -12,14 +12,14 @@ import org.jfree.data.general.DefaultPieDataset;
 
 import com.joshiminh.wgcinema.utils.*;
 
-public class movies {
+public class dashboardMovies {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
 
     private String url;
     private JPanel moviesSection;
     private JPanel moviesPanel;
 
-    public movies(String url) {
+    public dashboardMovies(String url) {
         this.url = url;
         this.moviesSection = new JPanel(new BorderLayout());
         this.moviesSection.setBackground(BACKGROUND_COLOR);
@@ -131,7 +131,7 @@ public class movies {
         searchButton.addActionListener(e -> {
             String query = searchBar.getText().trim();
             if (!query.isEmpty()) {
-                new searchMovie(url, query).setVisible(true);
+                new movieSearch(url, query).setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(null, "Please enter a search query.", "Warning", JOptionPane.WARNING_MESSAGE);
             }

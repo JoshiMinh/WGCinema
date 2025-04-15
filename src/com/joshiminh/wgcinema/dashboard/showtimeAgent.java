@@ -1,15 +1,15 @@
-package com.joshiminh.wgcinema.dashboard.showroomsSection;
+package com.joshiminh.wgcinema.dashboard;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import com.joshiminh.wgcinema.App;
-import com.joshiminh.wgcinema.dashboard.Dashboard;
+
 import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class showroomAgent extends JFrame { 
+public class showtimeAgent extends JFrame { 
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
     private static final Color ACCENT_COLOR = new Color(70, 130, 180);
     private static final Font LABEL_FONT = new Font("Segoe UI", Font.PLAIN, 14);
@@ -17,11 +17,11 @@ public class showroomAgent extends JFrame {
     private static final int FORM_PADDING = 50;
     private static final int BUTTON_PADDING = 8;
     
-    private String[] showroomColumns;
+    private String[] showtimeColumns;
     private final String databaseUrl;
     private final List<JComponent> inputComponents;
 
-    public showroomAgent(String url) {
+    public showtimeAgent(String url) {
         databaseUrl = url;
         inputComponents = new ArrayList<>();
         initializeUI();
@@ -30,7 +30,7 @@ public class showroomAgent extends JFrame {
 
     private void initializeUI() {
         setIconImage(new ImageIcon("images/icon.png").getImage());
-        setTitle("Add New Showroom");
+        setTitle("Add New Showtime");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(700, 700);
         setLocationRelativeTo(null);
@@ -48,7 +48,7 @@ public class showroomAgent extends JFrame {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBorder(new EmptyBorder(20, 0, 10, 0));
         headerPanel.setBackground(BACKGROUND_COLOR);
-        JLabel titleLabel = new JLabel("Add New Showroom", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Add New Showtime", SwingConstants.CENTER);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(TITLE_FONT);
         headerPanel.add(titleLabel, BorderLayout.CENTER);
@@ -56,16 +56,17 @@ public class showroomAgent extends JFrame {
     }
 
     private JPanel createFormPanel() {
-        showroomColumns = getColumnNames(databaseUrl, "showrooms");
+        // Get column names for the "showtimes" table and filter out the primary key "showtime_id"
+        showtimeColumns = getColumnNames(databaseUrl, "showtimes");
         List<String> filteredColumns = new ArrayList<>();
-        for (String column : showroomColumns) {
-            if (!column.equalsIgnoreCase("showroom_id")) {
+        for (String column : showtimeColumns) {
+            if (!column.equalsIgnoreCase("showtime_id")) {
                 filteredColumns.add(column);
             }
         }
-        showroomColumns = filteredColumns.toArray(new String[0]);
-        String[] columnValues = new String[showroomColumns.length];
-        for (int i = 0; i < showroomColumns.length; i++) {
+        showtimeColumns = filteredColumns.toArray(new String[0]);
+        String[] columnValues = new String[showtimeColumns.length];
+        for (int i = 0; i < showtimeColumns.length; i++) {
             columnValues[i] = "";
         }
         
@@ -78,14 +79,14 @@ public class showroomAgent extends JFrame {
         gbc.insets = new Insets(5, 10, 5, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
-        for (int i = 0; i < showroomColumns.length; i++) {
-            JLabel label = createFormLabel(showroomColumns[i]);
+        for (int i = 0; i < showtimeColumns.length; i++) {
+            JLabel label = createFormLabel(showtimeColumns[i]);
             gbc.gridx = 0;
             gbc.gridy = i;
             gbc.weightx = 0.25;
             gbc.fill = GridBagConstraints.NONE;
             formPanel.add(label, gbc);
-            JComponent inputComponent = createInputComponent(showroomColumns[i], columnValues[i]);
+            JComponent inputComponent = createInputComponent(showtimeColumns[i], columnValues[i]);
             inputComponents.add(inputComponent);
             gbc.gridx = 1;
             gbc.weightx = 0.75;
@@ -119,7 +120,7 @@ public class showroomAgent extends JFrame {
     }
 
     private JButton createSaveButton() {
-        JButton saveButton = new JButton("Add Showroom");
+        JButton saveButton = new JButton("Add Showtime");
         styleButton(saveButton);
         saveButton.addActionListener(e -> performSaveAction());
         return saveButton;
@@ -160,7 +161,7 @@ public class showroomAgent extends JFrame {
             BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         textField.setCaretColor(Color.WHITE);
-        if (fieldName.equalsIgnoreCase("showroom_id")) {
+        if (fieldName.equalsIgnoreCase("showtime_id")) {
             textField.setEditable(false);
         }
         textField.setPreferredSize(new Dimension(0, 30));
@@ -174,17 +175,17 @@ public class showroomAgent extends JFrame {
     }
 
     private void performSaveAction() {
-        addNewShowroom();
+        addNewShowtime();
     }
 
-    private void addNewShowroom() {
+    private void addNewShowtime() {
         String[] newValues = extractValues(inputComponents);
-        StringBuilder queryBuilder = new StringBuilder("INSERT INTO showrooms (");
-        queryBuilder.append(String.join(", ", showroomColumns))
+        StringBuilder queryBuilder = new StringBuilder("INSERT INTO showtimes (");
+        queryBuilder.append(String.join(", ", showtimeColumns))
                     .append(") VALUES (")
-                    .append("?,".repeat(showroomColumns.length).replaceAll(",$", ""))
+                    .append("?,".repeat(showtimeColumns.length).replaceAll(",$", ""))
                     .append(")");
-        executeDatabaseOperation(queryBuilder.toString(), newValues, "Showroom added successfully!", "Failed to add showroom");
+        executeDatabaseOperation(queryBuilder.toString(), newValues, "Showtime added successfully!", "Failed to add showtime");
     }
 
     private void executeDatabaseOperation(String query, String[] values, String successMsg, String failMsg) {
@@ -217,7 +218,7 @@ public class showroomAgent extends JFrame {
     }
 
     private String[] extractValues(List<JComponent> components) {
-        String[] values = new String[showroomColumns.length];
+        String[] values = new String[showtimeColumns.length];
         for (int i = 0; i < components.size(); i++) {
             JComponent component = components.get(i);
             if (component instanceof JTextField field) {

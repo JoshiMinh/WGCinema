@@ -1,14 +1,15 @@
-package com.joshiminh.wgcinema.dashboard.moviesSection;
+package com.joshiminh.wgcinema.dashboard;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import com.joshiminh.wgcinema.App;
+
 import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import com.joshiminh.wgcinema.utils.*;
 
-public class movieAgent extends JFrame {
+public class showroomAgent extends JFrame { 
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
     private static final Color ACCENT_COLOR = new Color(70, 130, 180);
     private static final Font LABEL_FONT = new Font("Segoe UI", Font.PLAIN, 14);
@@ -16,27 +17,22 @@ public class movieAgent extends JFrame {
     private static final int FORM_PADDING = 50;
     private static final int BUTTON_PADDING = 8;
     
-    private String[] movieColumns;
+    private String[] showroomColumns;
     private final String databaseUrl;
-    private final boolean isNewMovie;
-    private final int movieId;
     private final List<JComponent> inputComponents;
 
-    public movieAgent(String url, int id, boolean newMovie) {
+    public showroomAgent(String url) {
         databaseUrl = url;
-        movieId = id;
-        isNewMovie = newMovie;
         inputComponents = new ArrayList<>();
         initializeUI();
         setupFrame();
-        loadMovieData();
     }
 
     private void initializeUI() {
         setIconImage(new ImageIcon("images/icon.png").getImage());
-        setTitle(isNewMovie ? "Add New Movie" : "Edit Movie");
+        setTitle("Add New Showroom");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(800, 825);
+        setSize(700, 700);
         setLocationRelativeTo(null);
         getContentPane().setBackground(BACKGROUND_COLOR);
         setLayout(new BorderLayout(0, 20));
@@ -52,7 +48,7 @@ public class movieAgent extends JFrame {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBorder(new EmptyBorder(20, 0, 10, 0));
         headerPanel.setBackground(BACKGROUND_COLOR);
-        JLabel titleLabel = new JLabel(isNewMovie ? "Add New Movie" : "Edit Movie", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Add New Showroom", SwingConstants.CENTER);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(TITLE_FONT);
         headerPanel.add(titleLabel, BorderLayout.CENTER);
@@ -60,6 +56,19 @@ public class movieAgent extends JFrame {
     }
 
     private JPanel createFormPanel() {
+        showroomColumns = getColumnNames(databaseUrl, "showrooms");
+        List<String> filteredColumns = new ArrayList<>();
+        for (String column : showroomColumns) {
+            if (!column.equalsIgnoreCase("showroom_id")) {
+                filteredColumns.add(column);
+            }
+        }
+        showroomColumns = filteredColumns.toArray(new String[0]);
+        String[] columnValues = new String[showroomColumns.length];
+        for (int i = 0; i < showroomColumns.length; i++) {
+            columnValues[i] = "";
+        }
+        
         JPanel formContainer = new JPanel(new GridBagLayout());
         formContainer.setBackground(BACKGROUND_COLOR);
         formContainer.setBorder(new EmptyBorder(10, FORM_PADDING, 10, FORM_PADDING));
@@ -69,18 +78,14 @@ public class movieAgent extends JFrame {
         gbc.insets = new Insets(5, 10, 5, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
-        movieColumns = getColumnNames(databaseUrl, "movies");
-        String[] columnValues = loadColumnValues();
-
-        for (int i = 0; i < movieColumns.length; i++) {
-            JLabel label = createFormLabel(movieColumns[i]);
+        for (int i = 0; i < showroomColumns.length; i++) {
+            JLabel label = createFormLabel(showroomColumns[i]);
             gbc.gridx = 0;
             gbc.gridy = i;
             gbc.weightx = 0.25;
             gbc.fill = GridBagConstraints.NONE;
             formPanel.add(label, gbc);
-
-            JComponent inputComponent = createInputComponent(movieColumns[i], columnValues[i]);
+            JComponent inputComponent = createInputComponent(showroomColumns[i], columnValues[i]);
             inputComponents.add(inputComponent);
             gbc.gridx = 1;
             gbc.weightx = 0.75;
@@ -94,30 +99,6 @@ public class movieAgent extends JFrame {
         formGbc.weighty = 1;
         formContainer.add(formPanel, formGbc);
         return formContainer;
-    }
-
-    private String[] loadColumnValues() {
-        String[] columnValues = new String[movieColumns.length];
-        if (!isNewMovie) {
-            try (Connection connection = DriverManager.getConnection(databaseUrl);
-                 PreparedStatement statement = connection.prepareStatement(
-                         "SELECT " + String.join(", ", movieColumns) + " FROM movies WHERE id = ?")) {
-                statement.setInt(1, movieId);
-                ResultSet resultSet = statement.executeQuery();
-                if (resultSet.next()) {
-                    for (int i = 0; i < movieColumns.length; i++) {
-                        columnValues[i] = resultSet.getString(movieColumns[i]);
-                    }
-                }
-            } catch (SQLException e) {
-                showErrorDialog("Database error: " + e.getMessage());
-            }
-        } else {
-            for (int i = 0; i < movieColumns.length; i++) {
-                columnValues[i] = "";
-            }
-        }
-        return columnValues;
     }
 
     private JLabel createFormLabel(String columnName) {
@@ -138,7 +119,7 @@ public class movieAgent extends JFrame {
     }
 
     private JButton createSaveButton() {
-        JButton saveButton = new JButton(isNewMovie ? "Add Movie" : "Save Changes");
+        JButton saveButton = new JButton("Add Showroom");
         styleButton(saveButton);
         saveButton.addActionListener(e -> performSaveAction());
         return saveButton;
@@ -150,10 +131,6 @@ public class movieAgent extends JFrame {
         button.setFont(LABEL_FONT);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(BUTTON_PADDING, 25, BUTTON_PADDING, 25));
-    }
-
-    private void loadMovieData() {
-        movieColumns = getColumnNames(databaseUrl, "movies");
     }
 
     private static String[] getColumnNames(String url, String tableName) {
@@ -172,47 +149,9 @@ public class movieAgent extends JFrame {
     }
 
     private JComponent createInputComponent(String fieldName, String defaultValue) {
-        return switch (fieldName.toLowerCase()) {
-            case "age_rating" -> createRatingComboBox(defaultValue);
-            case "release_date" -> createDateSpinner(defaultValue);
-            case "description" -> createDescriptionTextArea(defaultValue);
-            default -> createTextField(fieldName, defaultValue);
-        };
+        return createTextField(fieldName, defaultValue);
     }
 
-    private JComboBox<String> createRatingComboBox(String defaultValue) {
-        JComboBox<String> comboBox = new JComboBox<>(age_rating_color.getRatings());
-        comboBox.setSelectedItem(defaultValue);
-        styleComponent(comboBox);
-        comboBox.setPreferredSize(new Dimension(0, 30));
-        return comboBox;
-    }
-
-    private JSpinner createDateSpinner(String defaultValue) {
-        JSpinner dateSpinner = new JSpinner(new SpinnerDateModel());
-        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd");
-        dateSpinner.setEditor(dateEditor);
-        styleComponent(dateSpinner);
-        try {
-            if (!defaultValue.isEmpty()) {
-                dateSpinner.setValue(java.sql.Date.valueOf(defaultValue));
-            }
-        } catch (IllegalArgumentException ignored) {}
-        dateSpinner.setPreferredSize(new Dimension(0, 30));
-        return dateSpinner;
-    }
-
-    private JScrollPane createDescriptionTextArea(String defaultValue) {
-        JTextArea textArea = new JTextArea(defaultValue, 4, 20);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        styleComponent(textArea);
-        textArea.setCaretColor(Color.WHITE);
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setPreferredSize(new Dimension(0, 150));
-        return scrollPane;
-    }
-    
     private JTextField createTextField(String fieldName, String defaultValue) {
         JTextField textField = new JTextField(defaultValue);
         styleComponent(textField);
@@ -221,7 +160,9 @@ public class movieAgent extends JFrame {
             BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         textField.setCaretColor(Color.WHITE);
-        textField.setEditable(!fieldName.equalsIgnoreCase("id"));
+        if (fieldName.equalsIgnoreCase("showroom_id")) {
+            textField.setEditable(false);
+        }
         textField.setPreferredSize(new Dimension(0, 30));
         return textField;
     }
@@ -233,34 +174,17 @@ public class movieAgent extends JFrame {
     }
 
     private void performSaveAction() {
-        if (isNewMovie) {
-            addNewMovie();
-        } else {
-            saveChanges();
-        }
+        addNewShowroom();
     }
 
-    private void addNewMovie() {
+    private void addNewShowroom() {
         String[] newValues = extractValues(inputComponents);
-        StringBuilder queryBuilder = new StringBuilder("INSERT INTO movies (");
-        queryBuilder.append(String.join(", ", movieColumns))
+        StringBuilder queryBuilder = new StringBuilder("INSERT INTO showrooms (");
+        queryBuilder.append(String.join(", ", showroomColumns))
                     .append(") VALUES (")
-                    .append("?,".repeat(movieColumns.length).replaceAll(",$", ""))
+                    .append("?,".repeat(showroomColumns.length).replaceAll(",$", ""))
                     .append(")");
-        executeDatabaseOperation(queryBuilder.toString(), newValues,
-                "Movie added successfully!", "Failed to add movie");
-    }
-
-    private void saveChanges() {
-        String[] updatedValues = extractValues(inputComponents);
-        StringBuilder queryBuilder = new StringBuilder("UPDATE movies SET ");
-        for (int i = 0; i < movieColumns.length; i++) {
-            queryBuilder.append(movieColumns[i]).append(" = ?");
-            if (i < movieColumns.length - 1) queryBuilder.append(", ");
-        }
-        queryBuilder.append(" WHERE id = ?");
-        executeDatabaseOperation(queryBuilder.toString(), updatedValues,
-                "Changes saved successfully!", "No changes were made");
+        executeDatabaseOperation(queryBuilder.toString(), newValues, "Showroom added successfully!", "Failed to add showroom");
     }
 
     private void executeDatabaseOperation(String query, String[] values, String successMsg, String failMsg) {
@@ -269,27 +193,35 @@ public class movieAgent extends JFrame {
             for (int i = 0; i < values.length; i++) {
                 statement.setString(i + 1, values[i]);
             }
-            if (!isNewMovie) statement.setInt(values.length + 1, movieId);
             int affectedRows = statement.executeUpdate();
-            showResultDialog(affectedRows > 0 ? successMsg : failMsg, affectedRows > 0);
+            if (affectedRows > 0) {
+                showResultDialog(successMsg, true);
+                for (Window window : Window.getWindows()) {
+                    if (window instanceof Dashboard) {
+                        window.dispose();
+                    }
+                }
+                dispose();
+                for (Window window : Window.getWindows()) {
+                    if (window instanceof App) {
+                        window.dispose();
+                    }
+                }
+                new Dashboard(databaseUrl).setVisible(true);
+            } else {
+                showResultDialog(failMsg, false);
+            }
         } catch (SQLException e) {
             showErrorDialog("Database error: " + e.getMessage());
         }
-        dispose();
     }
 
     private String[] extractValues(List<JComponent> components) {
-        String[] values = new String[movieColumns.length];
+        String[] values = new String[showroomColumns.length];
         for (int i = 0; i < components.size(); i++) {
             JComponent component = components.get(i);
             if (component instanceof JTextField field) {
                 values[i] = field.getText();
-            } else if (component instanceof JComboBox<?> comboBox) {
-                values[i] = comboBox.getSelectedItem().toString();
-            } else if (component instanceof JSpinner spinner) {
-                values[i] = new java.sql.Date(((java.util.Date) spinner.getValue()).getTime()).toString();
-            } else if (component instanceof JScrollPane pane) {
-                values[i] = ((JTextArea) pane.getViewport().getView()).getText();
             }
         }
         return values;
@@ -297,7 +229,7 @@ public class movieAgent extends JFrame {
 
     private void showResultDialog(String message, boolean success) {
         JOptionPane.showMessageDialog(this, message, success ? "Success" : "Warning",
-                success ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.WARNING_MESSAGE);
+            success ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.WARNING_MESSAGE);
     }
 
     private void showErrorDialog(String message) {
