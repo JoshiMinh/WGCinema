@@ -2,21 +2,21 @@ package com.joshiminh.wgcinema.dashboard;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import com.joshiminh.wgcinema.App;
-
 import java.awt.*;
 import java.sql.*;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Date;
 import java.util.List;
 
-public class showtimeAgent extends JFrame { 
+public class showtimeAgent extends JFrame {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
     private static final Color ACCENT_COLOR = new Color(70, 130, 180);
     private static final Font LABEL_FONT = new Font("Segoe UI", Font.PLAIN, 14);
     private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 22);
     private static final int FORM_PADDING = 50;
     private static final int BUTTON_PADDING = 8;
-    
+
     private String[] showtimeColumns;
     private final String databaseUrl;
     private final List<JComponent> inputComponents;
@@ -56,20 +56,19 @@ public class showtimeAgent extends JFrame {
     }
 
     private JPanel createFormPanel() {
-        // Get column names for the "showtimes" table and filter out the primary key "showtime_id"
         showtimeColumns = getColumnNames(databaseUrl, "showtimes");
         List<String> filteredColumns = new ArrayList<>();
         for (String column : showtimeColumns) {
-            if (!column.equalsIgnoreCase("showtime_id")) {
+            if (!column.equalsIgnoreCase("showtime_id") &&
+                !column.equalsIgnoreCase("reserved_chairs") &&
+                !column.equalsIgnoreCase("chairs_booked")) {
                 filteredColumns.add(column);
             }
         }
         showtimeColumns = filteredColumns.toArray(new String[0]);
         String[] columnValues = new String[showtimeColumns.length];
-        for (int i = 0; i < showtimeColumns.length; i++) {
-            columnValues[i] = "";
-        }
-        
+        Arrays.fill(columnValues, "");
+
         JPanel formContainer = new JPanel(new GridBagLayout());
         formContainer.setBackground(BACKGROUND_COLOR);
         formContainer.setBorder(new EmptyBorder(10, FORM_PADDING, 10, FORM_PADDING));
@@ -150,8 +149,63 @@ public class showtimeAgent extends JFrame {
     }
 
     private JComponent createInputComponent(String fieldName, String defaultValue) {
-        return createTextField(fieldName, defaultValue);
+        if (fieldName.equalsIgnoreCase("date")) {
+            JComboBox<String> dateBox = new JComboBox<>();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar cal = Calendar.getInstance();
+            for (int i = 0; i <= 14; i++) {
+                dateBox.addItem(sdf.format(cal.getTime()));
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+            }
+            styleComponent(dateBox);
+            return dateBox;
+        } else if (fieldName.equalsIgnoreCase("showroom_id")) {
+            JComboBox<String> showroomBox = new JComboBox<>();
+            try (Connection connection = DriverManager.getConnection(databaseUrl);
+                 Statement stmt = connection.createStatement();
+                 ResultSet rs = stmt.executeQuery("SELECT showroom_id, showroom_name FROM showrooms")) {
+                while (rs.next()) {
+                    showroomBox.addItem(rs.getInt("showroom_id") + " - " + rs.getString("showroom_name"));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            styleComponent(showroomBox);
+            return showroomBox;
+        } 
+        else if (fieldName.equalsIgnoreCase("movie_id")) {
+            JComboBox<String> movieBox = new JComboBox<>();
+            try (Connection connection = DriverManager.getConnection(databaseUrl);
+                 Statement stmt = connection.createStatement();
+                 ResultSet rs = stmt.executeQuery(
+                    "SELECT id, title FROM movies WHERE release_date >= (CURRENT_DATE - INTERVAL 14 DAY) ORDER BY release_date"
+                 )) {
+                while (rs.next()) {
+                    movieBox.addItem(rs.getInt("id") + " - " + rs.getString("title"));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            styleComponent(movieBox);
+            return movieBox;
+        } else if (fieldName.equalsIgnoreCase("time")) {
+            JComboBox<String> timeBox = new JComboBox<>();
+            int startHour = 7, endHour = 22;
+            for (int hour = startHour; hour <= endHour; hour++) {
+                for (int min = 0; min < 60; min += 15) {
+                    timeBox.addItem(String.format("%02d:%02d", hour, min));
+                }
+            }
+            timeBox.addItem("22:30");
+            timeBox.setSelectedItem("19:00");
+            styleComponent(timeBox);
+            return timeBox;
+        } else {
+            return createTextField(fieldName, defaultValue);
+        }
+        
     }
+    
 
     private JTextField createTextField(String fieldName, String defaultValue) {
         JTextField textField = new JTextField(defaultValue);
@@ -161,9 +215,6 @@ public class showtimeAgent extends JFrame {
             BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         textField.setCaretColor(Color.WHITE);
-        if (fieldName.equalsIgnoreCase("showtime_id")) {
-            textField.setEditable(false);
-        }
         textField.setPreferredSize(new Dimension(0, 30));
         return textField;
     }
@@ -197,18 +248,8 @@ public class showtimeAgent extends JFrame {
             int affectedRows = statement.executeUpdate();
             if (affectedRows > 0) {
                 showResultDialog(successMsg, true);
-                for (Window window : Window.getWindows()) {
-                    if (window instanceof Dashboard) {
-                        window.dispose();
-                    }
-                }
                 dispose();
-                for (Window window : Window.getWindows()) {
-                    if (window instanceof App) {
-                        window.dispose();
-                    }
-                }
-                new Dashboard(databaseUrl).setVisible(true);
+                new showtimeAgent(databaseUrl).setVisible(true);
             } else {
                 showResultDialog(failMsg, false);
             }
@@ -223,6 +264,16 @@ public class showtimeAgent extends JFrame {
             JComponent component = components.get(i);
             if (component instanceof JTextField field) {
                 values[i] = field.getText();
+            } else if (component instanceof JSpinner spinner) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                values[i] = sdf.format(spinner.getValue());
+            } else if (component instanceof JComboBox comboBox) {
+                String selected = (String) comboBox.getSelectedItem();
+                if (selected.contains(" - ")) {
+                    values[i] = selected.split(" - ")[0];
+                } else {
+                    values[i] = selected;
+                }
             }
         }
         return values;

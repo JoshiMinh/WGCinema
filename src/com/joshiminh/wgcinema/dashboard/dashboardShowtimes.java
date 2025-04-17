@@ -87,7 +87,7 @@ public class dashboardShowtimes {
         });
 
         table.getColumn("Actions").setCellRenderer(new ButtonRenderer());
-        table.getColumn("Actions").setCellEditor(new ButtonEditor(new JCheckBox(), url, table));
+        table.getColumn("Actions").setCellEditor(new ButtonEditor(url, table, "showtimes", "showtime_id"));
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
