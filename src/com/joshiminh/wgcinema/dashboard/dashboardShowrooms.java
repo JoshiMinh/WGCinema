@@ -17,14 +17,29 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 public class dashboardShowrooms {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
-    private JPanel showroomsPanel;
+    private final JPanel showroomsPanel;
 
     public dashboardShowrooms(String url) {
         showroomsPanel = new JPanel(new BorderLayout());
         showroomsPanel.setBackground(BACKGROUND_COLOR);
 
+        JPanel titlePanel = createTitlePanel(url);
+        showroomsPanel.add(titlePanel, BorderLayout.NORTH);
+
+        JTable table = createTable(url);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        showroomsPanel.add(scrollPane, BorderLayout.CENTER);
+
+        ChartPanel chartPanel = createChartPanel(url);
+        showroomsPanel.add(chartPanel, BorderLayout.SOUTH);
+    }
+
+    private JPanel createTitlePanel(String url) {
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setBackground(BACKGROUND_COLOR);
+
         JLabel titleLabel = new JLabel("Show Rooms", SwingConstants.CENTER);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
@@ -35,14 +50,18 @@ public class dashboardShowrooms {
         newButton.setFont(new Font("Arial", Font.BOLD, 12));
         newButton.addActionListener(e -> new showroomAgent(url).setVisible(true));
         titlePanel.add(newButton, BorderLayout.EAST);
-        showroomsPanel.add(titlePanel, BorderLayout.NORTH);
 
+        return titlePanel;
+    }
+
+    private JTable createTable(String url) {
         DefaultTableModel tableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return column != 0;
             }
         };
+
         JTable table = new JTable(tableModel);
         new table_style(table);
         table.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -51,12 +70,14 @@ public class dashboardShowrooms {
         try (Connection connection = DriverManager.getConnection(url);
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM showrooms")) {
+
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
             for (int i = 1; i <= columnCount; i++) {
                 tableModel.addColumn(metaData.getColumnLabel(i));
             }
             tableModel.addColumn("Actions");
+
             while (resultSet.next()) {
                 Object[] rowData = new Object[columnCount + 1];
                 for (int i = 1; i <= columnCount; i++) {
@@ -66,7 +87,7 @@ public class dashboardShowrooms {
                 tableModel.addRow(rowData);
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error loading showrooms: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            showError("Error loading showrooms: " + e.getMessage());
         }
 
         table.getModel().addTableModelListener(e -> {
@@ -74,16 +95,7 @@ public class dashboardShowrooms {
                 int row = e.getFirstRow();
                 int column = e.getColumn();
                 if (column != table.getColumnCount() - 1) {
-                    Object updatedValue = table.getValueAt(row, column);
-                    Object idValue = table.getValueAt(row, 0);
-                    try (Connection connection = DriverManager.getConnection(url);
-                         PreparedStatement preparedStatement = connection.prepareStatement("UPDATE showrooms SET " + table.getColumnName(column) + " = ? WHERE showroom_id = ?")) {
-                        preparedStatement.setObject(1, updatedValue);
-                        preparedStatement.setObject(2, idValue);
-                        preparedStatement.executeUpdate();
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(null, "Error updating record: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+                    updateTableCell(url, table, row, column);
                 }
             }
         });
@@ -91,44 +103,72 @@ public class dashboardShowrooms {
         table.getColumn("Actions").setCellRenderer(new ButtonRenderer());
         table.getColumn("Actions").setCellEditor(new ButtonEditor(url, table, "showrooms", "showroom_id"));
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        showroomsPanel.add(scrollPane, BorderLayout.CENTER);
+        return table;
+    }
 
+    private void updateTableCell(String url, JTable table, int row, int column) {
+        Object updatedValue = table.getValueAt(row, column);
+        Object idValue = table.getValueAt(row, 0);
+
+        String sql = "UPDATE showrooms SET " + table.getColumnName(column) + " = ? WHERE showroom_id = ?";
+
+        try (Connection connection = DriverManager.getConnection(url);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setObject(1, updatedValue);
+            preparedStatement.setObject(2, idValue);
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            showError("Error updating record: " + ex.getMessage());
+        }
+    }
+
+    private ChartPanel createChartPanel(String url) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
         try (Connection connection = DriverManager.getConnection(url);
              Statement statement = connection.createStatement();
-             ResultSet rs = statement.executeQuery("SELECT showroom_id, max_chairs FROM showrooms")) {
-            while (rs.next()) {
-                int showroomId = rs.getInt("showroom_id");
-                int maxChairs = rs.getInt("max_chairs");
-                dataset.addValue(maxChairs, "Seats", String.valueOf(showroomId));
+             ResultSet resultSet = statement.executeQuery("SELECT showroom_id, max_chairs FROM showrooms")) {
+
+            while (resultSet.next()) {
+                dataset.addValue(resultSet.getInt("max_chairs"), "Seats", String.valueOf(resultSet.getInt("showroom_id")));
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error loading chart data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            showError("Error loading chart data: " + e.getMessage());
         }
 
-        JFreeChart barChart = ChartFactory.createBarChart("Seats per Showroom", "Showroom Number", "Number of Seats", dataset, PlotOrientation.VERTICAL, false, true, false);
-        Color darkBackground = new Color(30, 30, 30);
-        barChart.getTitle().setPaint(Color.WHITE);
-        barChart.setBackgroundPaint(darkBackground);
-        CategoryPlot plot = (CategoryPlot) barChart.getPlot();
-        plot.setBackgroundPaint(darkBackground);
+        JFreeChart barChart = ChartFactory.createBarChart(
+                "Seats per Showroom", "Showroom Number", "Number of Seats",
+                dataset, PlotOrientation.VERTICAL, false, true, false);
+
+        styleChart(barChart);
+
+        ChartPanel chartPanel = new ChartPanel(barChart);
+        chartPanel.setPreferredSize(new Dimension(400, 300));
+        chartPanel.setBackground(BACKGROUND_COLOR);
+        chartPanel.setMouseWheelEnabled(true);
+        chartPanel.setDomainZoomable(true);
+        chartPanel.setRangeZoomable(true);
+
+        return chartPanel;
+    }
+
+    private void styleChart(JFreeChart chart) {
+        chart.getTitle().setPaint(Color.WHITE);
+        chart.setBackgroundPaint(BACKGROUND_COLOR);
+
+        CategoryPlot plot = chart.getCategoryPlot();
+        plot.setBackgroundPaint(BACKGROUND_COLOR);
         plot.setOutlinePaint(new Color(100, 100, 100));
         plot.setRangeGridlinePaint(Color.GRAY);
         plot.getDomainAxis().setLabelPaint(Color.WHITE);
         plot.getDomainAxis().setTickLabelPaint(Color.WHITE);
         plot.getRangeAxis().setLabelPaint(Color.WHITE);
         plot.getRangeAxis().setTickLabelPaint(Color.WHITE);
+    }
 
-        ChartPanel chartPanel = new ChartPanel(barChart);
-        chartPanel.setPreferredSize(new Dimension(400, 300));
-        chartPanel.setBackground(darkBackground);
-        chartPanel.setMouseWheelEnabled(true);
-        chartPanel.setDomainZoomable(true);
-        chartPanel.setRangeZoomable(true);
-        showroomsPanel.add(chartPanel, BorderLayout.SOUTH);
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     public JPanel getShowroomsPanel() {

@@ -6,7 +6,6 @@ import java.awt.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date;
 import java.util.List;
 
 public class showtimeAgent extends JFrame {
@@ -45,35 +44,23 @@ public class showtimeAgent extends JFrame {
     }
 
     private JPanel createHeaderPanel() {
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBorder(new EmptyBorder(20, 0, 10, 0));
-        headerPanel.setBackground(BACKGROUND_COLOR);
-        JLabel titleLabel = new JLabel("Add New Showtime", SwingConstants.CENTER);
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(TITLE_FONT);
-        headerPanel.add(titleLabel, BorderLayout.CENTER);
-        return headerPanel;
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new EmptyBorder(20, 0, 10, 0));
+        panel.setBackground(BACKGROUND_COLOR);
+        JLabel title = new JLabel("Add New Showtime", SwingConstants.CENTER);
+        title.setForeground(Color.WHITE);
+        title.setFont(TITLE_FONT);
+        panel.add(title, BorderLayout.CENTER);
+        return panel;
     }
 
     private JPanel createFormPanel() {
-        showtimeColumns = getColumnNames(databaseUrl, "showtimes");
-        List<String> filteredColumns = new ArrayList<>();
-        for (String column : showtimeColumns) {
-            if (!column.equalsIgnoreCase("showtime_id") &&
-                !column.equalsIgnoreCase("reserved_chairs") &&
-                !column.equalsIgnoreCase("chairs_booked")) {
-                filteredColumns.add(column);
-            }
-        }
-        showtimeColumns = filteredColumns.toArray(new String[0]);
-        String[] columnValues = new String[showtimeColumns.length];
-        Arrays.fill(columnValues, "");
-
-        JPanel formContainer = new JPanel(new GridBagLayout());
-        formContainer.setBackground(BACKGROUND_COLOR);
-        formContainer.setBorder(new EmptyBorder(10, FORM_PADDING, 10, FORM_PADDING));
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(BACKGROUND_COLOR);
+        showtimeColumns = getFilteredColumns();
+        JPanel container = new JPanel(new GridBagLayout());
+        container.setBackground(BACKGROUND_COLOR);
+        container.setBorder(new EmptyBorder(10, FORM_PADDING, 10, FORM_PADDING));
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setBackground(BACKGROUND_COLOR);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 10, 5, 10);
         gbc.anchor = GridBagConstraints.WEST;
@@ -84,25 +71,25 @@ public class showtimeAgent extends JFrame {
             gbc.gridy = i;
             gbc.weightx = 0.25;
             gbc.fill = GridBagConstraints.NONE;
-            formPanel.add(label, gbc);
-            JComponent inputComponent = createInputComponent(showtimeColumns[i], columnValues[i]);
-            inputComponents.add(inputComponent);
+            form.add(label, gbc);
+            JComponent input = createInputComponent(showtimeColumns[i]);
+            inputComponents.add(input);
             gbc.gridx = 1;
             gbc.weightx = 0.75;
             gbc.fill = GridBagConstraints.HORIZONTAL;
-            formPanel.add(inputComponent, gbc);
+            form.add(input, gbc);
         }
 
         GridBagConstraints formGbc = new GridBagConstraints();
         formGbc.fill = GridBagConstraints.BOTH;
         formGbc.weightx = 1;
         formGbc.weighty = 1;
-        formContainer.add(formPanel, formGbc);
-        return formContainer;
+        container.add(form, formGbc);
+        return container;
     }
 
-    private JLabel createFormLabel(String columnName) {
-        JLabel label = new JLabel(columnName.replace("_", " ") + ":");
+    private JLabel createFormLabel(String name) {
+        JLabel label = new JLabel(name.replace("_", " ") + ":");
         label.setForeground(Color.WHITE);
         label.setFont(LABEL_FONT);
         label.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -110,119 +97,121 @@ public class showtimeAgent extends JFrame {
     }
 
     private JPanel createFooterPanel() {
-        JPanel footerPanel = new JPanel();
-        footerPanel.setBorder(new EmptyBorder(10, 0, 20, 0));
-        footerPanel.setBackground(BACKGROUND_COLOR);
+        JPanel panel = new JPanel();
+        panel.setBorder(new EmptyBorder(10, 0, 20, 0));
+        panel.setBackground(BACKGROUND_COLOR);
         JButton saveButton = createSaveButton();
-        footerPanel.add(saveButton);
-        return footerPanel;
+        panel.add(saveButton);
+        return panel;
     }
 
     private JButton createSaveButton() {
-        JButton saveButton = new JButton("Add Showtime");
-        styleButton(saveButton);
-        saveButton.addActionListener(e -> performSaveAction());
-        return saveButton;
-    }
-
-    private void styleButton(JButton button) {
+        JButton button = new JButton("Add Showtime");
         button.setBackground(ACCENT_COLOR);
         button.setForeground(Color.WHITE);
         button.setFont(LABEL_FONT);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(BUTTON_PADDING, 25, BUTTON_PADDING, 25));
+        button.addActionListener(e -> performSaveAction());
+        return button;
     }
 
-    private static String[] getColumnNames(String url, String tableName) {
-        try (Connection connection = DriverManager.getConnection(url)) {
-            DatabaseMetaData metaData = connection.getMetaData();
-            ResultSet resultSet = metaData.getColumns(null, null, tableName, null);
-            List<String> columnNames = new ArrayList<>();
-            while (resultSet.next()) {
-                columnNames.add(resultSet.getString("COLUMN_NAME"));
+    private String[] getFilteredColumns() {
+        List<String> columns = new ArrayList<>();
+        for (String col : getColumnNames(databaseUrl, "showtimes")) {
+            if (!List.of("showtime_id", "reserved_chairs", "chairs_booked").contains(col.toLowerCase())) {
+                columns.add(col);
             }
-            return columnNames.toArray(new String[0]);
+        }
+        return columns.toArray(new String[0]);
+    }
+
+    private static String[] getColumnNames(String url, String table) {
+        try (Connection con = DriverManager.getConnection(url)) {
+            ResultSet rs = con.getMetaData().getColumns(null, null, table, null);
+            List<String> names = new ArrayList<>();
+            while (rs.next()) names.add(rs.getString("COLUMN_NAME"));
+            return names.toArray(new String[0]);
         } catch (SQLException e) {
-            e.printStackTrace();
             return new String[0];
         }
     }
 
-    private JComponent createInputComponent(String fieldName, String defaultValue) {
-        if (fieldName.equalsIgnoreCase("date")) {
-            JComboBox<String> dateBox = new JComboBox<>();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Calendar cal = Calendar.getInstance();
-            for (int i = 0; i <= 14; i++) {
-                dateBox.addItem(sdf.format(cal.getTime()));
-                cal.add(Calendar.DAY_OF_MONTH, 1);
-            }
-            styleComponent(dateBox);
-            return dateBox;
-        } else if (fieldName.equalsIgnoreCase("showroom_id")) {
-            JComboBox<String> showroomBox = new JComboBox<>();
-            try (Connection connection = DriverManager.getConnection(databaseUrl);
-                 Statement stmt = connection.createStatement();
-                 ResultSet rs = stmt.executeQuery("SELECT showroom_id, showroom_name FROM showrooms")) {
-                while (rs.next()) {
-                    showroomBox.addItem(rs.getInt("showroom_id") + " - " + rs.getString("showroom_name"));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            styleComponent(showroomBox);
-            return showroomBox;
-        } 
-        else if (fieldName.equalsIgnoreCase("movie_id")) {
-            JComboBox<String> movieBox = new JComboBox<>();
-            try (Connection connection = DriverManager.getConnection(databaseUrl);
-                 Statement stmt = connection.createStatement();
-                 ResultSet rs = stmt.executeQuery(
-                    "SELECT id, title FROM movies WHERE release_date >= (CURRENT_DATE - INTERVAL 14 DAY) ORDER BY release_date"
-                 )) {
-                while (rs.next()) {
-                    movieBox.addItem(rs.getInt("id") + " - " + rs.getString("title"));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            styleComponent(movieBox);
-            return movieBox;
-        } else if (fieldName.equalsIgnoreCase("time")) {
-            JComboBox<String> timeBox = new JComboBox<>();
-            int startHour = 7, endHour = 22;
-            for (int hour = startHour; hour <= endHour; hour++) {
-                for (int min = 0; min < 60; min += 15) {
-                    timeBox.addItem(String.format("%02d:%02d", hour, min));
-                }
-            }
-            timeBox.addItem("22:30");
-            timeBox.setSelectedItem("19:00");
-            styleComponent(timeBox);
-            return timeBox;
-        } else {
-            return createTextField(fieldName, defaultValue);
+    private JComponent createInputComponent(String field) {
+        if (field.equalsIgnoreCase("date")) return createDateBox();
+        if (field.equalsIgnoreCase("showroom_id")) return createShowroomBox();
+        if (field.equalsIgnoreCase("movie_id")) return createMovieBox();
+        if (field.equalsIgnoreCase("time")) return createTimeBox();
+        return createTextField();
+    }
+
+    private JComboBox<String> createDateBox() {
+        JComboBox<String> box = new JComboBox<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar cal = Calendar.getInstance();
+        for (int i = 0; i <= 14; i++) {
+            box.addItem(sdf.format(cal.getTime()));
+            cal.add(Calendar.DAY_OF_MONTH, 1);
         }
-        
+        styleComponent(box);
+        return box;
     }
-    
 
-    private JTextField createTextField(String fieldName, String defaultValue) {
-        JTextField textField = new JTextField(defaultValue);
-        styleComponent(textField);
-        textField.setBorder(BorderFactory.createCompoundBorder(
+    private JComboBox<String> createShowroomBox() {
+        JComboBox<String> box = new JComboBox<>();
+        try (Connection con = DriverManager.getConnection(databaseUrl);
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT showroom_id, showroom_name FROM showrooms")) {
+            while (rs.next()) {
+                box.addItem(rs.getInt("showroom_id") + " - " + rs.getString("showroom_name"));
+            }
+        } catch (SQLException ignored) {}
+        styleComponent(box);
+        return box;
+    }
+
+    private JComboBox<String> createMovieBox() {
+        JComboBox<String> box = new JComboBox<>();
+        try (Connection con = DriverManager.getConnection(databaseUrl);
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                "SELECT id, title FROM movies WHERE release_date >= (CURRENT_DATE - INTERVAL 14 DAY) ORDER BY release_date")) {
+            while (rs.next()) {
+                box.addItem(rs.getInt("id") + " - " + rs.getString("title"));
+            }
+        } catch (SQLException ignored) {}
+        styleComponent(box);
+        return box;
+    }
+
+    private JComboBox<String> createTimeBox() {
+        JComboBox<String> box = new JComboBox<>();
+        for (int h = 7; h <= 22; h++) {
+            for (int m = 0; m < 60; m += 15) {
+                box.addItem(String.format("%02d:%02d", h, m));
+            }
+        }
+        box.addItem("22:30");
+        box.setSelectedItem("19:00");
+        styleComponent(box);
+        return box;
+    }
+
+    private JTextField createTextField() {
+        JTextField field = new JTextField();
+        styleComponent(field);
+        field.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(70, 70, 70)),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)
-        ));
-        textField.setCaretColor(Color.WHITE);
-        textField.setPreferredSize(new Dimension(0, 30));
-        return textField;
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        field.setCaretColor(Color.WHITE);
+        field.setPreferredSize(new Dimension(0, 30));
+        return field;
     }
 
-    private void styleComponent(JComponent component) {
-        component.setBackground(new Color(50, 50, 50));
-        component.setForeground(Color.WHITE);
-        component.setFont(LABEL_FONT);
+    private void styleComponent(JComponent comp) {
+        comp.setBackground(new Color(50, 50, 50));
+        comp.setForeground(Color.WHITE);
+        comp.setFont(LABEL_FONT);
     }
 
     private void performSaveAction() {
@@ -230,23 +219,31 @@ public class showtimeAgent extends JFrame {
     }
 
     private void addNewShowtime() {
-        String[] newValues = extractValues(inputComponents);
-        StringBuilder queryBuilder = new StringBuilder("INSERT INTO showtimes (");
-        queryBuilder.append(String.join(", ", showtimeColumns))
-                    .append(") VALUES (")
-                    .append("?,".repeat(showtimeColumns.length).replaceAll(",$", ""))
-                    .append(")");
-        executeDatabaseOperation(queryBuilder.toString(), newValues, "Showtime added successfully!", "Failed to add showtime");
+        String[] values = extractValues();
+        String query = "INSERT INTO showtimes (" + String.join(", ", showtimeColumns) + ") VALUES (" +
+                       "?,".repeat(showtimeColumns.length).replaceAll(",$", "") + ")";
+        executeDatabaseOperation(query, values, "Showtime added successfully!", "Failed to add showtime");
+    }
+
+    private String[] extractValues() {
+        String[] values = new String[inputComponents.size()];
+        for (int i = 0; i < inputComponents.size(); i++) {
+            JComponent comp = inputComponents.get(i);
+            if (comp instanceof JTextField field) {
+                values[i] = field.getText();
+            } else if (comp instanceof JComboBox box) {
+                String selected = (String) box.getSelectedItem();
+                values[i] = selected.contains(" - ") ? selected.split(" - ")[0] : selected;
+            }
+        }
+        return values;
     }
 
     private void executeDatabaseOperation(String query, String[] values, String successMsg, String failMsg) {
-        try (Connection connection = DriverManager.getConnection(databaseUrl);
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            for (int i = 0; i < values.length; i++) {
-                statement.setString(i + 1, values[i]);
-            }
-            int affectedRows = statement.executeUpdate();
-            if (affectedRows > 0) {
+        try (Connection con = DriverManager.getConnection(databaseUrl);
+             PreparedStatement stmt = con.prepareStatement(query)) {
+            for (int i = 0; i < values.length; i++) stmt.setString(i + 1, values[i]);
+            if (stmt.executeUpdate() > 0) {
                 showResultDialog(successMsg, true);
                 dispose();
                 new showtimeAgent(databaseUrl).setVisible(true);
@@ -258,33 +255,12 @@ public class showtimeAgent extends JFrame {
         }
     }
 
-    private String[] extractValues(List<JComponent> components) {
-        String[] values = new String[showtimeColumns.length];
-        for (int i = 0; i < components.size(); i++) {
-            JComponent component = components.get(i);
-            if (component instanceof JTextField field) {
-                values[i] = field.getText();
-            } else if (component instanceof JSpinner spinner) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                values[i] = sdf.format(spinner.getValue());
-            } else if (component instanceof JComboBox comboBox) {
-                String selected = (String) comboBox.getSelectedItem();
-                if (selected.contains(" - ")) {
-                    values[i] = selected.split(" - ")[0];
-                } else {
-                    values[i] = selected;
-                }
-            }
-        }
-        return values;
-    }
-
-    private void showResultDialog(String message, boolean success) {
-        JOptionPane.showMessageDialog(this, message, success ? "Success" : "Warning",
+    private void showResultDialog(String msg, boolean success) {
+        JOptionPane.showMessageDialog(this, msg, success ? "Success" : "Warning",
             success ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.WARNING_MESSAGE);
     }
 
-    private void showErrorDialog(String message) {
-        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+    private void showErrorDialog(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
