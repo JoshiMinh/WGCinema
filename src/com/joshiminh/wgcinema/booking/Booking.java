@@ -69,6 +69,7 @@ public class Booking extends JFrame {
         }
     }
 
+    @SuppressWarnings("unused")
     private JButton createShowtimeButton(String time, int showtimeId) {
         JButton showtimeButton = new JButton(time);
         showtimeButton.setForeground(Color.WHITE);

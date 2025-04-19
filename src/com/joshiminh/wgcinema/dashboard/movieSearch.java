@@ -102,6 +102,7 @@ public class movieSearch extends JFrame {
         return buttonPanel;
     }
 
+    @SuppressWarnings("unused")
     private JButton createDeleteButton(int id, String url) {
         JButton deleteButton = new JButton("Delete");
         deleteButton.setBackground(Color.RED);
@@ -121,6 +122,7 @@ public class movieSearch extends JFrame {
         return deleteButton;
     }
 
+    @SuppressWarnings("unused")
     private JButton createEditButton(int id, String url) {
         JButton editButton = new JButton("Edit");
         editButton.setBackground(Color.DARK_GRAY);

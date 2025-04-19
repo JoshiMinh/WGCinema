@@ -17,6 +17,7 @@ public class App extends JFrame {
     private JTextField hostField;
     private JTextField databaseField;
 
+    @SuppressWarnings("unused")
     public App() {
         setTitle("Admin Login");
         setSize(600, 400);
@@ -146,7 +147,8 @@ public class App extends JFrame {
         String dbPassword = new String(passwordField.getPassword());
         String url = "jdbc:mysql://" + host + "/" + database + "?user=" + dbUsername + "&password=" + dbPassword;
 
-        try (Connection connection = DriverManager.getConnection(url)) {
+        try (@SuppressWarnings("unused")
+        Connection connection = DriverManager.getConnection(url)) {
             System.out.println("Login successful.");
             if (mode == 0) {
                 new Dashboard(url).setVisible(true);

@@ -2,20 +2,16 @@ package com.joshiminh.wgcinema.dashboard;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.joshiminh.wgcinema.utils.*;
 
+import static com.joshiminh.wgcinema.utils.UIStyles.*;
+
 public class movieAgent extends JFrame {
-    private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
-    private static final Color ACCENT_COLOR = new Color(70, 130, 180);
-    private static final Font LABEL_FONT = new Font("Segoe UI", Font.PLAIN, 14);
-    private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 22);
-    private static final int FORM_PADDING = 50;
-    private static final int BUTTON_PADDING = 8;
-    
     private String[] movieColumns;
     private final String databaseUrl;
     private final boolean isNewMovie;
@@ -27,19 +23,10 @@ public class movieAgent extends JFrame {
         movieId = id;
         isNewMovie = newMovie;
         inputComponents = new ArrayList<>();
-        initializeUI();
+        setIconImage(new ImageIcon("images/icon.png").getImage());
+        applyFrameDefaults(this, isNewMovie ? "Add New Movie" : "Edit Movie", 800, 825);
         setupFrame();
         loadMovieData();
-    }
-
-    private void initializeUI() {
-        setIconImage(new ImageIcon("images/icon.png").getImage());
-        setTitle(isNewMovie ? "Add New Movie" : "Edit Movie");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(800, 825);
-        setLocationRelativeTo(null);
-        getContentPane().setBackground(BACKGROUND_COLOR);
-        setLayout(new BorderLayout(0, 20));
     }
 
     private void setupFrame() {
@@ -52,9 +39,7 @@ public class movieAgent extends JFrame {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBorder(new EmptyBorder(20, 0, 10, 0));
         headerPanel.setBackground(BACKGROUND_COLOR);
-        JLabel titleLabel = new JLabel(isNewMovie ? "Add New Movie" : "Edit Movie", SwingConstants.CENTER);
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(TITLE_FONT);
+        JLabel titleLabel = createHeaderLabel(isNewMovie ? "Add New Movie" : "Edit Movie");
         headerPanel.add(titleLabel, BorderLayout.CENTER);
         return headerPanel;
     }
@@ -66,7 +51,7 @@ public class movieAgent extends JFrame {
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(BACKGROUND_COLOR);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.insets = LABEL_INSETS;
         gbc.anchor = GridBagConstraints.WEST;
 
         movieColumns = getColumnNames(databaseUrl, "movies");
@@ -128,28 +113,16 @@ public class movieAgent extends JFrame {
         return label;
     }
 
+    @SuppressWarnings("unused")
     private JPanel createFooterPanel() {
         JPanel footerPanel = new JPanel();
         footerPanel.setBorder(new EmptyBorder(10, 0, 20, 0));
         footerPanel.setBackground(BACKGROUND_COLOR);
-        JButton saveButton = createSaveButton();
-        footerPanel.add(saveButton);
-        return footerPanel;
-    }
-
-    private JButton createSaveButton() {
         JButton saveButton = new JButton(isNewMovie ? "Add Movie" : "Save Changes");
         styleButton(saveButton);
         saveButton.addActionListener(e -> performSaveAction());
-        return saveButton;
-    }
-
-    private void styleButton(JButton button) {
-        button.setBackground(ACCENT_COLOR);
-        button.setForeground(Color.WHITE);
-        button.setFont(LABEL_FONT);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(BUTTON_PADDING, 25, BUTTON_PADDING, 25));
+        footerPanel.add(saveButton);
+        return footerPanel;
     }
 
     private void loadMovieData() {
@@ -212,24 +185,15 @@ public class movieAgent extends JFrame {
         scrollPane.setPreferredSize(new Dimension(0, 150));
         return scrollPane;
     }
-    
+
     private JTextField createTextField(String fieldName, String defaultValue) {
         JTextField textField = new JTextField(defaultValue);
         styleComponent(textField);
-        textField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(70, 70, 70)),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)
-        ));
+        textField.setBorder(componentBorder());
         textField.setCaretColor(Color.WHITE);
         textField.setEditable(!fieldName.equalsIgnoreCase("id"));
         textField.setPreferredSize(new Dimension(0, 30));
         return textField;
-    }
-
-    private void styleComponent(JComponent component) {
-        component.setBackground(new Color(50, 50, 50));
-        component.setForeground(Color.WHITE);
-        component.setFont(LABEL_FONT);
     }
 
     private void performSaveAction() {

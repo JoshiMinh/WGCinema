@@ -13,11 +13,13 @@ public class Checkout extends JFrame {
     private static final int WIDTH = 410, HEIGHT = 700;
     private final JLabel selectedSeatsLabel;
     private int showtimeID, showroomID, movieId;
+    @SuppressWarnings("unused")
     private Showrooms showroomsFrame;
     private boolean bookingSuccessful = false;
     private String connectionString;
     private static final int REGULAR_SEAT_PRICE = 80000, VIP_SEAT_PRICE = 85000;
 
+    @SuppressWarnings("unused")
     public Checkout(String connectionString, int showroomID, Time time, int movieId, Date date, String movieTitle, String movieRating, String movieLink, int showtimeID, String selectedSeats, Showrooms showroomsFrame) {
         this.showtimeID = showtimeID;
         this.showroomsFrame = showroomsFrame;

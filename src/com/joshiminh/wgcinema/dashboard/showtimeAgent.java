@@ -7,15 +7,9 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+import static com.joshiminh.wgcinema.utils.UIStyles.*;
 
 public class showtimeAgent extends JFrame {
-    private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
-    private static final Color ACCENT_COLOR = new Color(70, 130, 180);
-    private static final Font LABEL_FONT = new Font("Segoe UI", Font.PLAIN, 14);
-    private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 22);
-    private static final int FORM_PADDING = 50;
-    private static final int BUTTON_PADDING = 8;
-
     private String[] showtimeColumns;
     private final String databaseUrl;
     private final List<JComponent> inputComponents;
@@ -23,18 +17,9 @@ public class showtimeAgent extends JFrame {
     public showtimeAgent(String url) {
         databaseUrl = url;
         inputComponents = new ArrayList<>();
-        initializeUI();
-        setupFrame();
-    }
-
-    private void initializeUI() {
         setIconImage(new ImageIcon("images/icon.png").getImage());
-        setTitle("Add New Showtime");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(700, 700);
-        setLocationRelativeTo(null);
-        getContentPane().setBackground(BACKGROUND_COLOR);
-        setLayout(new BorderLayout(0, 20));
+        applyFrameDefaults(this, "Add New Showtime", 700, 700);
+        setupFrame();
     }
 
     private void setupFrame() {
@@ -47,10 +32,7 @@ public class showtimeAgent extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(20, 0, 10, 0));
         panel.setBackground(BACKGROUND_COLOR);
-        JLabel title = new JLabel("Add New Showtime", SwingConstants.CENTER);
-        title.setForeground(Color.WHITE);
-        title.setFont(TITLE_FONT);
-        panel.add(title, BorderLayout.CENTER);
+        panel.add(createHeaderLabel("Add New Showtime"), BorderLayout.CENTER);
         return panel;
     }
 
@@ -62,7 +44,7 @@ public class showtimeAgent extends JFrame {
         JPanel form = new JPanel(new GridBagLayout());
         form.setBackground(BACKGROUND_COLOR);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.insets = LABEL_INSETS;
         gbc.anchor = GridBagConstraints.WEST;
 
         for (int i = 0; i < showtimeColumns.length; i++) {
@@ -96,24 +78,16 @@ public class showtimeAgent extends JFrame {
         return label;
     }
 
+    @SuppressWarnings("unused")
     private JPanel createFooterPanel() {
         JPanel panel = new JPanel();
         panel.setBorder(new EmptyBorder(10, 0, 20, 0));
         panel.setBackground(BACKGROUND_COLOR);
-        JButton saveButton = createSaveButton();
+        JButton saveButton = new JButton("Add Showtime");
+        styleButton(saveButton);
+        saveButton.addActionListener(e -> performSaveAction());
         panel.add(saveButton);
         return panel;
-    }
-
-    private JButton createSaveButton() {
-        JButton button = new JButton("Add Showtime");
-        button.setBackground(ACCENT_COLOR);
-        button.setForeground(Color.WHITE);
-        button.setFont(LABEL_FONT);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(BUTTON_PADDING, 25, BUTTON_PADDING, 25));
-        button.addActionListener(e -> performSaveAction());
-        return button;
     }
 
     private String[] getFilteredColumns() {
@@ -174,8 +148,7 @@ public class showtimeAgent extends JFrame {
         JComboBox<String> box = new JComboBox<>();
         try (Connection con = DriverManager.getConnection(databaseUrl);
              Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery(
-                "SELECT id, title FROM movies WHERE release_date >= (CURRENT_DATE - INTERVAL 14 DAY) ORDER BY release_date")) {
+             ResultSet rs = stmt.executeQuery("SELECT id, title FROM movies WHERE release_date >= (CURRENT_DATE - INTERVAL 14 DAY) ORDER BY release_date")) {
             while (rs.next()) {
                 box.addItem(rs.getInt("id") + " - " + rs.getString("title"));
             }
@@ -200,18 +173,10 @@ public class showtimeAgent extends JFrame {
     private JTextField createTextField() {
         JTextField field = new JTextField();
         styleComponent(field);
-        field.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(70, 70, 70)),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        field.setBorder(componentBorder());
         field.setCaretColor(Color.WHITE);
         field.setPreferredSize(new Dimension(0, 30));
         return field;
-    }
-
-    private void styleComponent(JComponent comp) {
-        comp.setBackground(new Color(50, 50, 50));
-        comp.setForeground(Color.WHITE);
-        comp.setFont(LABEL_FONT);
     }
 
     private void performSaveAction() {

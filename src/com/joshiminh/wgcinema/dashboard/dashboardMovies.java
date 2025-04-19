@@ -62,6 +62,7 @@ public class dashboardMovies {
         moviesPanel.repaint();
     }
 
+    @SuppressWarnings("unused")
     private JPanel createMovieEntryPanel(int id, String title, String ageRating, String releaseDate) {
         JPanel movieEntryPanel = new JPanel(new BorderLayout());
         movieEntryPanel.setBackground(BACKGROUND_COLOR);
@@ -106,18 +107,28 @@ public class dashboardMovies {
         movieEntryPanel.add(buttonPanel, BorderLayout.EAST);
         return movieEntryPanel;
     }
-
+    
     private void deleteMovie(int id) {
-        try (Connection connection = DriverManager.getConnection(url);
-             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM movies WHERE id = ?")) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
-            loadMovies();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error deleting movie: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        int confirm = JOptionPane.showConfirmDialog(
+            null, 
+            "Are you sure you want to delete this movie?", 
+            "Confirm Deletion", 
+            JOptionPane.YES_NO_OPTION
+        );
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            try (Connection connection = DriverManager.getConnection(url);
+                 PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM movies WHERE id = ?")) {
+                preparedStatement.setInt(1, id);
+                preparedStatement.executeUpdate();
+                loadMovies();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Error deleting movie: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
+    @SuppressWarnings("unused")
     private JPanel createSearchBarPanel() {
         JPanel searchBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         searchBarPanel.setBackground(BACKGROUND_COLOR);

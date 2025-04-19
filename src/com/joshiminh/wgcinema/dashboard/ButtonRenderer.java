@@ -27,6 +27,7 @@ class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
     private final String primaryKeyColumn;
     private int row;
 
+    @SuppressWarnings("unused")
     public ButtonEditor(String url, JTable table, String tableName, String primaryKeyColumn) {
         this.url = url;
         this.table = table;
