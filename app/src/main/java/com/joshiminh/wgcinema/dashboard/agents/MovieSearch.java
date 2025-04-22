@@ -15,7 +15,7 @@ public class MovieSearch extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(500, 500);
         setLocationRelativeTo(null);
-        setIconImage(new ImageIcon("images/icon.png").getImage());
+        setIconImage(ResourceUtil.loadAppIcon());
         JPanel moviesPanel = createMoviesPanel(url, query);
         JScrollPane scrollPane = new JScrollPane(moviesPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -103,7 +103,6 @@ public class MovieSearch extends JFrame {
         return buttonPanel;
     }
 
-    @SuppressWarnings("unused")
     private JButton createDeleteButton(int id, String url) {
         JButton deleteButton = new JButton("Delete");
         deleteButton.setBackground(Color.RED);
@@ -123,7 +122,6 @@ public class MovieSearch extends JFrame {
         return deleteButton;
     }
 
-    @SuppressWarnings("unused")
     private JButton createEditButton(int id, String url) {
         JButton editButton = new JButton("Edit");
         editButton.setBackground(Color.DARK_GRAY);

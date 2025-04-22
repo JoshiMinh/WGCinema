@@ -6,6 +6,7 @@ import java.net.URL;
 import java.sql.*;
 import javax.swing.*;
 
+import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.*;
 
 public class MovieList extends JFrame {
@@ -53,15 +54,10 @@ public class MovieList extends JFrame {
     }
 
     private void loadMovieList() {
-        String query = """
-            SELECT id, poster, title, age_rating 
-            FROM movies
-            WHERE release_date >= CURDATE()
-            ORDER BY release_date ASC
-            """;
-        try (Connection connection = DriverManager.getConnection(connectionString);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(query)) {
+        ResultSet resultSet = DAO.fetchUpcomingMovies(connectionString);
+        if (resultSet == null) return;
+    
+        try {
             while (resultSet.next()) {
                 int movieId = resultSet.getInt("id");
                 String imageLink = resultSet.getString("poster");
@@ -70,10 +66,11 @@ public class MovieList extends JFrame {
                 JPanel movie = createMoviePanel(movieId, imageLink, title, rating);
                 moviePanel.add(movie);
             }
+            resultSet.getStatement().getConnection().close();
         } catch (SQLException | java.net.MalformedURLException e) {
             e.printStackTrace();
         }
-    }
+    }    
 
     @SuppressWarnings("deprecation")
     private JPanel createMoviePanel(int movieId, String imageLink, String title, String rating) throws java.net.MalformedURLException {

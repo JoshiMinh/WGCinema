@@ -39,7 +39,6 @@ public class Showrooms {
         showroomsPanel.add(chartPanel, BorderLayout.SOUTH);
     }
 
-    @SuppressWarnings("unused")
     private JPanel createTitlePanel(String url) {
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setBackground(BACKGROUND_COLOR);

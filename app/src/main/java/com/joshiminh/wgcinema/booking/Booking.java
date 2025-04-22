@@ -1,12 +1,14 @@
 package com.joshiminh.wgcinema.booking;
+
+import com.joshiminh.wgcinema.data.DAO;
+import com.joshiminh.wgcinema.utils.*;
+
 import java.awt.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.*;
-
-import com.joshiminh.wgcinema.utils.ResourceUtil;
 
 public class Booking extends JFrame {
     private final int movieId;
@@ -49,29 +51,29 @@ public class Booking extends JFrame {
     private void loadShowtimes(JPanel showtimesPanel, Date date, boolean isToday) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-        try (Connection connection = DriverManager.getConnection(connectionString);
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT showtime_id, TIME_FORMAT(time, '%H:%i') AS 'Time (HH:mm)' " +
-                             "FROM showtimes WHERE movie_id = ? AND date = ? ORDER BY time")) {
-            preparedStatement.setInt(1, movieId);
-            preparedStatement.setString(2, dateFormat.format(date));
-            ResultSet resultSet = preparedStatement.executeQuery();
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-            buttonPanel.setBackground(bgColor);
-            Date currentTime = Calendar.getInstance().getTime();
+
+        ResultSet resultSet = DAO.fetchMovieShowtimes(connectionString, movieId, dateFormat.format(date));
+        if (resultSet == null) return;
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        buttonPanel.setBackground(bgColor);
+        Date currentTime = Calendar.getInstance().getTime();
+
+        try {
             while (resultSet.next()) {
                 String time = resultSet.getString("Time (HH:mm)");
                 Date showTimeDate = timeFormat.parse(time);
                 if (isToday && showTimeDate.before(currentTime)) continue;
                 buttonPanel.add(createShowtimeButton(time, resultSet.getInt("showtime_id")));
             }
-            showtimesPanel.add(buttonPanel);
-        } catch (SQLException | java.text.ParseException e) {
+            resultSet.getStatement().getConnection().close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+        showtimesPanel.add(buttonPanel);
     }
 
-    @SuppressWarnings("unused")
     private JButton createShowtimeButton(String time, int showtimeId) {
         JButton showtimeButton = new JButton(time);
         showtimeButton.setForeground(Color.WHITE);

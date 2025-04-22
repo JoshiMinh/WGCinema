@@ -2,6 +2,9 @@ package com.joshiminh.wgcinema.dashboard.agents;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import com.joshiminh.wgcinema.utils.ResourceUtil;
+
 import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,7 +19,7 @@ public class ShowroomAgent extends JFrame {
     public ShowroomAgent(String url) {
         databaseUrl = url;
         inputComponents = new ArrayList<>();
-        setIconImage(new ImageIcon("images/icon.png").getImage());
+        setIconImage(ResourceUtil.loadAppIcon());
         applyFrameDefaults(this, "Add New Showroom", 700, 700);
         setupFrame();
     }
@@ -69,7 +72,6 @@ public class ShowroomAgent extends JFrame {
         return container;
     }
 
-    @SuppressWarnings("unused")
     private JPanel createFooterPanel() {
         JPanel panel = new JPanel();
         panel.setBorder(new EmptyBorder(10, 0, 20, 0));

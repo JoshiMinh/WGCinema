@@ -23,7 +23,7 @@ public class MovieAgent extends JFrame {
         movieId = id;
         isNewMovie = newMovie;
         inputComponents = new ArrayList<>();
-        setIconImage(new ImageIcon("images/icon.png").getImage());
+        setIconImage(ResourceUtil.loadAppIcon());
         applyFrameDefaults(this, isNewMovie ? "Add New Movie" : "Edit Movie", 800, 825);
         setupFrame();
         loadMovieData();
@@ -113,7 +113,6 @@ public class MovieAgent extends JFrame {
         return label;
     }
 
-    @SuppressWarnings("unused")
     private JPanel createFooterPanel() {
         JPanel footerPanel = new JPanel();
         footerPanel.setBorder(new EmptyBorder(10, 0, 20, 0));

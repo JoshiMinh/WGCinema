@@ -16,7 +16,6 @@ public class Showtimes {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
     private final JPanel showtimesPanel;
 
-    @SuppressWarnings("unused")
     public Showtimes(String url) {
         showtimesPanel = new JPanel(new BorderLayout());
         showtimesPanel.setBackground(BACKGROUND_COLOR);

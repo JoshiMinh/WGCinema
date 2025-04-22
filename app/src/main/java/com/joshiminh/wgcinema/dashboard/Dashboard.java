@@ -5,6 +5,7 @@ import com.joshiminh.wgcinema.App;
 import com.joshiminh.wgcinema.dashboard.sections.Movies;
 import com.joshiminh.wgcinema.dashboard.sections.Showrooms;
 import com.joshiminh.wgcinema.dashboard.sections.Showtimes;
+import com.joshiminh.wgcinema.utils.ResourceUtil;
 
 public class Dashboard extends JFrame {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
@@ -22,7 +23,7 @@ public class Dashboard extends JFrame {
         setLocationRelativeTo(null);
         getContentPane().setBackground(BACKGROUND_COLOR);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setIconImage(new ImageIcon("images/icon.png").getImage());
+        setIconImage(ResourceUtil.loadAppIcon());
         setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();

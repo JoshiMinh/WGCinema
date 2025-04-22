@@ -22,7 +22,6 @@ public class Checkout extends JFrame {
     private String connectionString;
     private static final int REGULAR_SEAT_PRICE = 80000, VIP_SEAT_PRICE = 85000;
 
-    @SuppressWarnings("unused")
     public Checkout(String connectionString, int showroomID, Time time, int movieId, Date date, String movieTitle, String movieRating, String movieLink, int showtimeID, String selectedSeats, Showrooms showroomsFrame) {
         this.showtimeID = showtimeID;
         this.showroomsFrame = showroomsFrame;
@@ -266,7 +265,7 @@ public class Checkout extends JFrame {
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setBackground(new Color(30, 30, 30));
         JLabel imageLabel = new JLabel();
-        ImageIcon imageIcon = new ImageIcon("images/TicketBooked.png");
+        ImageIcon imageIcon = new ImageIcon(ResourceUtil.loadImage("/images/TicketBooked.png"));
         Image scaledImage = imageIcon.getImage().getScaledInstance(350, 350, Image.SCALE_SMOOTH);
         imageLabel.setIcon(new ImageIcon(scaledImage));
         centerPanel.add(imageLabel, new GridBagConstraints());

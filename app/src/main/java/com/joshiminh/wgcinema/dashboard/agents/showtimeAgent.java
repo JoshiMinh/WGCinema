@@ -2,6 +2,9 @@ package com.joshiminh.wgcinema.dashboard.agents;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import com.joshiminh.wgcinema.utils.ResourceUtil;
+
 import java.awt.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -17,7 +20,7 @@ public class showtimeAgent extends JFrame {
     public showtimeAgent(String url) {
         databaseUrl = url;
         inputComponents = new ArrayList<>();
-        setIconImage(new ImageIcon("images/icon.png").getImage());
+        setIconImage(ResourceUtil.loadAppIcon());
         applyFrameDefaults(this, "Add New Showtime", 700, 700);
         setupFrame();
     }
@@ -78,7 +81,6 @@ public class showtimeAgent extends JFrame {
         return label;
     }
 
-    @SuppressWarnings("unused")
     private JPanel createFooterPanel() {
         JPanel panel = new JPanel();
         panel.setBorder(new EmptyBorder(10, 0, 20, 0));

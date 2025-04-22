@@ -17,9 +17,8 @@ public class App extends JFrame {
     private JTextField hostField;
     private JTextField databaseField;
 
-    @SuppressWarnings("unused")
     public App() {
-        setTitle("Admin Login");
+        setTitle("Login");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -147,7 +146,7 @@ public class App extends JFrame {
         String dbPassword = new String(passwordField.getPassword());
         String url = "jdbc:mysql://" + host + "/" + database + "?user=" + dbUsername + "&password=" + dbPassword;
 
-        try (@SuppressWarnings("unused") Connection connection = DriverManager.getConnection(url)) {
+        try (Connection connection = DriverManager.getConnection(url)) {
             if (mode == 0) new Dashboard(url).setVisible(true);
             else if (mode == 1) new MovieList(url).setVisible(true);
             dispose();

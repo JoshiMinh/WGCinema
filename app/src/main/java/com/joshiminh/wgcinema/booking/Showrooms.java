@@ -33,7 +33,7 @@ public class Showrooms extends JFrame {
         setLayout(new BorderLayout());
         setSize(WIDTH, HEIGHT);
         setResizable(true);
-        setIconImage(new ImageIcon("images/icon.png").getImage());
+        setIconImage(ResourceUtil.loadAppIcon());
         showroomID = getShowroomID(showtimeID);
         fetchMovieInfo();
         setDimensions(showroomID);
@@ -146,7 +146,7 @@ public class Showrooms extends JFrame {
         return panel;
     }
 
-    @SuppressWarnings({ "deprecation", "unused" })
+    @SuppressWarnings("deprecation")
     private JPanel createBottomInfoPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(true);
