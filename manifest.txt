@@ -1,2 +1,0 @@
-Main-Class: com.joshiminh.wgcinema.App
-Class-Path: lib/mysql-connector-j-8.4.0.jar lib/jfreechart-1.0.19.jar lib/jcommon-1.0.23.jar
