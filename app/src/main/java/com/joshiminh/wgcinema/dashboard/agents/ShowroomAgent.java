@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import static com.joshiminh.wgcinema.utils.AgentStyles.*;
 
+@SuppressWarnings("unused")
 public class ShowroomAgent extends JFrame {
     private String[] showroomColumns;
     private final String databaseUrl;

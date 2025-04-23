@@ -6,9 +6,11 @@ import java.net.URL;
 import java.sql.*;
 import javax.swing.*;
 
+import com.joshiminh.wgcinema.data.AgeRatingColor;
 import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.*;
 
+@SuppressWarnings("deprecation")
 public class MovieList extends JFrame {
     private JPanel moviePanel;
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
@@ -72,7 +74,6 @@ public class MovieList extends JFrame {
         }
     }    
 
-    @SuppressWarnings("deprecation")
     private JPanel createMoviePanel(int movieId, String imageLink, String title, String rating) throws java.net.MalformedURLException {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(BACKGROUND_COLOR);

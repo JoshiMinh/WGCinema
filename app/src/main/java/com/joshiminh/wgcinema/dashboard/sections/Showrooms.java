@@ -8,6 +8,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
 import com.joshiminh.wgcinema.dashboard.agents.ShowroomAgent;
+import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.ButtonEditor;
 import com.joshiminh.wgcinema.utils.ButtonRenderer;
 import com.joshiminh.wgcinema.utils.TableStyles;
@@ -18,6 +19,7 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+@SuppressWarnings("unused")
 public class Showrooms {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
     private final JPanel showroomsPanel;
@@ -70,10 +72,7 @@ public class Showrooms {
         table.setFont(new Font("Arial", Font.PLAIN, 14));
         table.setRowHeight(30);
 
-        try (Connection connection = DriverManager.getConnection(url);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM showrooms")) {
-
+        try (ResultSet resultSet = DAO.fetchAllShowrooms(url)) {
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
             for (int i = 1; i <= columnCount; i++) {
@@ -112,27 +111,14 @@ public class Showrooms {
     private void updateTableCell(String url, JTable table, int row, int column) {
         Object updatedValue = table.getValueAt(row, column);
         Object idValue = table.getValueAt(row, 0);
-
-        String sql = "UPDATE showrooms SET " + table.getColumnName(column) + " = ? WHERE showroom_id = ?";
-
-        try (Connection connection = DriverManager.getConnection(url);
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-
-            preparedStatement.setObject(1, updatedValue);
-            preparedStatement.setObject(2, idValue);
-            preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            showError("Error updating record: " + ex.getMessage());
-        }
-    }
+    
+        DAO.updateShowroomColumn(url, table.getColumnName(column), updatedValue, idValue);
+    }    
 
     private ChartPanel createChartPanel(String url) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        try (Connection connection = DriverManager.getConnection(url);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT showroom_id, max_chairs FROM showrooms")) {
-
+        try (ResultSet resultSet = DAO.fetchAllShowrooms(url)) {
             while (resultSet.next()) {
                 dataset.addValue(resultSet.getInt("max_chairs"), "Seats", String.valueOf(resultSet.getInt("showroom_id")));
             }

@@ -5,8 +5,10 @@ import java.sql.*;
 import javax.swing.*;
 
 import com.joshiminh.wgcinema.dashboard.Dashboard;
+import com.joshiminh.wgcinema.data.AgeRatingColor;
 import com.joshiminh.wgcinema.utils.*;
 
+@SuppressWarnings("unused")
 public class MovieSearch extends JFrame {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
 

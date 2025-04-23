@@ -1,6 +1,7 @@
 package com.joshiminh.wgcinema.booking;
 import javax.swing.*;
 
+import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.ResourceUtil;
 
 import java.awt.*;
@@ -12,11 +13,11 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+@SuppressWarnings({"unused", "deprecation"})
 public class Checkout extends JFrame {
     private static final int WIDTH = 410, HEIGHT = 700;
     private final JLabel selectedSeatsLabel;
     private int showtimeID, showroomID, movieId;
-    @SuppressWarnings("unused")
     private Showrooms showroomsFrame;
     private boolean bookingSuccessful = false;
     private String connectionString;
@@ -46,7 +47,6 @@ public class Checkout extends JFrame {
 
         JLabel moviePosterLabel = new JLabel();
         try {
-            @SuppressWarnings("deprecation")
             URL moviePosterUrl = new URL(movieLink);
             ImageIcon moviePosterIcon = new ImageIcon(moviePosterUrl);
             Image scaledMoviePosterImage = moviePosterIcon.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH);
@@ -191,7 +191,6 @@ public class Checkout extends JFrame {
     }
 
     private static String formatPrice(int price) {
-        @SuppressWarnings("deprecation")
         NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
         return numberFormat.format(price) + "vnđ";
     }
@@ -199,63 +198,33 @@ public class Checkout extends JFrame {
     private void book() {
         try {
             String selectedSeats = selectedSeatsLabel.getText().substring("Selected Seats: ".length()).replaceAll(",", "");
-            Connection conn = DriverManager.getConnection(connectionString);
-            String chairsQuery = "SELECT chairs_booked FROM showtimes WHERE showtime_id = ?";
-            PreparedStatement chairsStatement = conn.prepareStatement(chairsQuery);
-            chairsStatement.setInt(1, showtimeID);
-            ResultSet chairsResult = chairsStatement.executeQuery();
+            ResultSet chairsResult = DAO.fetchShowtimeDetails(connectionString, showtimeID);
 
-            if (chairsResult.next()) {
+            if (chairsResult != null && chairsResult.next()) {
                 String chairsBooked = chairsResult.getString("chairs_booked");
                 if (checkBooked(chairsBooked, selectedSeats)) {
                     JOptionPane.showMessageDialog(this, "Some selected seats are already booked!", "Error", JOptionPane.ERROR_MESSAGE);
                     chairsResult.close();
-                    chairsStatement.close();
-                    conn.close();
                     return;
                 }
             } else {
-                chairsResult.close();
-                chairsStatement.close();
-                conn.close();
+                if (chairsResult != null) chairsResult.close();
                 return;
             }
-
             chairsResult.close();
-            chairsStatement.close();
 
-            String updateQuery = "UPDATE showtimes SET reserved_chairs = reserved_chairs + ?, chairs_booked = CONCAT(chairs_booked, ?) WHERE showtime_id = ?";
-            PreparedStatement updateStatement = conn.prepareStatement(updateQuery);
-            updateStatement.setInt(1, selectedSeats.split(" ").length);
-            updateStatement.setString(2, " " + selectedSeats);
-            updateStatement.setInt(3, showtimeID);
+            int reservedCount = selectedSeats.split(" ").length;
+            int updatedRows = DAO.updateShowtimeSeats(connectionString, reservedCount, selectedSeats, showtimeID);
 
-            int rowsAffected = updateStatement.executeUpdate();
-            if (rowsAffected > 0) {
+            if (updatedRows > 0) {
                 JOptionPane.showMessageDialog(this, "Booking Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 showSuccessImage();
                 bookingSuccessful = true;
-                insertTransactionData(conn, selectedSeats, calculateTotalPrice(selectedSeats));
+                DAO.insertTransaction(connectionString, movieId, calculateTotalPrice(selectedSeats), selectedSeats, showroomID, "admin", showtimeID);
             }
-
-            updateStatement.close();
-            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    private void insertTransactionData(Connection conn, String selectedSeats, String totalPrice) throws SQLException {
-        String insertQuery = "INSERT INTO transactions (movie_id, amount, seats_preserved, showroom_id, account_email, showtime_id) VALUES (?, ?, ?, ?, ?, ?)";
-        PreparedStatement insertStatement = conn.prepareStatement(insertQuery);
-        insertStatement.setInt(1, movieId);
-        insertStatement.setBigDecimal(2, new java.math.BigDecimal(totalPrice.replaceAll("[^\\d.]", "")));
-        insertStatement.setString(3, selectedSeats);
-        insertStatement.setInt(4, showroomID);
-        insertStatement.setString(5, "admin");
-        insertStatement.setInt(6, showtimeID);
-        insertStatement.executeUpdate();
-        insertStatement.close();
     }
 
     private void showSuccessImage() {

@@ -11,8 +11,12 @@ import java.util.stream.Collectors;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.swing.border.Border;
+
+import com.joshiminh.wgcinema.data.AgeRatingColor;
+import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.*;
 
+@SuppressWarnings({"unused", "deprecation"})
 public class Showrooms extends JFrame {
     private static final int WIDTH = 1900, HEIGHT = 900, GAP = 3, MAX_SELECTIONS = 8;
     private static int ROWS, COLS, CELL_SIZE, sideWidths;
@@ -57,18 +61,13 @@ public class Showrooms extends JFrame {
     }
 
     private int getShowroomID(int showtimeID) {
-        String query = "SELECT showroom_id, chairs_booked, time, movie_id, date FROM showtimes WHERE showtime_id = ?";
-        try (Connection conn = DriverManager.getConnection(connectionString);
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, showtimeID);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    date = rs.getDate("date");
-                    chairsBooked = rs.getString("chairs_booked");
-                    time = rs.getTime("time");
-                    movieId = rs.getInt("movie_id");
-                    return rs.getInt("showroom_id");
-                }
+        try (ResultSet rs = DAO.fetchShowtimeDetails(connectionString, showtimeID)) {
+            if (rs != null && rs.next()) {
+                date = rs.getDate("date");
+                chairsBooked = rs.getString("chairs_booked");
+                time = rs.getTime("time");
+                movieId = rs.getInt("movie_id");
+                return rs.getInt("showroom_id");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,16 +76,11 @@ public class Showrooms extends JFrame {
     }
 
     private void fetchMovieInfo() {
-        String query = "SELECT title, age_rating, poster FROM movies WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(connectionString);
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, movieId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    movieTitle = rs.getString("title");
-                    movieRating = rs.getString("age_rating");
-                    movieLink = rs.getString("poster");
-                }
+        try (ResultSet rs = DAO.fetchMovieDetails(connectionString, movieId)) {
+            if (rs != null && rs.next()) {
+                movieTitle = rs.getString("title");
+                movieRating = rs.getString("age_rating");
+                movieLink = rs.getString("poster");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -95,32 +89,28 @@ public class Showrooms extends JFrame {
 
     private void setDimensions(int showroomID) {
         final int totalWidth = 1450;
-        String query = "SELECT rowCount, collumnCount, max_chairs FROM showrooms WHERE showroom_id = ?";
-        try (Connection conn = DriverManager.getConnection(connectionString);
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, showroomID);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    ROWS = rs.getInt("rowCount");
-                    COLS = rs.getInt("collumnCount");
-                    int maxChairs = rs.getInt("max_chairs");
-                    CELL_SIZE = maxChairs > 250 ? 50 : 60;
-                    sideWidths = totalWidth - (CELL_SIZE * COLS);
-                } else {
-                    CELL_SIZE = 60;
-                    ROWS = 10;
-                    COLS = 10;
-                    sideWidths = totalWidth - (CELL_SIZE * COLS);
-                }
+        try (ResultSet rs = DAO.fetchShowroomDetails(connectionString, showroomID)) {
+            if (rs != null && rs.next()) {
+                ROWS = rs.getInt("rowCount");
+                COLS = rs.getInt("collumnCount");
+                int maxChairs = rs.getInt("max_chairs");
+                CELL_SIZE = maxChairs > 250 ? 50 : 60;
+                sideWidths = totalWidth - (CELL_SIZE * COLS);
+            } else {
+                defaultDimensions(totalWidth);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            CELL_SIZE = 60;
-            ROWS = 10;
-            COLS = 10;
-            sideWidths = totalWidth - (CELL_SIZE * COLS);
+            defaultDimensions(totalWidth);
         }
     }
+    
+    private void defaultDimensions(int totalWidth) {
+        CELL_SIZE = 60;
+        ROWS = 10;
+        COLS = 10;
+        sideWidths = totalWidth - (CELL_SIZE * COLS);
+    }    
 
     private JPanel createTopPanel(int gridPanelHeight) {
         JPanel topPanel = new JPanel(new GridBagLayout());
@@ -146,7 +136,6 @@ public class Showrooms extends JFrame {
         return panel;
     }
 
-    @SuppressWarnings("deprecation")
     private JPanel createBottomInfoPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(true);

@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.List;
 import static com.joshiminh.wgcinema.utils.AgentStyles.*;
 
+@SuppressWarnings("unused")
 public class showtimeAgent extends JFrame {
     private String[] showtimeColumns;
     private final String databaseUrl;

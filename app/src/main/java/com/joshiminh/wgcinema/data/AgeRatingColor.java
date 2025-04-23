@@ -1,4 +1,4 @@
-package com.joshiminh.wgcinema.utils;
+package com.joshiminh.wgcinema.data;
 import java.awt.Color;
 
 public class AgeRatingColor {

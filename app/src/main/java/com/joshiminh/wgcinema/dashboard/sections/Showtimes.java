@@ -8,10 +8,12 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
 import com.joshiminh.wgcinema.dashboard.agents.showtimeAgent;
+import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.ButtonEditor;
 import com.joshiminh.wgcinema.utils.ButtonRenderer;
 import com.joshiminh.wgcinema.utils.TableStyles;
 
+@SuppressWarnings("unused")
 public class Showtimes {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
     private final JPanel showtimesPanel;
@@ -45,10 +47,7 @@ public class Showtimes {
         new TableStyles(table);
         table.setRowHeight(25);
 
-        try (Connection connection = DriverManager.getConnection(url);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM showtimes")) {
-
+        try (ResultSet resultSet = DAO.fetchAllShowtimes(url)) {
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
 
@@ -76,15 +75,7 @@ public class Showtimes {
                 if (column != table.getColumnCount() - 1) {
                     Object updatedValue = table.getValueAt(row, column);
                     Object idValue = table.getValueAt(row, 0);
-                    try (Connection connection = DriverManager.getConnection(url);
-                         PreparedStatement ps = connection.prepareStatement(
-                                 "UPDATE showtimes SET " + table.getColumnName(column) + " = ? WHERE showtime_id = ?")) {
-                        ps.setObject(1, updatedValue);
-                        ps.setObject(2, idValue);
-                        ps.executeUpdate();
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(null, "Error updating record: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+                    DAO.updateShowtimeColumn(url, table.getColumnName(column), updatedValue, idValue);
                 }
             }
         });

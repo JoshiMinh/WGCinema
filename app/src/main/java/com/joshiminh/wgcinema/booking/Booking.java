@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.Date;
 import javax.swing.*;
 
+@SuppressWarnings("unused")
 public class Booking extends JFrame {
     private final int movieId;
     private final Color bgColor = new Color(30, 30, 30);

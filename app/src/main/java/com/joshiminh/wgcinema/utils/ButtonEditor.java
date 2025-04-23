@@ -6,6 +6,7 @@ import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
+@SuppressWarnings("unused")
 public class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
     private final JButton button;
     private final JTable table;

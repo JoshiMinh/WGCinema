@@ -9,8 +9,11 @@ import org.jfree.data.general.DefaultPieDataset;
 
 import com.joshiminh.wgcinema.dashboard.agents.MovieAgent;
 import com.joshiminh.wgcinema.dashboard.agents.MovieSearch;
+import com.joshiminh.wgcinema.data.AgeRatingColor;
+import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.*;
 
+@SuppressWarnings("unused")
 public class Movies {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
 
@@ -41,10 +44,8 @@ public class Movies {
 
     private void loadMovies() {
         moviesPanel.removeAll();
-        try (Connection connection = DriverManager.getConnection(url);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT id, title, age_rating, release_date FROM movies ORDER BY release_date")) {
-            while (resultSet.next()) {
+        try (ResultSet resultSet = DAO.fetchAllMovies(url)) {
+            while (resultSet != null && resultSet.next()) {
                 moviesPanel.add(createMovieEntryPanel(
                         resultSet.getInt("id"),
                         resultSet.getString("title"),
@@ -108,23 +109,21 @@ public class Movies {
     
     private void deleteMovie(int id) {
         int confirm = JOptionPane.showConfirmDialog(
-            null, 
-            "Are you sure you want to delete this movie?", 
-            "Confirm Deletion", 
+            null,
+            "Are you sure you want to delete this movie?",
+            "Confirm Deletion",
             JOptionPane.YES_NO_OPTION
         );
-        
+    
         if (confirm == JOptionPane.YES_OPTION) {
-            try (Connection connection = DriverManager.getConnection(url);
-                 PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM movies WHERE id = ?")) {
-                preparedStatement.setInt(1, id);
-                preparedStatement.executeUpdate();
+            int result = DAO.deleteMovieById(url, id);
+            if (result > 0) {
                 loadMovies();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Error deleting movie: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Error deleting movie.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
+    }    
 
     private JPanel createSearchBarPanel() {
         JPanel searchBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -155,10 +154,8 @@ public class Movies {
         chartPanel.setBackground(darkBackground);
     
         DefaultPieDataset ageRatingDataset = new DefaultPieDataset();
-        try (Connection connection = DriverManager.getConnection(url);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT age_rating, COUNT(*) AS count FROM movies GROUP BY age_rating")) {
-            while (resultSet.next()) {
+        try (ResultSet resultSet = DAO.fetchAgeRatingCounts(url)) {
+            while (resultSet != null && resultSet.next()) {
                 ageRatingDataset.setValue(resultSet.getString("age_rating"), resultSet.getInt("count"));
             }
         } catch (SQLException e) {
@@ -188,20 +185,16 @@ public class Movies {
     
         DefaultPieDataset languageDataset = new DefaultPieDataset();
         int totalMovies = 0;
-        try (Connection connection = DriverManager.getConnection(url);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT language, COUNT(*) AS count FROM movies GROUP BY language")) {
-            while (resultSet.next()) {
+        try (ResultSet resultSet = DAO.fetchLanguageCounts(url)) {
+            while (resultSet != null && resultSet.next()) {
                 totalMovies += resultSet.getInt("count");
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error loading language pie chart data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
-        try (Connection connection = DriverManager.getConnection(url);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT language, COUNT(*) AS count FROM movies GROUP BY language")) {
-            while (resultSet.next()) {
+
+        try (ResultSet resultSet = DAO.fetchLanguageCounts(url)) {
+            while (resultSet != null && resultSet.next()) {
                 String language = resultSet.getString("language");
                 double percentage = (resultSet.getInt("count") * 100.0) / totalMovies;
                 languageDataset.setValue(language, percentage);

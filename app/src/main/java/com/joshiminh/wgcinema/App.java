@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 
+@SuppressWarnings("unused")
 public class App extends JFrame {
     private JPanel mainPanel;
     private JPasswordField passwordField;

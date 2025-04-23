@@ -7,10 +7,13 @@ import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.joshiminh.wgcinema.data.AgeRatingColor;
 import com.joshiminh.wgcinema.utils.*;
 
 import static com.joshiminh.wgcinema.utils.AgentStyles.*;
 
+@SuppressWarnings("unused")
 public class MovieAgent extends JFrame {
     private String[] movieColumns;
     private final String databaseUrl;
