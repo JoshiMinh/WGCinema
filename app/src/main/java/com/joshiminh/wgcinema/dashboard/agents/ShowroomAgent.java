@@ -3,6 +3,8 @@ package com.joshiminh.wgcinema.dashboard.agents;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import com.joshiminh.wgcinema.dashboard.Dashboard;
+import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.ResourceUtil;
 
 import java.awt.*;
@@ -14,12 +16,16 @@ import static com.joshiminh.wgcinema.utils.AgentStyles.*;
 @SuppressWarnings("unused")
 public class ShowroomAgent extends JFrame {
     private String[] showroomColumns;
+    private Dashboard dashboardframe;
     private final String databaseUrl;
     private final List<JComponent> inputComponents;
 
-    public ShowroomAgent(String url) {
+    public ShowroomAgent(String url, Dashboard dashboardframe) {
+        this.dashboardframe = dashboardframe;
         databaseUrl = url;
         inputComponents = new ArrayList<>();
+    
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setIconImage(ResourceUtil.loadAppIcon());
         applyFrameDefaults(this, "Add New Showroom", 700, 700);
         setupFrame();
@@ -103,7 +109,7 @@ public class ShowroomAgent extends JFrame {
 
     private String[] getFilteredColumns() {
         List<String> columns = new ArrayList<>();
-        for (String col : getColumnNames(databaseUrl, "showrooms")) {
+        for (String col : DAO.getColumnNames(databaseUrl, "showrooms")) {
             if (!col.equalsIgnoreCase("showroom_id")) {
                 columns.add(col);
             }
@@ -129,13 +135,14 @@ public class ShowroomAgent extends JFrame {
 
     private void addNewShowroom() {
         String[] values = extractValues();
-        StringBuilder query = new StringBuilder("INSERT INTO showrooms (")
-                .append(String.join(", ", showroomColumns))
-                .append(") VALUES (")
-                .append("?,".repeat(showroomColumns.length).replaceAll(",$", ""))
-                .append(")");
-        executeDatabaseOperation(query.toString(), values);
-    }
+        int result = DAO.insertShowroom(databaseUrl, showroomColumns, values);
+        if (result > 0) {
+            showDialog("Showroom added successfully!", true);
+            dispose();
+        } else {
+            showDialog("Failed to add showroom", false);
+        }
+    }    
 
     private String[] extractValues() {
         String[] values = new String[inputComponents.size()];

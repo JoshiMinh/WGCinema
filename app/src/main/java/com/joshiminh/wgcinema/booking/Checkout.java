@@ -138,7 +138,7 @@ public class Checkout extends JFrame {
         northCenterPanel.add(priceLabel);
         innerPanel.add(northCenterPanel, BorderLayout.NORTH);
 
-        ImageIcon qrIcon = new ImageIcon(ResourceUtil.loadImage("/images/QR.png"));
+        ImageIcon qrIcon = new ImageIcon(ResourceUtil.loadImage("/images/QR.jpg"));
         JLabel qrLabel = new JLabel(qrIcon);
         innerPanel.add(qrLabel, BorderLayout.CENTER);
 

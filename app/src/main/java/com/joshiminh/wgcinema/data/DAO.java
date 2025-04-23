@@ -1,13 +1,16 @@
 package com.joshiminh.wgcinema.data;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DAO {
 
     // ==========================
-    // Movie-related operations
+    // SELECT Operations
     // ==========================
 
+    // Movie-related SELECT operations
     public static ResultSet fetchMovieDetails(String connectionString, int movieId) {
         String sql = "SELECT * FROM movies WHERE id = ?";
         return select(connectionString, sql, movieId);
@@ -28,11 +31,6 @@ public class DAO {
         return select(connectionString, sql);
     }
 
-    public static int deleteMovieById(String connectionString, int movieId) {
-        String sql = "DELETE FROM movies WHERE id = ?";
-        return update(connectionString, sql, movieId);
-    }
-
     public static ResultSet fetchAgeRatingCounts(String connectionString) {
         String sql = "SELECT age_rating, COUNT(*) AS count FROM movies GROUP BY age_rating";
         return select(connectionString, sql);
@@ -43,10 +41,12 @@ public class DAO {
         return select(connectionString, sql);
     }
 
-    // ==========================
-    // Showtime-related operations
-    // ==========================
+    public static ResultSet searchMoviesByTitle(String connectionString, String titleQuery) {
+        String sql = "SELECT id, title, age_rating, release_date FROM movies WHERE title LIKE ? ORDER BY release_date LIMIT 20";
+        return select(connectionString, sql, "%" + titleQuery + "%");
+    }
 
+    // Showtime-related SELECT operations
     public static ResultSet fetchShowtimeDetails(String connectionString, int showtimeId) {
         String sql = "SELECT * FROM showtimes WHERE showtime_id = ?";
         return select(connectionString, sql, showtimeId);
@@ -63,20 +63,7 @@ public class DAO {
         return select(connectionString, sql);
     }
 
-    public static int updateShowtimeSeats(String connectionString, int reservedCount, String selectedSeats, int showtimeId) {
-        String sql = "UPDATE showtimes SET reserved_chairs = reserved_chairs + ?, chairs_booked = CONCAT(chairs_booked, ?) WHERE showtime_id = ?";
-        return update(connectionString, sql, reservedCount, " " + selectedSeats, showtimeId);
-    }
-
-    public static int updateShowtimeColumn(String connectionString, String columnName, Object value, Object showtimeId) {
-        String sql = "UPDATE showtimes SET " + columnName + " = ? WHERE showtime_id = ?";
-        return update(connectionString, sql, value, showtimeId);
-    }
-
-    // ==========================
-    // Showroom-related operations
-    // ==========================
-
+    // Showroom-related SELECT operations
     public static ResultSet fetchShowroomDetails(String connectionString, int showroomId) {
         String sql = "SELECT * FROM showrooms WHERE showroom_id = ?";
         return select(connectionString, sql, showroomId);
@@ -87,13 +74,20 @@ public class DAO {
         return select(connectionString, sql);
     }
 
-    public static int updateShowroomColumn(String connectionString, String columnName, Object value, Object showroomId) {
-        String sql = "UPDATE showrooms SET " + columnName + " = ? WHERE showroom_id = ?";
-        return update(connectionString, sql, value, showroomId);
+    // Utility SELECT operations
+    public static String[] getColumnNames(String connectionString, String table) {
+        try (Connection con = DriverManager.getConnection(connectionString)) {
+            ResultSet rs = con.getMetaData().getColumns(null, null, table, null);
+            List<String> names = new ArrayList<>();
+            while (rs.next()) names.add(rs.getString("COLUMN_NAME"));
+            return names.toArray(new String[0]);
+        } catch (SQLException e) {
+            return new String[0];
+        }
     }
 
     // ==========================
-    // Transaction-related operations
+    // INSERT Operations
     // ==========================
 
     public static int insertTransaction(String connectionString, int movieId, String totalPrice, String selectedSeats, int showroomId, String accountEmail, int showtimeId) {
@@ -101,8 +95,67 @@ public class DAO {
         return update(connectionString, sql, movieId, new java.math.BigDecimal(totalPrice.replaceAll("[^\\d.]", "")), selectedSeats, showroomId, accountEmail, showtimeId);
     }
 
+    public static int insertMovie(String connectionString, String[] columns, String[] values) {
+        String sql = "INSERT INTO movies (" + String.join(", ", columns) + ") VALUES (" +
+                     "?,".repeat(values.length).replaceAll(",$", "") + ")";
+        return update(connectionString, sql, (Object[]) values);
+    }
+
+    public static int insertShowtime(String connectionString, String[] columns, String[] values) {
+        String sql = "INSERT INTO showtimes (" + String.join(", ", columns) + ") VALUES (" +
+                     "?,".repeat(values.length).replaceAll(",$", "") + ")";
+        return update(connectionString, sql, (Object[]) values);
+    }
+
+    public static int insertShowroom(String connectionString, String[] columns, String[] values) {
+        String sql = "INSERT INTO showrooms (" + String.join(", ", columns) + ") VALUES (" +
+                     "?,".repeat(columns.length).replaceAll(",$", "") + ")";
+        return update(connectionString, sql, (Object[]) values);
+    }
+
     // ==========================
-    // Utility methods
+    // UPDATE Operations
+    // ==========================
+
+    public static int updateShowtimeSeats(String connectionString, int reservedCount, String selectedSeats, int showtimeId) {
+        String sql = "UPDATE showtimes SET reserved_chairs = reserved_chairs + ?, chairs_booked = CONCAT(chairs_booked, ?) WHERE showtime_id = ?";
+        return update(connectionString, sql, reservedCount, " " + selectedSeats, showtimeId);
+    }
+
+    public static int updateShowtimeColumn(String connectionString, String columnName, Object value, Object showtimeId) {
+        String sql = "UPDATE showtimes SET " + columnName + " = ? WHERE showtime_id = ?";
+        return update(connectionString, sql, value, showtimeId);
+    }
+
+    public static int updateShowroomColumn(String connectionString, String columnName, Object value, Object showroomId) {
+        String sql = "UPDATE showrooms SET " + columnName + " = ? WHERE showroom_id = ?";
+        return update(connectionString, sql, value, showroomId);
+    }
+
+    public static int updateMovieById(String connectionString, String[] columns, String[] values, int movieId) {
+        StringBuilder sql = new StringBuilder("UPDATE movies SET ");
+        for (int i = 0; i < columns.length; i++) {
+            sql.append(columns[i]).append(" = ?");
+            if (i < columns.length - 1) sql.append(", ");
+        }
+        sql.append(" WHERE id = ?");
+        Object[] params = new Object[values.length + 1];
+        System.arraycopy(values, 0, params, 0, values.length);
+        params[values.length] = movieId;
+        return update(connectionString, sql.toString(), params);
+    }
+
+    // ==========================
+    // DELETE Operations
+    // ==========================
+
+    public static int deleteRowById(String connectionString, String tableName, String primaryKeyColumn, int id) {
+        String sql = "DELETE FROM " + tableName + " WHERE " + primaryKeyColumn + " = ?";
+        return update(connectionString, sql, id);
+    }
+
+    // ==========================
+    // Utility Methods
     // ==========================
 
     private static ResultSet select(String connectionString, String sql, Object... params) {

@@ -6,15 +6,19 @@ import javax.swing.*;
 
 import com.joshiminh.wgcinema.dashboard.Dashboard;
 import com.joshiminh.wgcinema.data.AgeRatingColor;
+import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.*;
 
 @SuppressWarnings("unused")
 public class MovieSearch extends JFrame {
+    private Dashboard dashboardframe;
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
 
-    public MovieSearch(String url, String query) {
+    public MovieSearch(String url, String query, Dashboard dashboardframe) {
+        this.dashboardframe = dashboardframe;
         setTitle("Search: " + query);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(500, 500);
         setLocationRelativeTo(null);
         setIconImage(ResourceUtil.loadAppIcon());
@@ -29,11 +33,7 @@ public class MovieSearch extends JFrame {
         JPanel moviesPanel = new JPanel();
         moviesPanel.setLayout(new BoxLayout(moviesPanel, BoxLayout.Y_AXIS));
         moviesPanel.setBackground(BACKGROUND_COLOR);
-        try (Connection connection = DriverManager.getConnection(url);
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT id, title, age_rating, release_date FROM movies WHERE title LIKE ? ORDER BY release_date LIMIT 20")) {
-            preparedStatement.setString(1, "%" + query + "%");
-            ResultSet resultSet = preparedStatement.executeQuery();
+        try (ResultSet resultSet = DAO.searchMoviesByTitle(url, query)) {
             while (resultSet.next()) {
                 moviesPanel.add(createMovieEntryPanel(
                         resultSet.getInt("id"),
@@ -111,14 +111,12 @@ public class MovieSearch extends JFrame {
         deleteButton.setForeground(Color.WHITE);
         deleteButton.setFont(new Font("Arial", Font.BOLD, 12));
         deleteButton.addActionListener(e -> {
-            try (Connection connection = DriverManager.getConnection(url);
-                 PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM movies WHERE id = ?")) {
-                preparedStatement.setInt(1, id);
-                preparedStatement.executeUpdate();
+            int rowsAffected = DAO.deleteRowById(url, "movies", "id", id);
+            if (rowsAffected > 0) {
                 dispose();
                 new Dashboard(url).setVisible(true);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error deleting movie: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Error deleting movie.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
         return deleteButton;
@@ -129,7 +127,7 @@ public class MovieSearch extends JFrame {
         editButton.setBackground(Color.DARK_GRAY);
         editButton.setForeground(Color.WHITE);
         editButton.setFont(new Font("Arial", Font.BOLD, 12));
-        editButton.addActionListener(e -> new MovieAgent(url, id, false).setVisible(true));
+        editButton.addActionListener(e -> new MovieAgent(url, id, false, dashboardframe).setVisible(true));
         return editButton;
     }
 }

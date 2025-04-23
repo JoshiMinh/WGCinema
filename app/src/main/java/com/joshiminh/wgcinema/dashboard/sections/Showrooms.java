@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
+import com.joshiminh.wgcinema.dashboard.Dashboard;
 import com.joshiminh.wgcinema.dashboard.agents.ShowroomAgent;
 import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.ButtonEditor;
@@ -22,9 +23,11 @@ import org.jfree.data.category.DefaultCategoryDataset;
 @SuppressWarnings("unused")
 public class Showrooms {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
+    private Dashboard dashboardframe;
     private final JPanel showroomsPanel;
 
-    public Showrooms(String url) {
+    public Showrooms(String url, Dashboard dashboardframe) {
+        this.dashboardframe = dashboardframe;
         showroomsPanel = new JPanel(new BorderLayout());
         showroomsPanel.setBackground(BACKGROUND_COLOR);
 
@@ -53,7 +56,7 @@ public class Showrooms {
 
         JButton newButton = new JButton("New");
         newButton.setFont(new Font("Arial", Font.BOLD, 12));
-        newButton.addActionListener(e -> new ShowroomAgent(url).setVisible(true));
+        newButton.addActionListener(e -> new ShowroomAgent(url, dashboardframe).setVisible(true));
         titlePanel.add(newButton, BorderLayout.EAST);
 
         return titlePanel;

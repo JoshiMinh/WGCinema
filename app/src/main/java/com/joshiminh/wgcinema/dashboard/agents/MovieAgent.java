@@ -8,7 +8,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.joshiminh.wgcinema.dashboard.Dashboard;
 import com.joshiminh.wgcinema.data.AgeRatingColor;
+import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.*;
 
 import static com.joshiminh.wgcinema.utils.AgentStyles.*;
@@ -16,16 +18,19 @@ import static com.joshiminh.wgcinema.utils.AgentStyles.*;
 @SuppressWarnings("unused")
 public class MovieAgent extends JFrame {
     private String[] movieColumns;
+    private Dashboard dashboardframe;
     private final String databaseUrl;
     private final boolean isNewMovie;
     private final int movieId;
     private final List<JComponent> inputComponents;
 
-    public MovieAgent(String url, int id, boolean newMovie) {
+    public MovieAgent(String url, int id, boolean newMovie, Dashboard dashboardframe) {
+        this.dashboardframe = dashboardframe;
         databaseUrl = url;
         movieId = id;
         isNewMovie = newMovie;
         inputComponents = new ArrayList<>();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setIconImage(ResourceUtil.loadAppIcon());
         applyFrameDefaults(this, isNewMovie ? "Add New Movie" : "Edit Movie", 800, 825);
         setupFrame();
@@ -86,23 +91,19 @@ public class MovieAgent extends JFrame {
 
     private String[] loadColumnValues() {
         String[] columnValues = new String[movieColumns.length];
-        if (!isNewMovie) {
-            try (Connection connection = DriverManager.getConnection(databaseUrl);
-                 PreparedStatement statement = connection.prepareStatement(
-                         "SELECT " + String.join(", ", movieColumns) + " FROM movies WHERE id = ?")) {
-                statement.setInt(1, movieId);
-                ResultSet resultSet = statement.executeQuery();
+        if (isNewMovie) {
+            for (int i = 0; i < movieColumns.length; i++) {
+                columnValues[i] = "";
+            }
+        } else {
+            try (ResultSet resultSet = DAO.fetchMovieDetails(databaseUrl, movieId)) {
                 if (resultSet.next()) {
                     for (int i = 0; i < movieColumns.length; i++) {
                         columnValues[i] = resultSet.getString(movieColumns[i]);
                     }
                 }
             } catch (SQLException e) {
-                showErrorDialog("Database error: " + e.getMessage());
-            }
-        } else {
-            for (int i = 0; i < movieColumns.length; i++) {
-                columnValues[i] = "";
+                showErrorDialog("Error loading movie details: " + e.getMessage());
             }
         }
         return columnValues;
@@ -208,26 +209,17 @@ public class MovieAgent extends JFrame {
 
     private void addNewMovie() {
         String[] newValues = extractValues(inputComponents);
-        StringBuilder queryBuilder = new StringBuilder("INSERT INTO movies (");
-        queryBuilder.append(String.join(", ", movieColumns))
-                    .append(") VALUES (")
-                    .append("?,".repeat(movieColumns.length).replaceAll(",$", ""))
-                    .append(")");
-        executeDatabaseOperation(queryBuilder.toString(), newValues,
-                "Movie added successfully!", "Failed to add movie");
-    }
+        int result = DAO.insertMovie(databaseUrl, movieColumns, newValues);
+        showResultDialog(result > 0 ? "Movie added successfully!" : "Failed to add movie", result > 0);
+        dispose();
+    }    
 
     private void saveChanges() {
         String[] updatedValues = extractValues(inputComponents);
-        StringBuilder queryBuilder = new StringBuilder("UPDATE movies SET ");
-        for (int i = 0; i < movieColumns.length; i++) {
-            queryBuilder.append(movieColumns[i]).append(" = ?");
-            if (i < movieColumns.length - 1) queryBuilder.append(", ");
-        }
-        queryBuilder.append(" WHERE id = ?");
-        executeDatabaseOperation(queryBuilder.toString(), updatedValues,
-                "Changes saved successfully!", "No changes were made");
-    }
+        int result = DAO.updateMovieById(databaseUrl, movieColumns, updatedValues, movieId);
+        showResultDialog(result > 0 ? "Changes saved successfully!" : "No changes were made", result > 0);
+        dispose();
+    }    
 
     private void executeDatabaseOperation(String query, String[] values, String successMsg, String failMsg) {
         try (Connection connection = DriverManager.getConnection(databaseUrl);

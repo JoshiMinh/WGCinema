@@ -6,6 +6,8 @@ import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
+import com.joshiminh.wgcinema.data.DAO;
+
 @SuppressWarnings("unused")
 public class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
     private final JButton button;
@@ -38,17 +40,13 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor 
 
     private void deleteRow() {
         int id = (int) table.getValueAt(row, 0);
-        try (Connection connection = DriverManager.getConnection(url);
-             PreparedStatement statement = connection.prepareStatement(
-                 "DELETE FROM " + tableName + " WHERE " + primaryKeyColumn + " = ?"
-             )) {
-            statement.setInt(1, id);
-            if (statement.executeUpdate() > 0) {
-                ((DefaultTableModel) table.getModel()).removeRow(row);
-                JOptionPane.showMessageDialog(null, "Deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error deleting record: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        int result = DAO.deleteRowById(url, tableName, primaryKeyColumn, id);
+
+        if (result > 0) {
+            ((DefaultTableModel) table.getModel()).removeRow(row);
+            JOptionPane.showMessageDialog(null, "Deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Error deleting record.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

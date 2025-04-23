@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
+import com.joshiminh.wgcinema.dashboard.Dashboard;
 import com.joshiminh.wgcinema.dashboard.agents.showtimeAgent;
 import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.ButtonEditor;
@@ -16,9 +17,11 @@ import com.joshiminh.wgcinema.utils.TableStyles;
 @SuppressWarnings("unused")
 public class Showtimes {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
+    private Dashboard dashboardframe;
     private final JPanel showtimesPanel;
 
-    public Showtimes(String url) {
+    public Showtimes(String url, Dashboard dashboardframe) {
+        this.dashboardframe = dashboardframe;
         showtimesPanel = new JPanel(new BorderLayout());
         showtimesPanel.setBackground(BACKGROUND_COLOR);
 
@@ -31,7 +34,7 @@ public class Showtimes {
         titlePanel.add(titleLabel, BorderLayout.CENTER);
 
         JButton newButton = new JButton("New");
-        newButton.addActionListener(e -> new showtimeAgent(url).setVisible(true));
+        newButton.addActionListener(e -> new showtimeAgent(url, dashboardframe).setVisible(true));
         titlePanel.add(newButton, BorderLayout.EAST);
 
         showtimesPanel.add(titlePanel, BorderLayout.NORTH);

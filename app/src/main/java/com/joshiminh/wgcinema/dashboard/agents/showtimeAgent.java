@@ -1,11 +1,16 @@
+//pre added data on next add
 package com.joshiminh.wgcinema.dashboard.agents;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import com.joshiminh.wgcinema.dashboard.Dashboard;
+import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.ResourceUtil;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -15,16 +20,33 @@ import static com.joshiminh.wgcinema.utils.AgentStyles.*;
 @SuppressWarnings("unused")
 public class showtimeAgent extends JFrame {
     private String[] showtimeColumns;
+    private Dashboard dashboardframe;
     private final String databaseUrl;
     private final List<JComponent> inputComponents;
 
-    public showtimeAgent(String url) {
+    public showtimeAgent(String url, Dashboard dashboardframe) {
+        this.dashboardframe = dashboardframe;
         databaseUrl = url;
         inputComponents = new ArrayList<>();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setIconImage(ResourceUtil.loadAppIcon());
         applyFrameDefaults(this, "Add New Showtime", 700, 700);
         setupFrame();
+    
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent windowEvent) {
+                if (!isVisible()) { // Ensure it's not recalling itself
+                    dashboardframe.dispose();
+                    Dashboard newDashboardFrame = new Dashboard(url);
+                    newDashboardFrame.setVisible(true);
+                }
+            }
+        });
+    
+        setVisible(true);
     }
+    
 
     private void setupFrame() {
         add(createHeaderPanel(), BorderLayout.NORTH);
@@ -95,7 +117,7 @@ public class showtimeAgent extends JFrame {
 
     private String[] getFilteredColumns() {
         List<String> columns = new ArrayList<>();
-        for (String col : getColumnNames(databaseUrl, "showtimes")) {
+        for (String col : DAO.getColumnNames(databaseUrl, "showtimes")) {
             if (!List.of("showtime_id", "reserved_chairs", "chairs_booked").contains(col.toLowerCase())) {
                 columns.add(col);
             }
@@ -136,29 +158,25 @@ public class showtimeAgent extends JFrame {
 
     private JComboBox<String> createShowroomBox() {
         JComboBox<String> box = new JComboBox<>();
-        try (Connection con = DriverManager.getConnection(databaseUrl);
-             Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT showroom_id, showroom_name FROM showrooms")) {
+        try (ResultSet rs = DAO.fetchAllShowrooms(databaseUrl)) {
             while (rs.next()) {
                 box.addItem(rs.getInt("showroom_id") + " - " + rs.getString("showroom_name"));
             }
         } catch (SQLException ignored) {}
         styleComponent(box);
         return box;
-    }
+    }    
 
     private JComboBox<String> createMovieBox() {
         JComboBox<String> box = new JComboBox<>();
-        try (Connection con = DriverManager.getConnection(databaseUrl);
-             Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT id, title FROM movies WHERE release_date >= (CURRENT_DATE - INTERVAL 14 DAY) ORDER BY release_date")) {
+        try (ResultSet rs = DAO.fetchUpcomingMovies(databaseUrl)) {
             while (rs.next()) {
                 box.addItem(rs.getInt("id") + " - " + rs.getString("title"));
             }
         } catch (SQLException ignored) {}
         styleComponent(box);
         return box;
-    }
+    }    
 
     private JComboBox<String> createTimeBox() {
         JComboBox<String> box = new JComboBox<>();
@@ -188,10 +206,15 @@ public class showtimeAgent extends JFrame {
 
     private void addNewShowtime() {
         String[] values = extractValues();
-        String query = "INSERT INTO showtimes (" + String.join(", ", showtimeColumns) + ") VALUES (" +
-                       "?,".repeat(showtimeColumns.length).replaceAll(",$", "") + ")";
-        executeDatabaseOperation(query, values, "Showtime added successfully!", "Failed to add showtime");
-    }
+        if (DAO.insertShowtime(databaseUrl, showtimeColumns, values) > 0) {
+            showResultDialog("Showtime added successfully!", true);
+            dispose();
+            new showtimeAgent(databaseUrl, dashboardframe).setVisible(true);
+        } else {
+            showResultDialog("Failed to add showtime", false);
+        }
+    }    
+    
 
     private String[] extractValues() {
         String[] values = new String[inputComponents.size()];
@@ -205,22 +228,6 @@ public class showtimeAgent extends JFrame {
             }
         }
         return values;
-    }
-
-    private void executeDatabaseOperation(String query, String[] values, String successMsg, String failMsg) {
-        try (Connection con = DriverManager.getConnection(databaseUrl);
-             PreparedStatement stmt = con.prepareStatement(query)) {
-            for (int i = 0; i < values.length; i++) stmt.setString(i + 1, values[i]);
-            if (stmt.executeUpdate() > 0) {
-                showResultDialog(successMsg, true);
-                dispose();
-                new showtimeAgent(databaseUrl).setVisible(true);
-            } else {
-                showResultDialog(failMsg, false);
-            }
-        } catch (SQLException e) {
-            showErrorDialog("Database error: " + e.getMessage());
-        }
     }
 
     private void showResultDialog(String msg, boolean success) {
