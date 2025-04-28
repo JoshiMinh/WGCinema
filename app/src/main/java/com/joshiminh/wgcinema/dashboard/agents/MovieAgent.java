@@ -8,7 +8,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.joshiminh.wgcinema.dashboard.Dashboard;
 import com.joshiminh.wgcinema.data.AgeRatingColor;
 import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.*;
@@ -18,18 +17,19 @@ import static com.joshiminh.wgcinema.utils.AgentStyles.*;
 @SuppressWarnings("unused")
 public class MovieAgent extends JFrame {
     private String[] movieColumns;
-    private Dashboard dashboardframe;
     private final String databaseUrl;
     private final boolean isNewMovie;
     private final int movieId;
     private final List<JComponent> inputComponents;
 
-    public MovieAgent(String url, int id, boolean newMovie, Dashboard dashboardframe) {
-        this.dashboardframe = dashboardframe;
+    public MovieAgent(String url, int id, boolean newMovie) {
         databaseUrl = url;
         movieId = id;
         isNewMovie = newMovie;
         inputComponents = new ArrayList<>();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setIconImage(ResourceUtil.loadAppIcon());
+        applyFrameDefaults(this, isNewMovie ? "Add New Movie" : "Edit Movie", 800, 825);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setIconImage(ResourceUtil.loadAppIcon());
         applyFrameDefaults(this, isNewMovie ? "Add New Movie" : "Edit Movie", 800, 825);

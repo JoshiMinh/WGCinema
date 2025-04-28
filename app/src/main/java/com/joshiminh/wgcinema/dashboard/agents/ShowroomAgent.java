@@ -3,7 +3,6 @@ package com.joshiminh.wgcinema.dashboard.agents;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import com.joshiminh.wgcinema.dashboard.Dashboard;
 import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.ResourceUtil;
 
@@ -16,12 +15,10 @@ import static com.joshiminh.wgcinema.utils.AgentStyles.*;
 @SuppressWarnings("unused")
 public class ShowroomAgent extends JFrame {
     private String[] showroomColumns;
-    private Dashboard dashboardframe;
     private final String databaseUrl;
     private final List<JComponent> inputComponents;
 
-    public ShowroomAgent(String url, Dashboard dashboardframe) {
-        this.dashboardframe = dashboardframe;
+    public ShowroomAgent(String url) {
         databaseUrl = url;
         inputComponents = new ArrayList<>();
     

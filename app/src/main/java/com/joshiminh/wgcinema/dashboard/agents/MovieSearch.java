@@ -11,11 +11,9 @@ import com.joshiminh.wgcinema.utils.*;
 
 @SuppressWarnings("unused")
 public class MovieSearch extends JFrame {
-    private Dashboard dashboardframe;
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
 
-    public MovieSearch(String url, String query, Dashboard dashboardframe) {
-        this.dashboardframe = dashboardframe;
+    public MovieSearch(String url, String query) {
         setTitle("Search: " + query);
     
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -127,7 +125,7 @@ public class MovieSearch extends JFrame {
         editButton.setBackground(Color.DARK_GRAY);
         editButton.setForeground(Color.WHITE);
         editButton.setFont(new Font("Arial", Font.BOLD, 12));
-        editButton.addActionListener(e -> new MovieAgent(url, id, false, dashboardframe).setVisible(true));
+        editButton.addActionListener(e -> new MovieAgent(url, id, false).setVisible(true));
         return editButton;
     }
 }

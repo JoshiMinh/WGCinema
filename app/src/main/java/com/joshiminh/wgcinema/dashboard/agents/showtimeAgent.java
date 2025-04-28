@@ -18,32 +18,18 @@ import java.util.List;
 import static com.joshiminh.wgcinema.utils.AgentStyles.*;
 
 @SuppressWarnings("unused")
-public class showtimeAgent extends JFrame {
+public class ShowtimeAgent extends JFrame {
     private String[] showtimeColumns;
-    private Dashboard dashboardframe;
     private final String databaseUrl;
     private final List<JComponent> inputComponents;
 
-    public showtimeAgent(String url, Dashboard dashboardframe) {
-        this.dashboardframe = dashboardframe;
+    public ShowtimeAgent(String url) {
         databaseUrl = url;
         inputComponents = new ArrayList<>();
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setIconImage(ResourceUtil.loadAppIcon());
         applyFrameDefaults(this, "Add New Showtime", 700, 700);
         setupFrame();
-    
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent windowEvent) {
-                if (!isVisible()) { // Ensure it's not recalling itself
-                    dashboardframe.dispose();
-                    Dashboard newDashboardFrame = new Dashboard(url);
-                    newDashboardFrame.setVisible(true);
-                }
-            }
-        });
-    
         setVisible(true);
     }
     
@@ -209,7 +195,7 @@ public class showtimeAgent extends JFrame {
         if (DAO.insertShowtime(databaseUrl, showtimeColumns, values) > 0) {
             showResultDialog("Showtime added successfully!", true);
             dispose();
-            new showtimeAgent(databaseUrl, dashboardframe).setVisible(true);
+            new ShowtimeAgent(databaseUrl).setVisible(true);
         } else {
             showResultDialog("Failed to add showtime", false);
         }

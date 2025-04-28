@@ -7,7 +7,6 @@ import org.jfree.chart.*;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
 
-import com.joshiminh.wgcinema.dashboard.Dashboard;
 import com.joshiminh.wgcinema.dashboard.agents.MovieAgent;
 import com.joshiminh.wgcinema.dashboard.agents.MovieSearch;
 import com.joshiminh.wgcinema.data.AgeRatingColor;
@@ -17,13 +16,11 @@ import com.joshiminh.wgcinema.utils.*;
 @SuppressWarnings("unused")
 public class Movies {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
-    private Dashboard dashboardframe;
     private String url;
     private JPanel moviesSection;
     private JPanel moviesPanel;
 
-    public Movies(String url, Dashboard dashboardframe) {
-        this.dashboardframe = dashboardframe;
+    public Movies(String url) {
         this.url = url;
         this.moviesSection = new JPanel(new BorderLayout());
         this.moviesSection.setBackground(BACKGROUND_COLOR);
@@ -102,7 +99,7 @@ public class Movies {
         JButton editButton = new JButton("Edit");
         editButton.setBackground(Color.DARK_GRAY);
         editButton.setForeground(Color.WHITE);
-        editButton.addActionListener(e -> new MovieAgent(url, id, false, dashboardframe).setVisible(true));
+        editButton.addActionListener(e -> new MovieAgent(url, id, false).setVisible(true));
         buttonPanel.add(deleteButton);
         buttonPanel.add(editButton);
         movieEntryPanel.add(buttonPanel, BorderLayout.EAST);
@@ -132,7 +129,7 @@ public class Movies {
         searchBarPanel.setBackground(BACKGROUND_COLOR);
         searchBarPanel.setPreferredSize(new Dimension(0, 45));
         JButton newMovieButton = new JButton("New Movie");
-        newMovieButton.addActionListener(e -> new MovieAgent(url, -1, true, dashboardframe).setVisible(true));
+        newMovieButton.addActionListener(e -> new MovieAgent(url, -1, true).setVisible(true));
         searchBarPanel.add(newMovieButton);
         JTextField searchBar = new JTextField(30);
         searchBarPanel.add(searchBar);
@@ -140,7 +137,7 @@ public class Movies {
         searchButton.addActionListener(e -> {
             String query = searchBar.getText().trim();
             if (!query.isEmpty()) {
-                new MovieSearch(url, query, dashboardframe).setVisible(true);
+                new MovieSearch(url, query).setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(null, "Please enter a search query.", "Warning", JOptionPane.WARNING_MESSAGE);
             }

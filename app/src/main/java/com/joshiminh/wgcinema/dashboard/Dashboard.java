@@ -34,9 +34,9 @@ public class Dashboard extends JFrame {
         tabbedPane.setBackground(BACKGROUND_COLOR);
         tabbedPane.setForeground(Color.WHITE);
 
-        tabbedPane.addTab("Movies", new Movies(url, this).getMoviesSection());
-        tabbedPane.addTab("Showrooms", new Showrooms(url, this).getShowroomsPanel());
-        tabbedPane.addTab("Showtimes", new Showtimes(url, this).getShowtimesPanel());
+        tabbedPane.addTab("Movies", new Movies(url).getMoviesSection());
+        tabbedPane.addTab("Showrooms", new Showrooms(url).getShowroomsPanel());
+        tabbedPane.addTab("Showtimes", new Showtimes(url).getShowtimesPanel());
 
         gbc.gridx = 0;
         gbc.gridy = 0;
