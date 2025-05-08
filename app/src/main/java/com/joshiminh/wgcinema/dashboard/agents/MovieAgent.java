@@ -2,7 +2,6 @@ package com.joshiminh.wgcinema.dashboard.agents;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -27,37 +26,43 @@ public class MovieAgent extends JFrame {
         movieId = id;
         isNewMovie = newMovie;
         inputComponents = new ArrayList<>();
+
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setIconImage(ResourceUtil.loadAppIcon());
         applyFrameDefaults(this, isNewMovie ? "Add New Movie" : "Edit Movie", 800, 825);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setIconImage(ResourceUtil.loadAppIcon());
-        applyFrameDefaults(this, isNewMovie ? "Add New Movie" : "Edit Movie", 800, 825);
+
         setupFrame();
         loadMovieData();
     }
 
+    // Sets up the main frame layout
     private void setupFrame() {
         add(createHeaderPanel(), BorderLayout.NORTH);
         add(createFormPanel(), BorderLayout.CENTER);
         add(createFooterPanel(), BorderLayout.SOUTH);
     }
 
+    // Creates the header panel with a title
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBorder(new EmptyBorder(20, 0, 10, 0));
         headerPanel.setBackground(BACKGROUND_COLOR);
+
         JLabel titleLabel = createHeaderLabel(isNewMovie ? "Add New Movie" : "Edit Movie");
         headerPanel.add(titleLabel, BorderLayout.CENTER);
+
         return headerPanel;
     }
 
+    // Creates the form panel with input fields
     private JPanel createFormPanel() {
         JPanel formContainer = new JPanel(new GridBagLayout());
         formContainer.setBackground(BACKGROUND_COLOR);
         formContainer.setBorder(new EmptyBorder(10, FORM_PADDING, 10, FORM_PADDING));
+
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(BACKGROUND_COLOR);
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = LABEL_INSETS;
         gbc.anchor = GridBagConstraints.WEST;
@@ -86,9 +91,11 @@ public class MovieAgent extends JFrame {
         formGbc.weightx = 1;
         formGbc.weighty = 1;
         formContainer.add(formPanel, formGbc);
+
         return formContainer;
     }
 
+    // Loads column values for the form
     private String[] loadColumnValues() {
         String[] columnValues = new String[movieColumns.length];
         if (isNewMovie) {
@@ -117,14 +124,17 @@ public class MovieAgent extends JFrame {
         return label;
     }
 
+    // Creates the footer panel with a save button
     private JPanel createFooterPanel() {
         JPanel footerPanel = new JPanel();
         footerPanel.setBorder(new EmptyBorder(10, 0, 20, 0));
         footerPanel.setBackground(BACKGROUND_COLOR);
+
         JButton saveButton = new JButton(isNewMovie ? "Add Movie" : "Save Changes");
         styleButton(saveButton);
         saveButton.addActionListener(e -> performSaveAction());
         footerPanel.add(saveButton);
+
         return footerPanel;
     }
 
@@ -184,6 +194,7 @@ public class MovieAgent extends JFrame {
         textArea.setWrapStyleWord(true);
         styleComponent(textArea);
         textArea.setCaretColor(Color.WHITE);
+
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setPreferredSize(new Dimension(0, 150));
         return scrollPane;
@@ -199,6 +210,7 @@ public class MovieAgent extends JFrame {
         return textField;
     }
 
+    // Handles save action for adding or updating movies
     private void performSaveAction() {
         if (isNewMovie) {
             addNewMovie();
@@ -212,27 +224,12 @@ public class MovieAgent extends JFrame {
         int result = DAO.insertMovie(databaseUrl, movieColumns, newValues);
         showResultDialog(result > 0 ? "Movie added successfully!" : "Failed to add movie", result > 0);
         dispose();
-    }    
+    }
 
     private void saveChanges() {
         String[] updatedValues = extractValues(inputComponents);
         int result = DAO.updateMovieById(databaseUrl, movieColumns, updatedValues, movieId);
         showResultDialog(result > 0 ? "Changes saved successfully!" : "No changes were made", result > 0);
-        dispose();
-    }    
-
-    private void executeDatabaseOperation(String query, String[] values, String successMsg, String failMsg) {
-        try (Connection connection = DriverManager.getConnection(databaseUrl);
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            for (int i = 0; i < values.length; i++) {
-                statement.setString(i + 1, values[i]);
-            }
-            if (!isNewMovie) statement.setInt(values.length + 1, movieId);
-            int affectedRows = statement.executeUpdate();
-            showResultDialog(affectedRows > 0 ? successMsg : failMsg, affectedRows > 0);
-        } catch (SQLException e) {
-            showErrorDialog("Database error: " + e.getMessage());
-        }
         dispose();
     }
 

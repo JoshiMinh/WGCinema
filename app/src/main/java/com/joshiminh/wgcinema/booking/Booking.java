@@ -19,6 +19,7 @@ public class Booking extends JFrame {
     public Booking(int movieId, String connectionString) {
         this.movieId = movieId;
         this.connectionString = connectionString;
+
         setTitle("Booking");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(600, 300);
@@ -27,28 +28,36 @@ public class Booking extends JFrame {
         add(createTabbedPane(), BorderLayout.CENTER);
     }
 
+    // Creates a tabbed pane for 7 days, starting from today
     private JTabbedPane createTabbedPane() {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setBackground(bgColor);
         tabbedPane.setForeground(Color.WHITE);
+
         Calendar calendar = Calendar.getInstance();
         for (int i = 0; i < 7; i++) {
-            tabbedPane.addTab(i == 0 ? "Today" : calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, java.util.Locale.getDefault()), createDayPanel(calendar.getTime(), i == 0));
+            String tabTitle = (i == 0) ? "Today" : calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, java.util.Locale.getDefault());
+            tabbedPane.addTab(tabTitle, createDayPanel(calendar.getTime(), i == 0));
             calendar.add(Calendar.DATE, 1);
         }
         return tabbedPane;
     }
 
+    // Creates a panel for a specific day's showtimes
     private JPanel createDayPanel(Date date, boolean isToday) {
         JPanel dayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         dayPanel.setBackground(bgColor);
+
         JPanel showtimesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         showtimesPanel.setBackground(bgColor);
+
         loadShowtimes(showtimesPanel, date, isToday);
         dayPanel.add(showtimesPanel);
+
         return dayPanel;
     }
 
+    // Loads showtimes from the database and adds buttons for each valid showtime
     private void loadShowtimes(JPanel showtimesPanel, Date date, boolean isToday) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
@@ -58,13 +67,17 @@ public class Booking extends JFrame {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         buttonPanel.setBackground(bgColor);
+
         Date currentTime = Calendar.getInstance().getTime();
 
         try {
             while (resultSet.next()) {
                 String time = resultSet.getString("Time (HH:mm)");
                 Date showTimeDate = timeFormat.parse(time);
+
+                // Skip past showtimes if it's today
                 if (isToday && showTimeDate.before(currentTime)) continue;
+
                 buttonPanel.add(createShowtimeButton(time, resultSet.getInt("showtime_id")));
             }
             resultSet.getStatement().getConnection().close();
@@ -75,11 +88,13 @@ public class Booking extends JFrame {
         showtimesPanel.add(buttonPanel);
     }
 
+    // Creates a button for a specific showtime
     private JButton createShowtimeButton(String time, int showtimeId) {
         JButton showtimeButton = new JButton(time);
         showtimeButton.setForeground(Color.WHITE);
         showtimeButton.setBackground(Color.DARK_GRAY);
         showtimeButton.setFont(new Font("Arial", Font.PLAIN, 14));
+
         showtimeButton.addActionListener(e -> SwingUtilities.invokeLater(() -> new Showrooms(connectionString, showtimeId)));
         return showtimeButton;
     }

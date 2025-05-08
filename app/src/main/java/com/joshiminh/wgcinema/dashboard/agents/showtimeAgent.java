@@ -1,4 +1,3 @@
-//pre added data on next add
 package com.joshiminh.wgcinema.dashboard.agents;
 
 import javax.swing.*;

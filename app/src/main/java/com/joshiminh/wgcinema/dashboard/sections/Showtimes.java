@@ -7,14 +7,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
-import com.joshiminh.wgcinema.dashboard.Dashboard;
 import com.joshiminh.wgcinema.dashboard.agents.ShowtimeAgent;
 import com.joshiminh.wgcinema.data.DAO;
-import com.joshiminh.wgcinema.utils.ButtonEditor;
-import com.joshiminh.wgcinema.utils.ButtonRenderer;
-import com.joshiminh.wgcinema.utils.TableStyles;
+import com.joshiminh.wgcinema.utils.*;
 
-@SuppressWarnings("unused")
 public class Showtimes {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
     private final JPanel showtimesPanel;
@@ -23,6 +19,7 @@ public class Showtimes {
         showtimesPanel = new JPanel(new BorderLayout());
         showtimesPanel.setBackground(BACKGROUND_COLOR);
 
+        // Title panel setup
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setBackground(BACKGROUND_COLOR);
 
@@ -32,15 +29,16 @@ public class Showtimes {
         titlePanel.add(titleLabel, BorderLayout.CENTER);
 
         JButton newButton = new JButton("New");
-        newButton.addActionListener(e -> new ShowtimeAgent(url).setVisible(true));
+        newButton.addActionListener(_ -> new ShowtimeAgent(url).setVisible(true));
         titlePanel.add(newButton, BorderLayout.EAST);
 
         showtimesPanel.add(titlePanel, BorderLayout.NORTH);
 
+        // Table setup
         DefaultTableModel tableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column != 0;
+                return column != 0; // Prevent editing of the first column
             }
         };
 
@@ -48,6 +46,7 @@ public class Showtimes {
         new TableStyles(table);
         table.setRowHeight(25);
 
+        // Load data into the table
         try (ResultSet resultSet = DAO.fetchAllShowtimes(url)) {
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
@@ -69,11 +68,12 @@ public class Showtimes {
             JOptionPane.showMessageDialog(null, "Error loading showtimes: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
+        // Handle table updates
         table.getModel().addTableModelListener(e -> {
             if (e.getType() == TableModelEvent.UPDATE) {
                 int row = e.getFirstRow();
                 int column = e.getColumn();
-                if (column != table.getColumnCount() - 1) {
+                if (column != table.getColumnCount() - 1) { // Skip "Actions" column
                     Object updatedValue = table.getValueAt(row, column);
                     Object idValue = table.getValueAt(row, 0);
                     DAO.updateShowtimeColumn(url, table.getColumnName(column), updatedValue, idValue);
@@ -81,6 +81,7 @@ public class Showtimes {
             }
         });
 
+        // Add button renderer and editor for "Actions" column
         table.getColumn("Actions").setCellRenderer(new ButtonRenderer());
         table.getColumn("Actions").setCellEditor(new ButtonEditor(url, table, "showtimes", "showtime_id"));
 

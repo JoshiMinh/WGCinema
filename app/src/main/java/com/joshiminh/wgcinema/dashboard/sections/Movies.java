@@ -41,6 +41,7 @@ public class Movies {
         return moviesSection;
     }
 
+    // Loads movies from the database and populates the movies panel
     private void loadMovies() {
         moviesPanel.removeAll();
         try (ResultSet resultSet = DAO.fetchAllMovies(url)) {
@@ -61,6 +62,7 @@ public class Movies {
         moviesPanel.repaint();
     }
 
+    // Creates a panel for a single movie entry with title, age rating, and release date
     private JPanel createMovieEntryPanel(int id, String title, String ageRating, String releaseDate) {
         JPanel movieEntryPanel = new JPanel(new BorderLayout());
         movieEntryPanel.setBackground(BACKGROUND_COLOR);
@@ -105,7 +107,8 @@ public class Movies {
         movieEntryPanel.add(buttonPanel, BorderLayout.EAST);
         return movieEntryPanel;
     }
-    
+
+    // Deletes a movie from the database and refreshes the movie list
     private void deleteMovie(int id) {
         int confirm = JOptionPane.showConfirmDialog(
             null,
@@ -113,7 +116,7 @@ public class Movies {
             "Confirm Deletion",
             JOptionPane.YES_NO_OPTION
         );
-    
+
         if (confirm == JOptionPane.YES_OPTION) {
             int result = DAO.deleteRowById(url, "movies", "id", id);
             if (result > 0) {
@@ -122,8 +125,9 @@ public class Movies {
                 JOptionPane.showMessageDialog(null, "Error deleting movie.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-    }      
+    }
 
+    // Creates the search bar panel with a search field and buttons
     private JPanel createSearchBarPanel() {
         JPanel searchBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         searchBarPanel.setBackground(BACKGROUND_COLOR);
@@ -147,11 +151,13 @@ public class Movies {
         return searchBarPanel;
     }
 
+    // Creates the chart panel displaying pie charts for age ratings and languages
     private JPanel createChartPanel() {
         JPanel chartPanel = new JPanel(new GridLayout(1, 3));
         Color darkBackground = new Color(30, 30, 30);
         chartPanel.setBackground(darkBackground);
-    
+
+        // Age Rating Pie Chart
         DefaultPieDataset ageRatingDataset = new DefaultPieDataset();
         try (ResultSet resultSet = DAO.fetchAgeRatingCounts(url)) {
             while (resultSet != null && resultSet.next()) {
@@ -160,7 +166,7 @@ public class Movies {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error loading age rating pie chart data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         JFreeChart ageRatingChart = ChartFactory.createPieChart("Movies by Age Rating", ageRatingDataset, true, true, false);
         ageRatingChart.getTitle().setPaint(Color.WHITE);
         PiePlot agePlot = (PiePlot) ageRatingChart.getPlot();
@@ -173,7 +179,7 @@ public class Movies {
         agePlot.setSectionPaint("PG-16", AgeRatingColor.getColorForRating("PG-16"));
         agePlot.setSectionPaint("R", AgeRatingColor.getColorForRating("R"));
         ageRatingChart.setBackgroundPaint(darkBackground);
-        
+
         ChartPanel ageChartPanel = new ChartPanel(ageRatingChart);
         ageChartPanel.setPreferredSize(new Dimension(300, 300));
         ageChartPanel.setBackground(darkBackground);
@@ -181,7 +187,8 @@ public class Movies {
         ageChartPanel.setDomainZoomable(true);
         ageChartPanel.setRangeZoomable(true);
         chartPanel.add(ageChartPanel);
-    
+
+        // Language Pie Chart
         DefaultPieDataset languageDataset = new DefaultPieDataset();
         int totalMovies = 0;
         try (ResultSet resultSet = DAO.fetchLanguageCounts(url)) {
@@ -201,7 +208,7 @@ public class Movies {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error calculating language percentages: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         JFreeChart languageChart = ChartFactory.createPieChart("Movies by Language", languageDataset, true, true, false);
         languageChart.getTitle().setPaint(Color.WHITE);
         PiePlot languagePlot = (PiePlot) languageChart.getPlot();
@@ -213,7 +220,7 @@ public class Movies {
         languagePlot.setSectionPaint("Vietnamese", Color.GREEN);
         languagePlot.setSectionPaint("Other", Color.GRAY);
         languageChart.setBackgroundPaint(darkBackground);
-        
+
         ChartPanel languageChartPanel = new ChartPanel(languageChart);
         languageChartPanel.setPreferredSize(new Dimension(300, 300));
         languageChartPanel.setBackground(darkBackground);
@@ -221,7 +228,7 @@ public class Movies {
         languageChartPanel.setDomainZoomable(true);
         languageChartPanel.setRangeZoomable(true);
         chartPanel.add(languageChartPanel);
-    
+
         return chartPanel;
     }
 }

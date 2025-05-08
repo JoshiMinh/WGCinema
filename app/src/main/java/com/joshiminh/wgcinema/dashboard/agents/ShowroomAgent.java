@@ -10,6 +10,7 @@ import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.joshiminh.wgcinema.utils.AgentStyles.*;
 
 @SuppressWarnings("unused")
@@ -21,7 +22,7 @@ public class ShowroomAgent extends JFrame {
     public ShowroomAgent(String url) {
         databaseUrl = url;
         inputComponents = new ArrayList<>();
-    
+
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setIconImage(ResourceUtil.loadAppIcon());
         applyFrameDefaults(this, "Add New Showroom", 700, 700);
@@ -47,12 +48,14 @@ public class ShowroomAgent extends JFrame {
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(BACKGROUND_COLOR);
         container.setBorder(new EmptyBorder(10, FORM_PADDING, 10, FORM_PADDING));
+
         JPanel form = new JPanel(new GridBagLayout());
         form.setBackground(BACKGROUND_COLOR);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = LABEL_INSETS;
         gbc.anchor = GridBagConstraints.WEST;
 
+        // Dynamically create form fields based on database columns
         for (int i = 0; i < showroomColumns.length; i++) {
             JLabel label = createFormLabel(showroomColumns[i]);
             gbc.gridx = 0;
@@ -60,6 +63,7 @@ public class ShowroomAgent extends JFrame {
             gbc.weightx = 0.25;
             gbc.fill = GridBagConstraints.NONE;
             form.add(label, gbc);
+
             JComponent input = createInputComponent(showroomColumns[i]);
             inputComponents.add(input);
             gbc.gridx = 1;
@@ -80,10 +84,12 @@ public class ShowroomAgent extends JFrame {
         JPanel panel = new JPanel();
         panel.setBorder(new EmptyBorder(10, 0, 20, 0));
         panel.setBackground(BACKGROUND_COLOR);
+
         JButton button = new JButton("Add Showroom");
         styleButton(button);
         button.addActionListener(e -> performSaveAction());
         panel.add(button);
+
         return panel;
     }
 
@@ -114,18 +120,6 @@ public class ShowroomAgent extends JFrame {
         return columns.toArray(new String[0]);
     }
 
-    private static String[] getColumnNames(String url, String table) {
-        try (Connection con = DriverManager.getConnection(url)) {
-            ResultSet rs = con.getMetaData().getColumns(null, null, table, null);
-            List<String> names = new ArrayList<>();
-            while (rs.next()) names.add(rs.getString("COLUMN_NAME"));
-            return names.toArray(new String[0]);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return new String[0];
-        }
-    }
-
     private void performSaveAction() {
         addNewShowroom();
     }
@@ -133,13 +127,15 @@ public class ShowroomAgent extends JFrame {
     private void addNewShowroom() {
         String[] values = extractValues();
         int result = DAO.insertShowroom(databaseUrl, showroomColumns, values);
+
+        // Show success or failure dialog based on the result
         if (result > 0) {
             showDialog("Showroom added successfully!", true);
             dispose();
         } else {
             showDialog("Failed to add showroom", false);
         }
-    }    
+    }
 
     private String[] extractValues() {
         String[] values = new String[inputComponents.size()];
@@ -150,23 +146,6 @@ public class ShowroomAgent extends JFrame {
             }
         }
         return values;
-    }
-
-    private void executeDatabaseOperation(String query, String[] values) {
-        try (Connection con = DriverManager.getConnection(databaseUrl);
-             PreparedStatement stmt = con.prepareStatement(query)) {
-            for (int i = 0; i < values.length; i++) {
-                stmt.setString(i + 1, values[i]);
-            }
-            if (stmt.executeUpdate() > 0) {
-                showDialog("Showroom added successfully!", true);
-                dispose();
-            } else {
-                showDialog("Failed to add showroom", false);
-            }
-        } catch (SQLException e) {
-            showDialog("Database error: " + e.getMessage(), false);
-        }
     }
 
     private void showDialog(String message, boolean success) {

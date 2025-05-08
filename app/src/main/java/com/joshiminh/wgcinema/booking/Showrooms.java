@@ -32,34 +32,41 @@ public class Showrooms extends JFrame {
     public Showrooms(String connectionString, int showtimeID) {
         this.showtimeID = showtimeID;
         this.connectionString = connectionString;
+
         setTitle("Select Seats");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
         setSize(WIDTH, HEIGHT);
         setResizable(true);
         setIconImage(ResourceUtil.loadAppIcon());
+
         showroomID = getShowroomID(showtimeID);
         fetchMovieInfo();
         setDimensions(showroomID);
+
         gridPanel = new JPanel(new GridLayout(ROWS, COLS, GAP, GAP));
         gridPanel.setBackground(new Color(30, 30, 30));
         createGridOfBoxes(chairsBooked);
+
         int gridPanelHeight = gridPanel.getPreferredSize().height;
         JPanel topPanel = createTopPanel(gridPanelHeight);
         JPanel leftPanel = createSidePanel(gridPanelHeight, sideWidths);
         JPanel rightPanel = createSidePanel(gridPanelHeight, sideWidths);
         JPanel bottomInfoPanel = createBottomInfoPanel();
+
         add(topPanel, BorderLayout.NORTH);
         add(leftPanel, BorderLayout.WEST);
         add(gridPanel, BorderLayout.CENTER);
         add(rightPanel, BorderLayout.EAST);
         add(bottomInfoPanel, BorderLayout.SOUTH);
+
         pack();
         setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
     }
 
+    // Fetch showroom ID and related details
     private int getShowroomID(int showtimeID) {
         try (ResultSet rs = DAO.fetchShowtimeDetails(connectionString, showtimeID)) {
             if (rs != null && rs.next()) {
@@ -75,6 +82,7 @@ public class Showrooms extends JFrame {
         return 1;
     }
 
+    // Fetch movie details
     private void fetchMovieInfo() {
         try (ResultSet rs = DAO.fetchMovieDetails(connectionString, movieId)) {
             if (rs != null && rs.next()) {
@@ -87,6 +95,7 @@ public class Showrooms extends JFrame {
         }
     }
 
+    // Set dimensions for the grid
     private void setDimensions(int showroomID) {
         final int totalWidth = 1450;
         try (ResultSet rs = DAO.fetchShowroomDetails(connectionString, showroomID)) {
@@ -104,27 +113,30 @@ public class Showrooms extends JFrame {
             defaultDimensions(totalWidth);
         }
     }
-    
+
     private void defaultDimensions(int totalWidth) {
         CELL_SIZE = 60;
         ROWS = 10;
         COLS = 10;
         sideWidths = totalWidth - (CELL_SIZE * COLS);
-    }    
+    }
 
     private JPanel createTopPanel(int gridPanelHeight) {
         JPanel topPanel = new JPanel(new GridBagLayout());
         topPanel.setBackground(new Color(30, 30, 30));
         topPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT - gridPanelHeight - 140));
+
         JLabel screenLabel = new JLabel("SCREEN");
         screenLabel.setFont(new Font(screenLabel.getFont().getName(), Font.BOLD, 35));
         screenLabel.setForeground(new Color(60, 60, 60));
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.CENTER;
+
         topPanel.add(screenLabel, gbc);
         return topPanel;
     }
@@ -141,10 +153,11 @@ public class Showrooms extends JFrame {
         panel.setOpaque(true);
         panel.setBackground(new Color(35, 35, 35));
         panel.setPreferredSize(new Dimension(WIDTH, 140));
-        Border topBorder = BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE);
-        panel.setBorder(topBorder);
+        panel.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE));
+
         JPanel westPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         westPanel.setOpaque(false);
+
         ImageIcon posterIcon = null;
         try {
             posterIcon = new ImageIcon(new URL(movieLink));
@@ -153,59 +166,71 @@ public class Showrooms extends JFrame {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+
         JLabel posterLabel = new JLabel(posterIcon);
         westPanel.add(posterLabel);
         panel.add(westPanel, BorderLayout.WEST);
+
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 10, 5, 10);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 2.0;
+
         JPanel movieInfoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         movieInfoPanel.setOpaque(false);
+
         JLabel movieTitleLabel = new JLabel(movieTitle);
         movieTitleLabel.setForeground(Color.GRAY);
         movieInfoPanel.add(movieTitleLabel);
+
         JLabel movieRatingLabel = new JLabel(" " + movieRating);
         movieRatingLabel.setForeground(AgeRatingColor.getColorForRating(movieRating));
         movieInfoPanel.add(movieRatingLabel);
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         centerPanel.add(movieInfoPanel, gbc);
+
         JLabel showroomIDLabel = new JLabel("Showroom " + showroomID);
         showroomIDLabel.setForeground(Color.WHITE);
-        gbc.gridx = 0;
         gbc.gridy = 1;
         centerPanel.add(showroomIDLabel, gbc);
+
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
         String formattedTime = timeFormat.format(time);
         JLabel timeLabel = new JLabel("Time: " + formattedTime);
         timeLabel.setForeground(Color.WHITE);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        String formattedDate = dateFormat.format(this.date);
         gbc.gridy = 2;
         centerPanel.add(timeLabel, gbc);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String formattedDate = dateFormat.format(this.date);
         JLabel dateLabel = new JLabel("Date: " + formattedDate);
         dateLabel.setForeground(Color.WHITE);
-        gbc.gridx = 0;
         gbc.gridy = 3;
         centerPanel.add(dateLabel, gbc);
+
         infoLabel = new JLabel(updateMessage());
         infoLabel.setForeground(Color.WHITE);
-        gbc.gridx = 0;
         gbc.gridy = 4;
         centerPanel.add(infoLabel, gbc);
+
         panel.add(centerPanel, BorderLayout.CENTER);
+
         JPanel eastPanel = new JPanel(new GridBagLayout());
         eastPanel.setOpaque(false);
         eastPanel.setPreferredSize(new Dimension(160, 140));
+
         JButton bookButton = new JButton("Check Out");
         bookButton.setPreferredSize(new Dimension(120, 40));
         bookButton.setFont(new Font("Arial", Font.BOLD, 17));
         bookButton.setBackground(new Color(51, 255, 102));
         bookButton.setForeground(Color.WHITE);
+
         bookButton.addActionListener(e -> {
             String selectedSeats = selectedCells.stream()
                     .map(cell -> ((JLabel) cell.getComponent(0)).getText())
@@ -216,11 +241,13 @@ public class Showrooms extends JFrame {
                 new Checkout(connectionString, showroomID, time, movieId, date, movieTitle, movieRating, movieLink, showtimeID, selectedSeats, this);
             }
         });
+
         GridBagConstraints gbcButton = new GridBagConstraints();
         gbcButton.gridx = 0;
         gbcButton.gridy = 0;
         gbcButton.anchor = GridBagConstraints.CENTER;
         eastPanel.add(bookButton, gbcButton);
+
         panel.add(eastPanel, BorderLayout.EAST);
         return panel;
     }
@@ -259,17 +286,21 @@ public class Showrooms extends JFrame {
                 JPanel box = new JPanel();
                 String seatLabel = getBoxLabel(row, col);
                 boolean isBooked = isSeatBooked(seatLabel);
+
                 Color vipBookedColor = new Color(51, 0, 51);
                 Color regularBookedColor = new Color(160, 160, 160);
                 Color bookedColor = isBooked ? (isVIPRow(row) ? vipBookedColor : regularBookedColor) :
                         (isVIPRow(row) ? new Color(128, 0, 128) : Color.LIGHT_GRAY);
+
                 box.setBackground(bookedColor);
                 box.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
                 box.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
                 JLabel label = new JLabel(seatLabel);
                 label.setForeground(isBooked ? Color.GRAY : Color.WHITE);
                 label.setHorizontalAlignment(JLabel.CENTER);
                 box.add(label);
+
                 if (!isBooked) box.addMouseListener(new BoxClickListener(box));
                 gridPanel.add(box);
             }
@@ -288,9 +319,11 @@ public class Showrooms extends JFrame {
 
     private class BoxClickListener extends MouseAdapter {
         private final JPanel box;
+
         BoxClickListener(JPanel box) {
             this.box = box;
         }
+
         @Override
         public void mouseClicked(MouseEvent e) {
             if (selectedCells.contains(box)) {

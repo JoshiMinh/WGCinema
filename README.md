@@ -1,32 +1,13 @@
 <p align="center">
-   <img src="images/icon.png" width="20%" alt="WGCinema Logo">
+    <img src="icon.ico" width="20%" alt="WGCinema Logo">
 </p>
 
-# WGCinema Software
+<h1 align="center">WGCinema Software</h1>
 
-WGCinema Software is a university project developed collaboratively by our group, "Wonderful Guys" (WG). The project utilizes MySQL, preferably accessed via phpMyAdmin from XAMPP.
-
-## How to Run the Program
-
-1. **Quick Test Run**  
-    Execute `run.bat` to quickly test the program. You can review the script for additional details.
-
-2. **Build an Executable JAR**  
-    Run `build.bat` to compile the project into an executable JAR file.
-
-3. **Run Pre-Built JAR**  
-    Double-click the pre-built JAR file included in the project to run it.
-
-## Project Folder Structure
-
-The workspace is organized as follows:
-
-- **`src`**: Contains the source code.
-- **`lib`**: Includes the project dependencies.
-- **`bin`**: Stores the compiled output files.
+WGCinema Software is a university project developed collaboratively by our group, **"Wonderful Guys" (WG)**. This project leverages **MySQL** as the database and is built using **Gradle**. You can run the project using the command `gradle run` or build a JAR file with `gradle build`.
 
 <p align="center">
-   <img src="demo.png" width="100%" alt="Demo Screenshot">
+    <img src="preview.jpg">
 </p>
 
-> **Note**: This software is copyrighted. You are welcome to clone it for hobby or educational purposes, provided it is not used for profit.
+> This software is copyrighted. You are welcome to clone it for hobby or educational purposes, provided it is not used for profit.

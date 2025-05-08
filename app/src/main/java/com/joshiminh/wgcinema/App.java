@@ -19,12 +19,14 @@ public class App extends JFrame {
     private JTextField databaseField;
 
     public App() {
+        // Frame setup
         setTitle("Login");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setIconImage(ResourceUtil.loadAppIcon());
 
+        // Main panel with background image
         mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -37,6 +39,7 @@ public class App extends JFrame {
 
         int fieldColumns = 16;
 
+        // Input fields
         passwordField = new JPasswordField(fieldColumns);
         passwordField.setEchoChar('•');
         passwordField.addKeyListener(new KeyAdapter() {
@@ -50,6 +53,7 @@ public class App extends JFrame {
         hostField = new JTextField("localhost:3306", fieldColumns);
         databaseField = new JTextField("cinema_data", fieldColumns);
 
+        // Buttons
         loginButton = new JButton("Login");
         loginButton.setForeground(Color.WHITE);
         loginButton.setBackground(Color.DARK_GRAY);
@@ -60,8 +64,10 @@ public class App extends JFrame {
         dashboardButton.setBackground(Color.DARK_GRAY);
         dashboardButton.addActionListener(e -> performLogin(0));
 
+        // Logo
         logoLabel = new JLabel(new ImageIcon(ResourceUtil.loadImage("/images/icon.png").getScaledInstance(60, 55, Image.SCALE_SMOOTH)));
 
+        // Rectangle panel for form
         JPanel rectanglePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -73,9 +79,11 @@ public class App extends JFrame {
         rectanglePanel.setOpaque(false);
         rectanglePanel.setLayout(new GridBagLayout());
 
+        // Layout constraints
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
+        // Adding components to rectangle panel
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -134,12 +142,14 @@ public class App extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         rectanglePanel.add(loginButton, gbc);
 
+        // Adding rectangle panel to main panel
         mainPanel.add(rectanglePanel, new GridBagConstraints());
         add(mainPanel, BorderLayout.CENTER);
 
         setVisible(true);
     }
 
+    // Handles login and dashboard navigation
     private void performLogin(int mode) {
         String host = hostField.getText();
         String database = databaseField.getText();

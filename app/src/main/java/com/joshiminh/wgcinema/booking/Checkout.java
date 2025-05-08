@@ -1,6 +1,7 @@
 package com.joshiminh.wgcinema.booking;
 import javax.swing.*;
 
+import com.joshiminh.wgcinema.data.AgeRatingColor;
 import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.ResourceUtil;
 
@@ -15,7 +16,7 @@ import java.util.Locale;
 
 @SuppressWarnings({"unused", "deprecation"})
 public class Checkout extends JFrame {
-    private static final int WIDTH = 410, HEIGHT = 700;
+    private static final int WIDTH = 400, HEIGHT = 700;
     private final JLabel selectedSeatsLabel;
     private int showtimeID, showroomID, movieId;
     private Showrooms showroomsFrame;
@@ -60,7 +61,6 @@ public class Checkout extends JFrame {
         gbc.anchor = GridBagConstraints.NORTHWEST;
         northPanel.add(moviePosterLabel, gbc);
         gbc.gridheight = 1;
-
         JLabel movieLabel = new JLabel(movieTitle);
         movieLabel.setForeground(Color.GRAY);
         gbc.gridx = 1;
@@ -68,14 +68,7 @@ public class Checkout extends JFrame {
         gbc.gridwidth = 1;
         northPanel.add(movieLabel, gbc);
 
-        Color ratingColor = switch (movieRating) {
-            case "P" -> new Color(50, 220, 100);
-            case "K" -> Color.BLUE;
-            case "T13" -> Color.YELLOW;
-            case "T16" -> Color.ORANGE;
-            case "T18" -> Color.RED;
-            default -> Color.WHITE;
-        };
+        Color ratingColor = AgeRatingColor.getColorForRating(movieRating);
         JLabel ratingLabel = new JLabel(movieRating);
         ratingLabel.setForeground(ratingColor);
         gbc.gridx = 2;

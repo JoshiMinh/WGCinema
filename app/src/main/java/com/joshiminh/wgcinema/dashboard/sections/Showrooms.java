@@ -9,9 +9,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.joshiminh.wgcinema.dashboard.agents.ShowroomAgent;
 import com.joshiminh.wgcinema.data.DAO;
-import com.joshiminh.wgcinema.utils.ButtonEditor;
-import com.joshiminh.wgcinema.utils.ButtonRenderer;
-import com.joshiminh.wgcinema.utils.TableStyles;
+import com.joshiminh.wgcinema.utils.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -28,15 +26,18 @@ public class Showrooms {
         showroomsPanel = new JPanel(new BorderLayout());
         showroomsPanel.setBackground(BACKGROUND_COLOR);
 
+        // Add title panel
         JPanel titlePanel = createTitlePanel(url);
         showroomsPanel.add(titlePanel, BorderLayout.NORTH);
 
+        // Add table with scroll pane
         JTable table = createTable(url);
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         showroomsPanel.add(scrollPane, BorderLayout.CENTER);
 
+        // Add chart panel
         ChartPanel chartPanel = createChartPanel(url);
         showroomsPanel.add(chartPanel, BorderLayout.SOUTH);
     }
@@ -63,7 +64,7 @@ public class Showrooms {
         DefaultTableModel tableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column != 0;
+                return column != 0; // Prevent editing of the first column
             }
         };
 
@@ -75,11 +76,14 @@ public class Showrooms {
         try (ResultSet resultSet = DAO.fetchAllShowrooms(url)) {
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
+
+            // Add columns to the table model
             for (int i = 1; i <= columnCount; i++) {
                 tableModel.addColumn(metaData.getColumnLabel(i));
             }
             tableModel.addColumn("Actions");
 
+            // Populate table rows
             while (resultSet.next()) {
                 Object[] rowData = new Object[columnCount + 1];
                 for (int i = 1; i <= columnCount; i++) {
@@ -92,6 +96,7 @@ public class Showrooms {
             showError("Error loading showrooms: " + e.getMessage());
         }
 
+        // Add listener for table cell updates
         table.getModel().addTableModelListener(e -> {
             if (e.getType() == TableModelEvent.UPDATE) {
                 int row = e.getFirstRow();
@@ -102,6 +107,7 @@ public class Showrooms {
             }
         });
 
+        // Add button renderer and editor for the "Actions" column
         table.getColumn("Actions").setCellRenderer(new ButtonRenderer());
         table.getColumn("Actions").setCellEditor(new ButtonEditor(url, table, "showrooms", "showroom_id"));
 
@@ -111,14 +117,16 @@ public class Showrooms {
     private void updateTableCell(String url, JTable table, int row, int column) {
         Object updatedValue = table.getValueAt(row, column);
         Object idValue = table.getValueAt(row, 0);
-    
+
+        // Update the database with the new value
         DAO.updateShowroomColumn(url, table.getColumnName(column), updatedValue, idValue);
-    }    
+    }
 
     private ChartPanel createChartPanel(String url) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         try (ResultSet resultSet = DAO.fetchAllShowrooms(url)) {
+            // Populate dataset for the chart
             while (resultSet.next()) {
                 dataset.addValue(resultSet.getInt("max_chairs"), "Seats", String.valueOf(resultSet.getInt("showroom_id")));
             }

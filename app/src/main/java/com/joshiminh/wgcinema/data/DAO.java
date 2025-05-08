@@ -53,8 +53,12 @@ public class DAO {
     }
 
     public static ResultSet fetchMovieShowtimes(String connectionString, int movieId, String date) {
-        String sql = "SELECT showtime_id, TIME_FORMAT(time, '%H:%i') AS 'Time (HH:mm)' " +
-                     "FROM showtimes WHERE movie_id = ? AND date = ? ORDER BY time";
+        String sql = """
+            SELECT showtime_id, TIME_FORMAT(time, '%H:%i') AS 'Time (HH:mm)'
+            FROM showtimes
+            WHERE movie_id = ? AND date = ?
+            ORDER BY time
+            """;
         return select(connectionString, sql, movieId, date);
     }
 
@@ -79,7 +83,9 @@ public class DAO {
         try (Connection con = DriverManager.getConnection(connectionString)) {
             ResultSet rs = con.getMetaData().getColumns(null, null, table, null);
             List<String> names = new ArrayList<>();
-            while (rs.next()) names.add(rs.getString("COLUMN_NAME"));
+            while (rs.next()) {
+                names.add(rs.getString("COLUMN_NAME"));
+            }
             return names.toArray(new String[0]);
         } catch (SQLException e) {
             return new String[0];
@@ -91,7 +97,10 @@ public class DAO {
     // ==========================
 
     public static int insertTransaction(String connectionString, int movieId, String totalPrice, String selectedSeats, int showroomId, String accountEmail, int showtimeId) {
-        String sql = "INSERT INTO transactions (movie_id, amount, seats_preserved, showroom_id, account_email, showtime_id) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = """
+            INSERT INTO transactions (movie_id, amount, seats_preserved, showroom_id, account_email, showtime_id)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """;
         return update(connectionString, sql, movieId, new java.math.BigDecimal(totalPrice.replaceAll("[^\\d.]", "")), selectedSeats, showroomId, accountEmail, showtimeId);
     }
 
@@ -118,7 +127,11 @@ public class DAO {
     // ==========================
 
     public static int updateShowtimeSeats(String connectionString, int reservedCount, String selectedSeats, int showtimeId) {
-        String sql = "UPDATE showtimes SET reserved_chairs = reserved_chairs + ?, chairs_booked = CONCAT(chairs_booked, ?) WHERE showtime_id = ?";
+        String sql = """
+            UPDATE showtimes
+            SET reserved_chairs = reserved_chairs + ?, chairs_booked = CONCAT(chairs_booked, ?)
+            WHERE showtime_id = ?
+            """;
         return update(connectionString, sql, reservedCount, " " + selectedSeats, showtimeId);
     }
 
@@ -136,7 +149,9 @@ public class DAO {
         StringBuilder sql = new StringBuilder("UPDATE movies SET ");
         for (int i = 0; i < columns.length; i++) {
             sql.append(columns[i]).append(" = ?");
-            if (i < columns.length - 1) sql.append(", ");
+            if (i < columns.length - 1) {
+                sql.append(", ");
+            }
         }
         sql.append(" WHERE id = ?");
         Object[] params = new Object[values.length + 1];
