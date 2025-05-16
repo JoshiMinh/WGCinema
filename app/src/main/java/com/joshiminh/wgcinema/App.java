@@ -3,32 +3,44 @@ package com.joshiminh.wgcinema;
 import javax.swing.*;
 import com.joshiminh.wgcinema.booking.*;
 import com.joshiminh.wgcinema.dashboard.*;
+import com.joshiminh.wgcinema.data.RegisterFrame;
 import com.joshiminh.wgcinema.utils.ResourceUtil;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
+import java.io.*;
+import java.nio.file.*;
 
 @SuppressWarnings("unused")
 public class App extends JFrame {
     private JPanel mainPanel;
     private JPasswordField passwordField;
     private JButton loginButton;
+    private JButton registerButton;
     private JLabel logoLabel;
-    private JTextField usernameField;
-    private JTextField hostField;
-    private JTextField databaseField;
+    private JTextField emailField;
+    private JButton dashboardButton;
+
+    private static final String DB_HOST = "localhost:3306";
+    private static final String DB_NAME = "cinema_data";
+    private static final String DB_USERNAME = "root";
+    private static final String DB_PASSWORD = "";
+    private static final String DB_URL = "jdbc:mysql://" + DB_HOST + "/" + DB_NAME + "?user=" + DB_USERNAME + "&password=" + DB_PASSWORD;
+
+    private static final String SMTP_EMAIL = "binhangia241273@gmail.com";
+    private static final String SMTP_APP_PASSWORD = "fxup vxai xtsu dwdb";
+    private static final String SERVICE_NAME = "WG Cinema";
+
+    private static final Path USER_FILE = Paths.get("user.txt");
 
     public App() {
-        // Frame setup
         setTitle("Login");
-        setSize(600, 400);
+        setSize(600, 450);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setIconImage(ResourceUtil.loadAppIcon());
 
-        // Main panel with background image
         mainPanel = new JPanel() {
-            @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Image background = ResourceUtil.loadImage("/images/background.jpg");
@@ -37,132 +49,237 @@ public class App extends JFrame {
         };
         mainPanel.setLayout(new GridBagLayout());
 
-        int fieldColumns = 16;
+        int fieldColumns = 40;
 
-        // Input fields
+        logoLabel = new JLabel(new ImageIcon(ResourceUtil.loadImage("/images/icon.png").getScaledInstance(60, 55, Image.SCALE_SMOOTH)));
+
+        emailField = new JTextField(fieldColumns);
         passwordField = new JPasswordField(fieldColumns);
         passwordField.setEchoChar('•');
         passwordField.addKeyListener(new KeyAdapter() {
-            @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) performLogin(0);
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) performLogin();
             }
         });
 
-        usernameField = new JTextField("root", fieldColumns);
-        hostField = new JTextField("localhost:3306", fieldColumns);
-        databaseField = new JTextField("cinema_data", fieldColumns);
+        preloadUserCredentials();
 
-        // Buttons
+        registerButton = new JButton("Register");
         loginButton = new JButton("Login");
-        loginButton.setForeground(Color.WHITE);
-        loginButton.setBackground(Color.DARK_GRAY);
-        loginButton.addActionListener(e -> performLogin(1));
+        dashboardButton = new JButton("Admin Dashboard");
 
-        JButton dashboardButton = new JButton("Dashboard");
-        dashboardButton.setForeground(Color.WHITE);
-        dashboardButton.setBackground(Color.DARK_GRAY);
-        dashboardButton.addActionListener(e -> performLogin(0));
+        JButton[] buttons = {registerButton, loginButton, dashboardButton};
+        for (JButton btn : buttons) {
+            btn.setForeground(Color.WHITE);
+            btn.setBackground(new Color(40, 40, 40));
+            btn.setFocusPainted(false);
+            btn.setPreferredSize(new Dimension(140, 30));
+        }
 
-        // Logo
-        logoLabel = new JLabel(new ImageIcon(ResourceUtil.loadImage("/images/icon.png").getScaledInstance(60, 55, Image.SCALE_SMOOTH)));
+        registerButton.addActionListener(e -> openRegisterFrame());
+        loginButton.addActionListener(e -> performLogin());
+        dashboardButton.addActionListener(e -> performLogin());
 
-        // Rectangle panel for form
-        JPanel rectanglePanel = new JPanel() {
-            @Override
+        JPanel formPanel = new JPanel(new GridBagLayout()) {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.setColor(new Color(56, 56, 56, 179));
-                g.fillRect(0, 0, getWidth(), getHeight());
+                g.setColor(new Color(56, 56, 56, 200));
+                g.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
             }
         };
-        rectanglePanel.setOpaque(false);
-        rectanglePanel.setLayout(new GridBagLayout());
+        formPanel.setOpaque(false);
 
-        // Layout constraints
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-
-        // Adding components to rectangle panel
+        gbc.insets = new Insets(12, 18, 8, 18);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-        rectanglePanel.add(logoLabel, gbc);
+        gbc.anchor = GridBagConstraints.CENTER;
+        formPanel.add(logoLabel, gbc);
 
-        gbc.gridy = 1;
+        gbc.gridy++;
         gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.EAST;
-        JLabel hostLabel = new JLabel("Host: ");
-        hostLabel.setForeground(Color.WHITE);
-        rectanglePanel.add(hostLabel, gbc);
+        JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setForeground(Color.WHITE);
+        formPanel.add(emailLabel, gbc);
 
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        rectanglePanel.add(hostField, gbc);
+        formPanel.add(emailField, gbc);
 
-        gbc.gridy = 2;
+        gbc.gridy++;
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.EAST;
-        JLabel databaseLabel = new JLabel("Database: ");
-        databaseLabel.setForeground(Color.WHITE);
-        rectanglePanel.add(databaseLabel, gbc);
-
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        rectanglePanel.add(databaseField, gbc);
-
-        gbc.gridy = 3;
-        gbc.gridx = 0;
-        gbc.anchor = GridBagConstraints.EAST;
-        JLabel usernameLabel = new JLabel("Username: ");
-        usernameLabel.setForeground(Color.WHITE);
-        rectanglePanel.add(usernameLabel, gbc);
-
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        rectanglePanel.add(usernameField, gbc);
-
-        gbc.gridy = 4;
-        gbc.gridx = 0;
-        gbc.anchor = GridBagConstraints.EAST;
-        JLabel passwordLabel = new JLabel("Password: ");
+        JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setForeground(Color.WHITE);
-        rectanglePanel.add(passwordLabel, gbc);
+        formPanel.add(passwordLabel, gbc);
 
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        rectanglePanel.add(passwordField, gbc);
+        formPanel.add(passwordField, gbc);
 
-        gbc.gridy = 5;
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.EAST;
-        rectanglePanel.add(dashboardButton, gbc);
+        gbc.gridy++;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        rectanglePanel.add(loginButton, gbc);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 18, 0));
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(registerButton);
+        buttonPanel.add(loginButton);
+        buttonPanel.add(dashboardButton);
 
-        // Adding rectangle panel to main panel
-        mainPanel.add(rectanglePanel, new GridBagConstraints());
+        formPanel.add(buttonPanel, gbc);
+
+        mainPanel.add(formPanel, new GridBagConstraints());
         add(mainPanel, BorderLayout.CENTER);
 
         setVisible(true);
     }
 
-    // Handles login and dashboard navigation
-    private void performLogin(int mode) {
-        String host = hostField.getText();
-        String database = databaseField.getText();
-        String dbUsername = usernameField.getText();
-        String dbPassword = new String(passwordField.getPassword());
-        String url = "jdbc:mysql://" + host + "/" + database + "?user=" + dbUsername + "&password=" + dbPassword;
-
-        try (Connection connection = DriverManager.getConnection(url)) {
-            if (mode == 0) new Dashboard(url).setVisible(true);
-            else if (mode == 1) new MovieList(url).setVisible(true);
-            dispose();
+    private void performLogin() {
+        String email = emailField.getText().trim();
+        String password = new String(passwordField.getPassword());
+        String sql = "SELECT password_hash, admin FROM accounts WHERE account_email = ?";
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String hash = rs.getString("password_hash");
+                boolean isAdmin = rs.getBoolean("admin");
+                if (hash.equals(hashPassword(password))) {
+                    saveUserCredentials(email, password);
+                    if (dashboardButton.getModel().isArmed() || dashboardButton.hasFocus()) {
+                        if (isAdmin) {
+                            new Dashboard(DB_URL).setVisible(true);
+                            dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(this, "You are not an admin.", "Access Denied", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } else {
+                        new MovieList(DB_URL).setVisible(true);
+                        dispose();
+                    }
+                } else {
+                    handleWrongPassword(email);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid email or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Database connection error", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleWrongPassword(String email) {
+        int option = JOptionPane.showConfirmDialog(this,
+                "Invalid email or password.\nWould you like to reset your password?",
+                "Login Failed", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (option == JOptionPane.YES_OPTION) {
+            String code = generateResetCode();
+            if (sendResetEmail(email, code)) {
+                String inputCode = JOptionPane.showInputDialog(this, "Enter the code sent to your email:");
+                if (inputCode != null && inputCode.equals(code)) {
+                    String newPassword = JOptionPane.showInputDialog(this, "Enter your new password:");
+                    if (newPassword != null && !newPassword.isEmpty()) {
+                        resetPassword(email, newPassword);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Incorrect code.", "Reset Failed", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to send reset email.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private String generateResetCode() {
+        int code = (int) (Math.random() * 900000) + 100000;
+        return String.valueOf(code);
+    }
+
+    private boolean sendResetEmail(String toEmail, String code) {
+        try {
+            java.util.Properties props = new java.util.Properties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", "smtp.gmail.com");
+            props.put("mail.smtp.port", "587");
+            jakarta.mail.Session session = jakarta.mail.Session.getInstance(props, new jakarta.mail.Authenticator() {
+                protected jakarta.mail.PasswordAuthentication getPasswordAuthentication() {
+                    return new jakarta.mail.PasswordAuthentication(SMTP_EMAIL, SMTP_APP_PASSWORD);
+                }
+            });
+            jakarta.mail.Message message = new jakarta.mail.internet.MimeMessage(session);
+            message.setFrom(new jakarta.mail.internet.InternetAddress(SMTP_EMAIL, SERVICE_NAME));
+            message.setRecipients(jakarta.mail.Message.RecipientType.TO, jakarta.mail.internet.InternetAddress.parse(toEmail));
+            message.setSubject("Password Reset Code - " + SERVICE_NAME);
+            message.setText("Your password reset code is: " + code);
+            jakarta.mail.Transport.send(message);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void resetPassword(String email, String newPassword) {
+        String sql = "UPDATE accounts SET password_hash = ? WHERE account_email = ?";
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, hashPassword(newPassword));
+            stmt.setString(2, email);
+            int updated = stmt.executeUpdate();
+            if (updated > 0) {
+                JOptionPane.showMessageDialog(this, "Password reset successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to reset password.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Database connection error", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private String hashPassword(String password) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(password.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder(2 * hash.length);
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private void openRegisterFrame() {
+        JFrame registerFrame = new RegisterFrame(DB_URL);
+        registerFrame.setVisible(true);
+    }
+
+    private void saveUserCredentials(String email, String password) {
+        try (BufferedWriter writer = Files.newBufferedWriter(USER_FILE)) {
+            writer.write(email);
+            writer.newLine();
+            writer.write(password);
+        } catch (IOException e) {
+        }
+    }
+
+    private void preloadUserCredentials() {
+        if (Files.exists(USER_FILE)) {
+            try (BufferedReader reader = Files.newBufferedReader(USER_FILE)) {
+                String email = reader.readLine();
+                String password = reader.readLine();
+                if (email != null) emailField.setText(email);
+                if (password != null) passwordField.setText(password);
+            } catch (IOException e) {
+            }
         }
     }
 
