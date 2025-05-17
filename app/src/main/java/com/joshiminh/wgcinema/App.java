@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.sql.*;
 import java.io.*;
 import java.nio.file.*;
+import java.util.Properties;
 
 @SuppressWarnings("unused")
 public class App extends JFrame {
@@ -21,17 +22,19 @@ public class App extends JFrame {
     private JTextField emailField;
     private JButton dashboardButton;
 
-    private static final String DB_HOST = "localhost:3306";
-    private static final String DB_NAME = "cinema_data";
-    private static final String DB_USERNAME = "root";
-    private static final String DB_PASSWORD = "";
-    private static final String DB_URL = "jdbc:mysql://" + DB_HOST + "/" + DB_NAME + "?user=" + DB_USERNAME + "&password=" + DB_PASSWORD;
+    private static String DB_HOST;
+    private static String DB_NAME;
+    private static String DB_USERNAME;
+    private static String DB_PASSWORD;
+    private static String DB_URL;
+    private static String SMTP_EMAIL;
+    private static String SMTP_APP_PASSWORD;
+    private static String SERVICE_NAME;
+    private static Path USER_FILE;
 
-    private static final String SMTP_EMAIL = "binhangia241273@gmail.com";
-    private static final String SMTP_APP_PASSWORD = "fxup vxai xtsu dwdb";
-    private static final String SERVICE_NAME = "WG Cinema";
-
-    private static final Path USER_FILE = Paths.get("user.txt");
+    static {
+        loadEnv();
+    }
 
     public App() {
         setTitle("Login");
@@ -202,7 +205,7 @@ public class App extends JFrame {
 
     private boolean sendResetEmail(String toEmail, String code) {
         try {
-            java.util.Properties props = new java.util.Properties();
+            Properties props = new Properties();
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.host", "smtp.gmail.com");
@@ -280,6 +283,30 @@ public class App extends JFrame {
                 if (password != null) passwordField.setText(password);
             } catch (IOException e) {
             }
+        }
+    }
+
+    private static void loadEnv() {
+        Properties props = new Properties();
+        try (InputStream in = new FileInputStream(".env")) {
+            props.load(in);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load .env file", e);
+        }
+        DB_HOST = props.getProperty("DB_HOST");
+        DB_NAME = props.getProperty("DB_NAME");
+        DB_USERNAME = props.getProperty("DB_USERNAME");
+        DB_PASSWORD = props.getProperty("DB_PASSWORD");
+        if (DB_HOST == null || DB_NAME == null || DB_USERNAME == null || DB_PASSWORD == null) {
+            throw new RuntimeException("Missing required database environment variables in .env");
+        }
+        DB_URL = "jdbc:mysql://" + DB_HOST + "/" + DB_NAME + "?user=" + DB_USERNAME + "&password=" + DB_PASSWORD;
+        SMTP_EMAIL = props.getProperty("SMTP_EMAIL");
+        SMTP_APP_PASSWORD = props.getProperty("SMTP_APP_PASSWORD");
+        SERVICE_NAME = props.getProperty("SERVICE_NAME");
+        USER_FILE = Paths.get(props.getProperty("USER_FILE"));
+        if (SMTP_EMAIL == null || SMTP_APP_PASSWORD == null || SERVICE_NAME == null || USER_FILE == null) {
+            throw new RuntimeException("Missing required SMTP or user file environment variables in .env");
         }
     }
 
