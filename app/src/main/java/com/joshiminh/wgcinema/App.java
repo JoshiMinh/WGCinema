@@ -3,6 +3,7 @@ package com.joshiminh.wgcinema;
 import javax.swing.*;
 import com.joshiminh.wgcinema.booking.*;
 import com.joshiminh.wgcinema.dashboard.*;
+import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.data.RegisterFrame;
 import com.joshiminh.wgcinema.utils.ResourceUtil;
 import java.awt.*;
@@ -144,11 +145,7 @@ public class App extends JFrame {
     private void performLogin() {
         String email = emailField.getText().trim();
         String password = new String(passwordField.getPassword());
-        String sql = "SELECT password_hash, admin FROM accounts WHERE account_email = ?";
-        try (Connection connection = DriverManager.getConnection(DB_URL);
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
+        try (ResultSet rs = DAO.fetchAccountByEmail(DB_URL, email)) {
             if (rs.next()) {
                 String hash = rs.getString("password_hash");
                 boolean isAdmin = rs.getBoolean("admin");
@@ -228,19 +225,11 @@ public class App extends JFrame {
     }
 
     private void resetPassword(String email, String newPassword) {
-        String sql = "UPDATE accounts SET password_hash = ? WHERE account_email = ?";
-        try (Connection connection = DriverManager.getConnection(DB_URL);
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, hashPassword(newPassword));
-            stmt.setString(2, email);
-            int updated = stmt.executeUpdate();
-            if (updated > 0) {
-                JOptionPane.showMessageDialog(this, "Password reset successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to reset password.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Database connection error", "Error", JOptionPane.ERROR_MESSAGE);
+        int updated = DAO.updateAccountPassword(DB_URL, email, hashPassword(newPassword));
+        if (updated > 0) {
+            JOptionPane.showMessageDialog(this, "Password reset successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to reset password.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

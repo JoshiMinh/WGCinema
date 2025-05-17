@@ -78,6 +78,12 @@ public class DAO {
         return select(connectionString, sql);
     }
 
+    // Account-related SELECT operations
+    public static ResultSet fetchAccountByEmail(String connectionString, String email) {
+        String sql = "SELECT * FROM accounts WHERE account_email = ?";
+        return select(connectionString, sql, email);
+    }
+
     // Utility SELECT operations
     public static String[] getColumnNames(String connectionString, String table) {
         try (Connection con = DriverManager.getConnection(connectionString)) {
@@ -101,7 +107,16 @@ public class DAO {
             INSERT INTO transactions (movie_id, amount, seats_preserved, showroom_id, account_email, showtime_id)
             VALUES (?, ?, ?, ?, ?, ?)
             """;
-        return update(connectionString, sql, movieId, new java.math.BigDecimal(totalPrice.replaceAll("[^\\d.]", "")), selectedSeats, showroomId, accountEmail, showtimeId);
+        return update(
+            connectionString,
+            sql,
+            movieId,
+            new java.math.BigDecimal(totalPrice.replaceAll("[^\\d.]", "")),
+            selectedSeats,
+            showroomId,
+            accountEmail,
+            showtimeId
+        );
     }
 
     public static int insertMovie(String connectionString, String[] columns, String[] values) {
@@ -160,6 +175,11 @@ public class DAO {
         return update(connectionString, sql.toString(), params);
     }
 
+    public static int updateAccountPassword(String connectionString, String email, String newHashedPassword) {
+        String sql = "UPDATE accounts SET password_hash = ? WHERE account_email = ?";
+        return update(connectionString, sql, newHashedPassword, email);
+    }
+
     // ==========================
     // DELETE Operations
     // ==========================
@@ -177,11 +197,9 @@ public class DAO {
         try {
             Connection connection = DriverManager.getConnection(connectionString);
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
             for (int i = 0; i < params.length; i++) {
                 preparedStatement.setObject(i + 1, params[i]);
             }
-
             return preparedStatement.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -190,13 +208,13 @@ public class DAO {
     }
 
     private static int update(String connectionString, String sql, Object... params) {
-        try (Connection connection = DriverManager.getConnection(connectionString);
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-
+        try (
+            Connection connection = DriverManager.getConnection(connectionString);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)
+        ) {
             for (int i = 0; i < params.length; i++) {
                 preparedStatement.setObject(i + 1, params[i]);
             }
-
             return preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

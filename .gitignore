@@ -1,5 +1,15 @@
 # Ignore Gradle project-specific cache directory
-.gradle
+.gradle/
 
 # Ignore Gradle build output directory
-build
+build/
+
+# Ignore local environment config file
+app.env
+
+# Optional: Ignore IDE config files (if using IntelliJ)
+.idea/
+*.iml
+
+# Optional: Ignore log files
+*.log
