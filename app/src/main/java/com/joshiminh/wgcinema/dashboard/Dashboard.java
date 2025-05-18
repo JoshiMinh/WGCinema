@@ -12,7 +12,6 @@ public class Dashboard extends JFrame {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
 
     public Dashboard(String url) {
-        // Set up the main frame
         setTitle("Admin Dashboard");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1200, 1000);
@@ -22,7 +21,6 @@ public class Dashboard extends JFrame {
         setIconImage(ResourceUtil.loadAppIcon());
         setLayout(new GridBagLayout());
 
-        // Handle window close event
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
@@ -30,7 +28,6 @@ public class Dashboard extends JFrame {
             }
         });
 
-        // Configure layout constraints
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -39,17 +36,13 @@ public class Dashboard extends JFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
 
-        // Create and configure tabbed pane
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setBackground(BACKGROUND_COLOR);
         tabbedPane.setForeground(Color.WHITE);
-
-        // Add tabs for different sections
         tabbedPane.addTab("Movies", new Movies(url).getMoviesSection());
         tabbedPane.addTab("Showrooms", new Showrooms(url).getShowroomsPanel());
         tabbedPane.addTab("Showtimes", new Showtimes(url).getShowtimesPanel());
 
-        // Add tabbed pane to the frame
         add(tabbedPane, gbc);
     }
 }
