@@ -25,11 +25,13 @@ public class MovieList extends JFrame {
     private static final int CARDS_PER_ROW = 4;
     private static final int CARD_RADIUS = 24;
 
-    private final String connectionString;
+    private final String url;
+    private String email;
     private JPanel moviePanel;
 
-    public MovieList(String connectionString) {
-        this.connectionString = connectionString;
+    public MovieList(String url, String email) {
+        this.url = url;
+        this.email = email;
         initializeFrame();
         setupComponents();
         loadMovieList();
@@ -62,26 +64,26 @@ public class MovieList extends JFrame {
         topBar.setBackground(TOP_BAR_COLOR);
         topBar.setBorder(BorderFactory.createEmptyBorder(25, 40, 25, 40));
 
-        JLabel title = createTitleLabel();
-        JLabel logo = createLogoLabel();
+        JButton transactionHistoryButton = new JButton("Transaction History");
+        transactionHistoryButton.setBackground(new Color(44, 62, 80)); // Use a solid dark blue color
+        transactionHistoryButton.setPreferredSize(new Dimension(220, 48)); // Increase width and height
+        transactionHistoryButton.setMinimumSize(new Dimension(220, 48));
+        transactionHistoryButton.setMaximumSize(new Dimension(220, 48));
+        transactionHistoryButton.setBorderPainted(false);
+        transactionHistoryButton.setFocusPainted(false);
+        transactionHistoryButton.setForeground(Color.WHITE);
+        transactionHistoryButton.setFont(BASE_FONT.deriveFont(Font.BOLD, 16f));
+        transactionHistoryButton.setHorizontalAlignment(SwingConstants.CENTER);
+        transactionHistoryButton.setHorizontalTextPosition(SwingConstants.CENTER);
+        transactionHistoryButton.addActionListener(_ -> new TransactionHistory(url, email).setVisible(true));
 
-        topBar.add(title, BorderLayout.WEST);
-        topBar.add(logo, BorderLayout.EAST);
-        return topBar;
-    }
-
-    private JLabel createTitleLabel() {
-        JLabel title = new JLabel("Now Showing");
-        title.setForeground(Color.WHITE);
-        title.setFont(BASE_FONT.deriveFont(Font.PLAIN, 32f));
-        return title;
-    }
-
-    private JLabel createLogoLabel() {
         JLabel logo = new JLabel();
         Image image = ResourceUtil.loadImage("/images/icon.png").getScaledInstance(60, 54, Image.SCALE_SMOOTH);
         logo.setIcon(new ImageIcon(image));
-        return logo;
+
+        topBar.add(transactionHistoryButton, BorderLayout.EAST);
+        topBar.add(logo, BorderLayout.WEST);
+        return topBar;
     }
 
     private JScrollPane createMovieScrollPane() {
@@ -96,7 +98,7 @@ public class MovieList extends JFrame {
     }
 
     private void loadMovieList() {
-        ResultSet resultSet = DAO.fetchUpcomingMovies(connectionString);
+        ResultSet resultSet = DAO.fetchUpcomingMovies(url);
         if (resultSet == null) return;
 
         try {
@@ -194,7 +196,7 @@ public class MovieList extends JFrame {
         bookButton.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         bookButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         bookButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        bookButton.addActionListener(_ -> new Booking(movieId, connectionString).setVisible(true));
+        bookButton.addActionListener(_ -> new Booking(movieId, url).setVisible(true));
         return bookButton;
     }
 

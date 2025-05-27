@@ -10,121 +10,136 @@ import com.joshiminh.wgcinema.utils.*;
 
 @SuppressWarnings("unused")
 public class MovieSearch extends JFrame {
-    private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
+    private static final Color BACKGROUND_COLOR = new Color(34, 40, 49);
+    private static final Color PANEL_COLOR = new Color(44, 54, 63);
+    private static final Color BUTTON_DELETE = new Color(220, 53, 69);
+    private static final Color BUTTON_EDIT = new Color(52, 58, 64);
+    private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 16);
+    private static final Font LABEL_FONT = new Font("Segoe UI", Font.PLAIN, 13);
 
     public MovieSearch(String url, String query) {
         setTitle("Search: " + query);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(500, 500);
+        setSize(520, 650);
         setLocationRelativeTo(null);
         setIconImage(ResourceUtil.loadAppIcon());
-
-        JPanel moviesPanel = createMoviesPanel(url, query);
-        JScrollPane scrollPane = new JScrollPane(moviesPanel);
+        JScrollPane scrollPane = new JScrollPane(createMoviesPanel(url, query));
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         setContentPane(scrollPane);
     }
 
-    // Creates the panel containing the list of movies
     private JPanel createMoviesPanel(String url, String query) {
-        JPanel moviesPanel = new JPanel();
-        moviesPanel.setLayout(new BoxLayout(moviesPanel, BoxLayout.Y_AXIS));
-        moviesPanel.setBackground(BACKGROUND_COLOR);
-
+        JPanel listPanel = new JPanel();
+        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+        listPanel.setBackground(BACKGROUND_COLOR);
+        boolean found = false;
         try (ResultSet resultSet = DAO.searchMoviesByTitle(url, query)) {
             while (resultSet.next()) {
-                moviesPanel.add(createMovieEntryPanel(
+                found = true;
+                listPanel.add(createMovieEntryPanel(
                         resultSet.getInt("id"),
                         resultSet.getString("title"),
                         resultSet.getString("age_rating"),
                         resultSet.getString("release_date"),
                         url));
-                moviesPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+                listPanel.add(Box.createRigidArea(new Dimension(0, 14)));
             }
         } catch (SQLException e) {
             JLabel errorLabel = new JLabel("Error loading movies: " + e.getMessage());
-            errorLabel.setForeground(Color.RED);
-            moviesPanel.add(errorLabel);
+            errorLabel.setForeground(BUTTON_DELETE);
+            errorLabel.setFont(TITLE_FONT);
+            errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            listPanel.add(errorLabel);
         }
-        return moviesPanel;
+        if (!found) {
+            JLabel noResult = new JLabel("No movies found.");
+            noResult.setForeground(Color.LIGHT_GRAY);
+            noResult.setFont(TITLE_FONT);
+            noResult.setAlignmentX(Component.CENTER_ALIGNMENT);
+            listPanel.add(Box.createVerticalGlue());
+            listPanel.add(noResult);
+            listPanel.add(Box.createVerticalGlue());
+        }
+        JPanel wrapperPanel = new JPanel(new BorderLayout());
+        wrapperPanel.setBackground(BACKGROUND_COLOR);
+        wrapperPanel.add(listPanel, BorderLayout.NORTH);
+        return wrapperPanel;
     }
 
-    // Creates a single movie entry panel
     private JPanel createMovieEntryPanel(int id, String title, String ageRating, String releaseDate, String url) {
-        JPanel movieEntryPanel = new JPanel(new BorderLayout());
-        movieEntryPanel.setBackground(BACKGROUND_COLOR);
-        movieEntryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
+        JPanel movieEntryPanel = new JPanel(new BorderLayout(12, 0));
+        movieEntryPanel.setBackground(PANEL_COLOR);
+        movieEntryPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(60, 70, 80), 1, true),
+                BorderFactory.createEmptyBorder(14, 18, 14, 18)
+        ));
         movieEntryPanel.add(createTextPanel(title, ageRating, releaseDate), BorderLayout.CENTER);
         movieEntryPanel.add(createButtonPanel(id, url), BorderLayout.EAST);
-
         return movieEntryPanel;
     }
 
     private JPanel createTextPanel(String title, String ageRating, String releaseDate) {
         JPanel textPanel = new JPanel();
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
-        textPanel.setBackground(BACKGROUND_COLOR);
+        textPanel.setBackground(PANEL_COLOR);
 
         JLabel titleLabel = new JLabel(title);
         titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        titleLabel.setFont(TITLE_FONT);
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel ageRatingPanel = createAgeRatingPanel(ageRating);
 
         JLabel releaseDateLabel = new JLabel("Release Date: " + releaseDate);
-        releaseDateLabel.setForeground(Color.LIGHT_GRAY);
-        releaseDateLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        releaseDateLabel.setForeground(new Color(180, 180, 180));
+        releaseDateLabel.setFont(LABEL_FONT);
         releaseDateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         textPanel.add(titleLabel);
+        textPanel.add(Box.createRigidArea(new Dimension(0, 4)));
         textPanel.add(ageRatingPanel);
-        textPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        textPanel.add(Box.createRigidArea(new Dimension(0, 7)));
         textPanel.add(releaseDateLabel);
-
         return textPanel;
     }
 
     private JPanel createAgeRatingPanel(String ageRating) {
         JLabel ageRatingLabel = new JLabel("Age Rating: ");
-        ageRatingLabel.setForeground(Color.LIGHT_GRAY);
-        ageRatingLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        ageRatingLabel.setForeground(new Color(200, 200, 200));
+        ageRatingLabel.setFont(LABEL_FONT);
 
         JLabel ageRatingValueLabel = new JLabel(ageRating);
         ageRatingValueLabel.setForeground(AgeRatingColor.getColorForRating(ageRating));
-        ageRatingValueLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        ageRatingValueLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
 
         JPanel ageRatingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        ageRatingPanel.setBackground(BACKGROUND_COLOR);
+        ageRatingPanel.setBackground(PANEL_COLOR);
         ageRatingPanel.add(ageRatingLabel);
         ageRatingPanel.add(ageRatingValueLabel);
         ageRatingPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
         return ageRatingPanel;
     }
 
-    // Creates the panel containing action buttons (Edit/Delete)
     private JPanel createButtonPanel(int id, String url) {
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(BACKGROUND_COLOR);
-
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 0, 8));
+        buttonPanel.setBackground(PANEL_COLOR);
         JButton deleteButton = createDeleteButton(id, url);
-        buttonPanel.add(deleteButton);
-
         JButton editButton = createEditButton(id, url);
         buttonPanel.add(editButton);
-
+        buttonPanel.add(deleteButton);
         return buttonPanel;
     }
 
     private JButton createDeleteButton(int id, String url) {
         JButton deleteButton = new JButton("Delete");
-        deleteButton.setBackground(Color.RED);
+        deleteButton.setBackground(BUTTON_DELETE);
         deleteButton.setForeground(Color.WHITE);
-        deleteButton.setFont(new Font("Arial", Font.BOLD, 12));
-
+        deleteButton.setFont(LABEL_FONT);
+        deleteButton.setFocusPainted(false);
+        deleteButton.setBorder(BorderFactory.createEmptyBorder(6, 18, 6, 18));
         deleteButton.addActionListener(e -> {
             int rowsAffected = DAO.deleteRowById(url, "movies", "id", id);
             if (rowsAffected > 0) {
@@ -134,18 +149,17 @@ public class MovieSearch extends JFrame {
                 JOptionPane.showMessageDialog(this, "Error deleting movie.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-
         return deleteButton;
     }
 
     private JButton createEditButton(int id, String url) {
         JButton editButton = new JButton("Edit");
-        editButton.setBackground(Color.DARK_GRAY);
+        editButton.setBackground(BUTTON_EDIT);
         editButton.setForeground(Color.WHITE);
-        editButton.setFont(new Font("Arial", Font.BOLD, 12));
-
+        editButton.setFont(LABEL_FONT);
+        editButton.setFocusPainted(false);
+        editButton.setBorder(BorderFactory.createEmptyBorder(6, 18, 6, 18));
         editButton.addActionListener(e -> new MovieAgent(url, id, false).setVisible(true));
-
         return editButton;
     }
 }

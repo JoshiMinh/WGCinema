@@ -1,4 +1,4 @@
-package com.joshiminh.wgcinema.data;
+package com.joshiminh.wgcinema.booking;
 
 import com.joshiminh.wgcinema.utils.AgentStyles;
 
@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public class RegisterFrame extends JFrame {
+public class Register extends JFrame {
     private final JTextField emailField = new JTextField(20);
     private final JTextField nameField = new JTextField(20);
     private final JPasswordField passwordField = new JPasswordField(20);
@@ -25,7 +25,7 @@ public class RegisterFrame extends JFrame {
     private static final DateTimeFormatter INPUT_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter DB_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public RegisterFrame(String dbUrl) {
+    public Register(String dbUrl) {
         this.dbUrl = dbUrl;
         AgentStyles.applyFrameDefaults(this, "Register Account", 600, 600);
 

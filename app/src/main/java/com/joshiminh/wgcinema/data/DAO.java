@@ -46,6 +46,12 @@ public class DAO {
         return select(connectionString, sql, "%" + titleQuery + "%");
     }
 
+    // Transaction-related SELECT operations
+    public static ResultSet fetchTransactionHistory(String connectionString, String email) {
+        String sql = "SELECT * FROM transactions WHERE account_email = ? ORDER BY transaction_date DESC";
+        return select(connectionString, sql, email);
+    }
+
     // Showtime-related SELECT operations
     public static ResultSet fetchShowtimeDetails(String connectionString, int showtimeId) {
         String sql = "SELECT * FROM showtimes WHERE showtime_id = ?";
@@ -97,6 +103,7 @@ public class DAO {
             return new String[0];
         }
     }
+
 
     // ==========================
     // INSERT Operations

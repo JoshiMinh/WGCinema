@@ -15,7 +15,7 @@ import java.util.Locale;
 
 @SuppressWarnings({"unused", "deprecation"})
 public class Checkout extends JFrame {
-    private static final int WIDTH = 400, HEIGHT = 700;
+    private static final int WIDTH = 420, HEIGHT = 740;
     private static final int REGULAR_SEAT_PRICE = 80000, VIP_SEAT_PRICE = 85000;
     private final JLabel selectedSeatsLabel;
     private int showtimeID, showroomID, movieId;
@@ -35,59 +35,64 @@ public class Checkout extends JFrame {
         setLayout(new BorderLayout());
         setSize(WIDTH, HEIGHT);
         setResizable(false);
-        setBackground(new Color(30, 30, 30));
+        setBackground(new Color(24, 26, 32));
         setIconImage(ResourceUtil.loadAppIcon());
 
         JPanel northPanel = new JPanel(new GridBagLayout());
-        northPanel.setBackground(new Color(30, 30, 30));
-        northPanel.setPreferredSize(new Dimension(WIDTH, 130));
+        northPanel.setBackground(new Color(24, 26, 32));
+        northPanel.setPreferredSize(new Dimension(WIDTH, 150));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel moviePosterLabel = new JLabel();
         try {
             URL moviePosterUrl = new URL(movieLink);
             ImageIcon moviePosterIcon = new ImageIcon(moviePosterUrl);
-            Image scaledMoviePosterImage = moviePosterIcon.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH);
+            Image scaledMoviePosterImage = moviePosterIcon.getImage().getScaledInstance(90, 130, Image.SCALE_SMOOTH);
             moviePosterLabel.setIcon(new ImageIcon(scaledMoviePosterImage));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            moviePosterLabel.setBorder(BorderFactory.createLineBorder(new Color(60, 60, 60), 2, true));
+        } catch (Exception ignored) {}
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridheight = 5; gbc.anchor = GridBagConstraints.NORTHWEST;
         northPanel.add(moviePosterLabel, gbc);
         gbc.gridheight = 1;
 
         JLabel movieLabel = new JLabel(movieTitle);
-        movieLabel.setForeground(Color.GRAY);
+        movieLabel.setForeground(new Color(220, 220, 220));
+        movieLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         gbc.gridx = 1; gbc.gridy = 0; gbc.gridwidth = 1;
         northPanel.add(movieLabel, gbc);
 
         Color ratingColor = AgeRatingColor.getColorForRating(movieRating);
         JLabel ratingLabel = new JLabel(movieRating);
         ratingLabel.setForeground(ratingColor);
+        ratingLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         gbc.gridx = 2; gbc.gridy = 0; gbc.gridwidth = 1;
         northPanel.add(ratingLabel, gbc);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         JLabel dateLabel = new JLabel("Date: " + dateFormat.format(date));
-        dateLabel.setForeground(Color.WHITE);
+        dateLabel.setForeground(new Color(180, 180, 180));
+        dateLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         gbc.gridx = 1; gbc.gridy = 1; gbc.gridwidth = 2;
         northPanel.add(dateLabel, gbc);
 
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
         JLabel timeLabel = new JLabel("Time: " + timeFormat.format(time));
-        timeLabel.setForeground(Color.WHITE);
+        timeLabel.setForeground(new Color(180, 180, 180));
+        timeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         gbc.gridx = 1; gbc.gridy = 2; gbc.gridwidth = 2;
         northPanel.add(timeLabel, gbc);
 
         JLabel showroomLabel = new JLabel("Showroom " + showroomID);
-        showroomLabel.setForeground(Color.WHITE);
+        showroomLabel.setForeground(new Color(180, 180, 180));
+        showroomLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         gbc.gridx = 1; gbc.gridy = 3; gbc.gridwidth = 2;
         northPanel.add(showroomLabel, gbc);
 
         selectedSeatsLabel = new JLabel("Selected Seats: " + selectedSeats);
-        selectedSeatsLabel.setForeground(Color.WHITE);
+        selectedSeatsLabel.setForeground(new Color(220, 220, 220));
+        selectedSeatsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         gbc.gridx = 1; gbc.gridy = 4; gbc.gridwidth = 2;
         northPanel.add(selectedSeatsLabel, gbc);
 
@@ -95,12 +100,15 @@ public class Checkout extends JFrame {
 
         JButton bookButton = new JButton("CONFIRM");
         bookButton.setForeground(Color.WHITE);
-        bookButton.setBackground(Color.BLUE);
-        bookButton.setFont(bookButton.getFont().deriveFont(Font.BOLD, 25));
+        bookButton.setBackground(new Color(0, 120, 215));
+        bookButton.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        bookButton.setFocusPainted(false);
+        bookButton.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
         bookButton.addActionListener(e -> book());
 
         JPanel southPanel = new JPanel(new BorderLayout());
-        southPanel.setPreferredSize(new Dimension(50, 60));
+        southPanel.setBackground(new Color(24, 26, 32));
+        southPanel.setPreferredSize(new Dimension(50, 70));
         southPanel.add(bookButton, BorderLayout.CENTER);
         add(southPanel, BorderLayout.SOUTH);
 
@@ -108,25 +116,26 @@ public class Checkout extends JFrame {
         innerPanel.setOpaque(false);
 
         JPanel northCenterPanel = new JPanel();
-        northCenterPanel.setBackground(new Color(51, 51, 51));
-        northCenterPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        northCenterPanel.setBackground(new Color(34, 36, 42));
+        northCenterPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 18));
 
         JLabel priceLabel = new JLabel("Total Price: " + calculateTotalPrice(selectedSeats));
-        priceLabel.setForeground(Color.GREEN);
-        priceLabel.setFont(priceLabel.getFont().deriveFont(Font.BOLD, 15));
+        priceLabel.setForeground(new Color(0, 220, 120));
+        priceLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         northCenterPanel.add(priceLabel);
         innerPanel.add(northCenterPanel, BorderLayout.NORTH);
 
         ImageIcon qrIcon = new ImageIcon(ResourceUtil.loadImage("/images/QR.jpg"));
         JLabel qrLabel = new JLabel(qrIcon);
+        qrLabel.setBorder(BorderFactory.createEmptyBorder(18, 0, 18, 0));
         innerPanel.add(qrLabel, BorderLayout.CENTER);
 
         JPanel southCenterPanel = new JPanel();
-        southCenterPanel.setBackground(new Color(51, 51, 51));
+        southCenterPanel.setBackground(new Color(34, 36, 42));
         southCenterPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         JLabel scanLabel = new JLabel("SCAN TO PAY");
-        scanLabel.setForeground(Color.GREEN);
-        scanLabel.setFont(scanLabel.getFont().deriveFont(Font.BOLD, 20));
+        scanLabel.setForeground(new Color(0, 220, 120));
+        scanLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         southCenterPanel.add(scanLabel);
         innerPanel.add(southCenterPanel, BorderLayout.SOUTH);
 
@@ -171,7 +180,7 @@ public class Checkout extends JFrame {
 
     private static String formatPrice(int price) {
         NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-        return numberFormat.format(price) + "vnđ";
+        return numberFormat.format(price) + " vnđ";
     }
 
     private void book() {
@@ -215,14 +224,14 @@ public class Checkout extends JFrame {
         revalidate();
         repaint();
         JPanel centerPanel = new JPanel(new GridBagLayout());
-        centerPanel.setBackground(new Color(30, 30, 30));
+        centerPanel.setBackground(new Color(24, 26, 32));
         JLabel imageLabel = new JLabel();
         ImageIcon imageIcon = new ImageIcon(ResourceUtil.loadImage("/images/TicketBooked.png"));
         Image scaledImage = imageIcon.getImage().getScaledInstance(350, 350, Image.SCALE_SMOOTH);
         imageLabel.setIcon(new ImageIcon(scaledImage));
         centerPanel.add(imageLabel, new GridBagConstraints());
         add(centerPanel, BorderLayout.CENTER);
-        getContentPane().setBackground(new Color(30, 30, 30));
+        getContentPane().setBackground(new Color(24, 26, 32));
         revalidate();
         repaint();
     }

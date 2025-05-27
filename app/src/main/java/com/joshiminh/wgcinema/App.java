@@ -4,7 +4,6 @@ import javax.swing.*;
 import com.joshiminh.wgcinema.booking.*;
 import com.joshiminh.wgcinema.dashboard.*;
 import com.joshiminh.wgcinema.data.DAO;
-import com.joshiminh.wgcinema.data.RegisterFrame;
 import com.joshiminh.wgcinema.utils.ResourceUtil;
 import java.awt.*;
 import java.awt.event.*;
@@ -159,7 +158,7 @@ public class App extends JFrame {
                             JOptionPane.showMessageDialog(this, "You are not an admin.", "Access Denied", JOptionPane.ERROR_MESSAGE);
                         }
                     } else {
-                        new MovieList(DB_URL).setVisible(true);
+                        new MovieList(DB_URL, email).setVisible(true);
                         dispose();
                     }
                 } else {
@@ -250,8 +249,9 @@ public class App extends JFrame {
     }
 
     private void openRegisterFrame() {
-        JFrame registerFrame = new RegisterFrame(DB_URL);
+        JFrame registerFrame = new Register(DB_URL);
         registerFrame.setVisible(true);
+        registerFrame.setIconImage(ResourceUtil.loadAppIcon());
     }
 
     private void saveUserCredentials(String email, String password) {
