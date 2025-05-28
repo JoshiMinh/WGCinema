@@ -22,19 +22,11 @@ public class App extends JFrame {
     private JTextField emailField;
     private JButton dashboardButton;
 
-    private static String DB_HOST;
-    private static String DB_NAME;
-    private static String DB_USERNAME;
-    private static String DB_PASSWORD;
-    private static String DB_URL;
-    private static String SMTP_EMAIL;
-    private static String SMTP_APP_PASSWORD;
-    private static String SERVICE_NAME;
-    private static Path USER_FILE;
+    private static String DB_HOST, DB_NAME, DB_USERNAME, DB_PASSWORD, DB_URL;
+    private static String SMTP_EMAIL, SMTP_APP_PASSWORD, SERVICE_NAME = "WG Cinema";
+    private static final Path USER_FILE = Paths.get("user.txt");
 
-    static {
-        loadEnv();
-    }
+    static { loadEnv(); }
 
     public App() {
         setTitle("Login");
@@ -46,18 +38,16 @@ public class App extends JFrame {
         mainPanel = new JPanel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                Image background = ResourceUtil.loadImage("/images/background.jpg");
-                g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+                Image bg = ResourceUtil.loadImage("/images/background.jpg");
+                g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
             }
         };
         mainPanel.setLayout(new GridBagLayout());
 
-        int fieldColumns = 40;
+        logoLabel = new JLabel(new ImageIcon(ResourceUtil.loadImage("/images/icon.png").getScaledInstance(70, 65, Image.SCALE_SMOOTH)));
 
-        logoLabel = new JLabel(new ImageIcon(ResourceUtil.loadImage("/images/icon.png").getScaledInstance(60, 55, Image.SCALE_SMOOTH)));
-
-        emailField = new JTextField(fieldColumns);
-        passwordField = new JPasswordField(fieldColumns);
+        emailField = new JTextField(36);
+        passwordField = new JPasswordField(36);
         passwordField.setEchoChar('•');
         passwordField.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
@@ -74,9 +64,11 @@ public class App extends JFrame {
         JButton[] buttons = {registerButton, loginButton, dashboardButton};
         for (JButton btn : buttons) {
             btn.setForeground(Color.WHITE);
-            btn.setBackground(new Color(40, 40, 40));
+            btn.setBackground(new Color(30, 30, 30));
             btn.setFocusPainted(false);
-            btn.setPreferredSize(new Dimension(140, 30));
+            btn.setFont(new Font("Segoe UI", Font.BOLD, 15));
+            btn.setPreferredSize(new Dimension(150, 36));
+            btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         }
 
         registerButton.addActionListener(e -> openRegisterFrame());
@@ -86,53 +78,41 @@ public class App extends JFrame {
         JPanel formPanel = new JPanel(new GridBagLayout()) {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.setColor(new Color(56, 56, 56, 200));
-                g.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
+                g.setColor(new Color(44, 44, 44, 220));
+                g.fillRoundRect(0, 0, getWidth(), getHeight(), 28, 28);
             }
         };
         formPanel.setOpaque(false);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(12, 18, 8, 18);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(14, 22, 10, 22);
+        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER;
         formPanel.add(logoLabel, gbc);
 
-        gbc.gridy++;
-        gbc.gridwidth = 1;
-        gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridy++; gbc.gridwidth = 1; gbc.anchor = GridBagConstraints.EAST;
         JLabel emailLabel = new JLabel("Email:");
         emailLabel.setForeground(Color.WHITE);
+        emailLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         formPanel.add(emailLabel, gbc);
 
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST;
         formPanel.add(emailField, gbc);
 
-        gbc.gridy++;
-        gbc.gridx = 0;
-        gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridy++; gbc.gridx = 0; gbc.anchor = GridBagConstraints.EAST;
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setForeground(Color.WHITE);
+        passwordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         formPanel.add(passwordLabel, gbc);
 
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST;
         formPanel.add(passwordField, gbc);
 
-        gbc.gridy++;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 18, 0));
+        gbc.gridy++; gbc.gridx = 0; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER;
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setOpaque(false);
         buttonPanel.add(registerButton);
         buttonPanel.add(loginButton);
         buttonPanel.add(dashboardButton);
-
         formPanel.add(buttonPanel, gbc);
 
         mainPanel.add(formPanel, new GridBagConstraints());
@@ -155,7 +135,7 @@ public class App extends JFrame {
                             new Dashboard(DB_URL).setVisible(true);
                             dispose();
                         } else {
-                            JOptionPane.showMessageDialog(this, "You are not an admin.", "Access Denied", JOptionPane.ERROR_MESSAGE);
+                            showError("You are not an admin.", "Access Denied");
                         }
                     } else {
                         new MovieList(DB_URL, email).setVisible(true);
@@ -165,10 +145,10 @@ public class App extends JFrame {
                     handleWrongPassword(email);
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Invalid email or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                showError("Invalid email or password", "Login Failed");
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Database connection error", "Error", JOptionPane.ERROR_MESSAGE);
+            showError("Database connection error", "Error");
         }
     }
 
@@ -186,10 +166,10 @@ public class App extends JFrame {
                         resetPassword(email, newPassword);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(this, "Incorrect code.", "Reset Failed", JOptionPane.ERROR_MESSAGE);
+                    showError("Incorrect code.", "Reset Failed");
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to send reset email.", "Error", JOptionPane.ERROR_MESSAGE);
+                showError("Failed to send reset email.", "Error");
             }
         }
     }
@@ -228,7 +208,7 @@ public class App extends JFrame {
         if (updated > 0) {
             JOptionPane.showMessageDialog(this, "Password reset successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(this, "Failed to reset password.", "Error", JOptionPane.ERROR_MESSAGE);
+            showError("Failed to reset password.", "Error");
         }
     }
 
@@ -259,8 +239,7 @@ public class App extends JFrame {
             writer.write(email);
             writer.newLine();
             writer.write(password);
-        } catch (IOException e) {
-        }
+        } catch (IOException ignored) {}
     }
 
     private void preloadUserCredentials() {
@@ -270,8 +249,11 @@ public class App extends JFrame {
                 String password = reader.readLine();
                 if (email != null) emailField.setText(email);
                 if (password != null) passwordField.setText(password);
-            } catch (IOException e) {
-            }
+            } catch (IOException ignored) {}
+        }
+        if (!Files.exists(USER_FILE)) {
+            try { Files.createFile(USER_FILE); }
+            catch (IOException e) { throw new RuntimeException("Failed to create user.txt file", e); }
         }
     }
 
@@ -286,17 +268,17 @@ public class App extends JFrame {
         DB_NAME = props.getProperty("DB_NAME");
         DB_USERNAME = props.getProperty("DB_USERNAME");
         DB_PASSWORD = props.getProperty("DB_PASSWORD");
-        if (DB_HOST == null || DB_NAME == null || DB_USERNAME == null || DB_PASSWORD == null) {
+        if (DB_HOST == null || DB_NAME == null || DB_USERNAME == null || DB_PASSWORD == null)
             throw new RuntimeException("Missing required database environment variables in .env");
-        }
         DB_URL = "jdbc:mysql://" + DB_HOST + "/" + DB_NAME + "?user=" + DB_USERNAME + "&password=" + DB_PASSWORD;
         SMTP_EMAIL = props.getProperty("SMTP_EMAIL");
         SMTP_APP_PASSWORD = props.getProperty("SMTP_APP_PASSWORD");
-        SERVICE_NAME = props.getProperty("SERVICE_NAME");
-        USER_FILE = Paths.get(props.getProperty("USER_FILE"));
-        if (SMTP_EMAIL == null || SMTP_APP_PASSWORD == null || SERVICE_NAME == null || USER_FILE == null) {
+        if (SMTP_EMAIL == null || SMTP_APP_PASSWORD == null)
             throw new RuntimeException("Missing required SMTP or user file environment variables in .env");
-        }
+    }
+
+    private void showError(String msg, String title) {
+        JOptionPane.showMessageDialog(this, msg, title, JOptionPane.ERROR_MESSAGE);
     }
 
     public static void main(String[] args) {

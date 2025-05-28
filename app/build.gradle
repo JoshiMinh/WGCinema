@@ -1,19 +1,19 @@
 plugins {
     id 'application'
+    id 'java'
 }
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
-    testImplementation libs.junit.jupiter
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation libs.guava
-    implementation 'com.mysql:mysql-connector-j:8.1.0'
-    implementation 'org.jfree:jfreechart:1.5.0'
     implementation 'com.sun.mail:jakarta.mail:2.0.1'
     implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+    implementation 'com.google.guava:guava:31.0.1-jre'
+    implementation 'com.mysql:mysql-connector-j:8.1.0'
+    implementation 'org.jfree:jfreechart:1.5.0'
     implementation 'com.google.zxing:core:3.5.3'
     implementation 'com.google.zxing:javase:3.5.3'
 }

@@ -126,6 +126,52 @@ public class DAO {
         );
     }
 
+    public static int insertTransactionReturnId(
+        String connectionString,
+        int movieId,
+        String totalPrice,
+        String selectedSeats,
+        int showroomId,
+        String accountEmail,
+        int showtimeId) throws SQLException {
+
+    String sql = """
+        INSERT INTO transactions
+          (movie_id, amount, seats_preserved, showroom_id, account_email, showtime_id)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """;
+
+    try (
+        Connection conn = DriverManager.getConnection(connectionString);
+        PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+    ) {
+        // amount as BigDecimal stripped of non-digits
+        java.math.BigDecimal amount = new java.math.BigDecimal(
+            totalPrice.replaceAll("[^\\d.]", "")
+        );
+        ps.setInt(1, movieId);
+        ps.setBigDecimal(2, amount);
+        ps.setString(3, selectedSeats);
+        ps.setInt(4, showroomId);
+        ps.setString(5, accountEmail);
+        ps.setInt(6, showtimeId);
+
+        int affected = ps.executeUpdate();
+        if (affected == 0) {
+            throw new SQLException("Creating transaction failed, no rows affected.");
+        }
+
+        try (ResultSet keys = ps.getGeneratedKeys()) {
+            if (keys.next()) {
+                return keys.getInt(1);
+            } else {
+                throw new SQLException("Creating transaction failed, no ID obtained.");
+            }
+        }
+    }
+}
+
+
     public static int insertMovie(String connectionString, String[] columns, String[] values) {
         String sql = "INSERT INTO movies (" + String.join(", ", columns) + ") VALUES (" +
                      "?,".repeat(values.length).replaceAll(",$", "") + ")";

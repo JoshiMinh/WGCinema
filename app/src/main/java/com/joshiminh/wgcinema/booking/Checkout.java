@@ -1,19 +1,35 @@
 package com.joshiminh.wgcinema.booking;
 
-import javax.swing.*;
 import com.joshiminh.wgcinema.data.AgeRatingColor;
 import com.joshiminh.wgcinema.data.DAO;
 import com.joshiminh.wgcinema.utils.ResourceUtil;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import jakarta.mail.*;
+import jakarta.mail.internet.*;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.URL;
-import java.sql.*;
+import java.nio.file.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.Time;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.Properties;
 
-@SuppressWarnings({"unused", "deprecation"})
 public class Checkout extends JFrame {
     private static final int WIDTH = 420, HEIGHT = 740;
     private static final int REGULAR_SEAT_PRICE = 80000, VIP_SEAT_PRICE = 85000;
@@ -23,13 +39,35 @@ public class Checkout extends JFrame {
     private boolean bookingSuccessful = false;
     private String connectionString;
 
-    public Checkout(String connectionString, int showroomID, Time time, int movieId, Date date, String movieTitle, String movieRating, String movieLink, int showtimeID, String selectedSeats, Showrooms showroomsFrame) {
+    private static final String SMTP_EMAIL;
+    private static final String SMTP_APP_PASSWORD;
+    private static final String SERVICE_NAME;
+    private static final Path USER_FILE_PATH;
+
+    static {
+        Properties props = new Properties();
+        try (InputStream in = new FileInputStream(".env")) {
+            props.load(in);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load .env file", e);
+        }
+        SMTP_EMAIL = props.getProperty("SMTP_EMAIL");
+        SMTP_APP_PASSWORD = props.getProperty("SMTP_APP_PASSWORD");
+        SERVICE_NAME = props.getProperty("SERVICE_NAME");
+        USER_FILE_PATH = Paths.get(props.getProperty("USER_FILE", ""));
+        if (SMTP_EMAIL == null || SMTP_APP_PASSWORD == null || SERVICE_NAME == null || USER_FILE_PATH == null) {
+            throw new RuntimeException("Missing required SMTP or user file environment variables in .env");
+        }
+    }
+
+    public Checkout(String connectionString, int showroomID, Time time, int movieId, Date date,
+                    String movieTitle, String movieRating, String movieLink, int showtimeID,
+                    String selectedSeats, Showrooms showroomsFrame) {
         this.showtimeID = showtimeID;
         this.showroomsFrame = showroomsFrame;
         this.showroomID = showroomID;
         this.movieId = movieId;
         this.connectionString = connectionString;
-
         setTitle("Checkout");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -185,9 +223,10 @@ public class Checkout extends JFrame {
 
     private void book() {
         try {
-            String selectedSeats = selectedSeatsLabel.getText().substring("Selected Seats: ".length()).replaceAll(",", "");
-            ResultSet chairsResult = DAO.fetchShowtimeDetails(connectionString, showtimeID);
+            String selectedSeats = selectedSeatsLabel.getText()
+                .substring("Selected Seats: ".length()).replaceAll(",", "");
 
+            ResultSet chairsResult = DAO.fetchShowtimeDetails(connectionString, showtimeID);
             if (chairsResult != null && chairsResult.next()) {
                 String chairsBooked = chairsResult.getString("chairs_booked");
                 if (checkBooked(chairsBooked, selectedSeats)) {
@@ -195,28 +234,101 @@ public class Checkout extends JFrame {
                     chairsResult.close();
                     return;
                 }
-            } else {
-                if (chairsResult != null) chairsResult.close();
-                return;
             }
-            chairsResult.close();
+            if (chairsResult != null) chairsResult.close();
 
             int reservedCount = selectedSeats.split(" ").length;
             int updatedRows = DAO.updateShowtimeSeats(connectionString, reservedCount, selectedSeats, showtimeID);
 
             if (updatedRows > 0) {
                 String userEmail = "";
-                java.nio.file.Path USER_FILE = java.nio.file.Paths.get("user.txt");
-                java.util.List<String> lines = java.nio.file.Files.readAllLines(USER_FILE);
-                if (!lines.isEmpty()) userEmail = lines.get(0).trim();
-                JOptionPane.showMessageDialog(this, "Booking Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                if (Files.exists(USER_FILE_PATH)) {
+                    java.util.List<String> lines = Files.readAllLines(USER_FILE_PATH);
+                    if (!lines.isEmpty()) userEmail = lines.get(0).trim();
+                }
+
+                int transactionId = DAO.insertTransactionReturnId(
+                    connectionString, movieId, calculateTotalPrice(selectedSeats), selectedSeats,
+                    showroomID, userEmail, showtimeID
+                );
+
+                String hashed = hashTransactionId(transactionId);
+
+                BufferedImage qrImage = generateQrCode(hashed, 250, 250);
+
+                sendEmailWithQr(userEmail, qrImage);
+
+                JOptionPane.showMessageDialog(this, "Booking Successful! QR code sent to your email.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 showSuccessImage();
                 bookingSuccessful = true;
-                DAO.insertTransaction(connectionString, movieId, calculateTotalPrice(selectedSeats), selectedSeats, showroomID, userEmail, showtimeID);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static String hashTransactionId(int id) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashedBytes = digest.digest(String.valueOf(id).getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashedBytes) sb.append(String.format("%02x", b));
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Failed to hash transaction ID", e);
+        }
+    }
+
+    private static BufferedImage generateQrCode(String data, int width, int height) throws WriterException {
+        QRCodeWriter writer = new QRCodeWriter();
+        BitMatrix matrix = writer.encode(data, BarcodeFormat.QR_CODE, width, height);
+        return MatrixToImageWriter.toBufferedImage(matrix);
+    }
+
+    private void sendEmailWithQr(String toEmail, BufferedImage qrImage) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(qrImage, "png", baos);
+        byte[] imageBytes = baos.toByteArray();
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(SMTP_EMAIL, SMTP_APP_PASSWORD);
+            }
+        });
+
+        Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(SMTP_EMAIL, SERVICE_NAME));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+        message.setSubject("Your Booking QR Code");
+
+        MimeBodyPart textPart = new MimeBodyPart();
+        textPart.setText("Thank you for your booking! Please find your QR code attached.");
+
+        MimeBodyPart imagePart = new MimeBodyPart();
+        imagePart.attachFile(createTempImageFile(imageBytes));
+        imagePart.setHeader("Content-ID", "<qr>");
+
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(textPart);
+        multipart.addBodyPart(imagePart);
+        message.setContent(multipart);
+
+        Transport.send(message);
+    }
+
+    private File createTempImageFile(byte[] data) throws IOException {
+        File temp = File.createTempFile("qr", ".png");
+        try (FileOutputStream fos = new FileOutputStream(temp)) {
+            fos.write(data);
+        }
+        return temp;
     }
 
     private void showSuccessImage() {
