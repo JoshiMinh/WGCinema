@@ -1,11 +1,9 @@
 plugins {
     id 'application'
-    id 'java'
 }
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
@@ -14,8 +12,6 @@ dependencies {
     implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'com.mysql:mysql-connector-j:8.1.0'
     implementation 'org.jfree:jfreechart:1.5.0'
-    implementation 'com.google.zxing:core:3.5.3'
-    implementation 'com.google.zxing:javase:3.5.3'
 }
 
 java {

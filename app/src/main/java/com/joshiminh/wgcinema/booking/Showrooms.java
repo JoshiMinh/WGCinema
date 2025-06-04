@@ -10,13 +10,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.net.MalformedURLException;
 import java.net.URL;
-import javax.swing.border.Border;
 
 import com.joshiminh.wgcinema.data.AgeRatingColor;
 import com.joshiminh.wgcinema.data.DAO;
-import com.joshiminh.wgcinema.utils.*;
+import com.joshiminh.wgcinema.utils.ResourceUtil;
 
-@SuppressWarnings({"unused", "deprecation"})
 public class Showrooms extends JFrame {
     private static final int WIDTH = 1900, HEIGHT = 900, GAP = 3, MAX_SELECTIONS = 8;
     private static int ROWS, COLS, CELL_SIZE, sideWidths;
@@ -66,7 +64,6 @@ public class Showrooms extends JFrame {
         setVisible(true);
     }
 
-    // Fetch showroom ID and related details
     private int getShowroomID(int showtimeID) {
         try (ResultSet rs = DAO.fetchShowtimeDetails(connectionString, showtimeID)) {
             if (rs != null && rs.next()) {
@@ -82,7 +79,6 @@ public class Showrooms extends JFrame {
         return 1;
     }
 
-    // Fetch movie details
     private void fetchMovieInfo() {
         try (ResultSet rs = DAO.fetchMovieDetails(connectionString, movieId)) {
             if (rs != null && rs.next()) {
@@ -95,9 +91,8 @@ public class Showrooms extends JFrame {
         }
     }
 
-    // Set dimensions for the grid
     private void setDimensions(int showroomID) {
-        final int totalWidth = 1450;
+        int totalWidth = 1450;
         try (ResultSet rs = DAO.fetchShowroomDetails(connectionString, showroomID)) {
             if (rs != null && rs.next()) {
                 ROWS = rs.getInt("rowCount");
@@ -150,7 +145,6 @@ public class Showrooms extends JFrame {
 
     private JPanel createBottomInfoPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setOpaque(true);
         panel.setBackground(new Color(35, 35, 35));
         panel.setPreferredSize(new Dimension(WIDTH, 140));
         panel.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE));
