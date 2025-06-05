@@ -3,27 +3,27 @@ package com.joshiminh.wgcinema.booking;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import com.joshiminh.wgcinema.data.DAO;
-import com.joshiminh.wgcinema.utils.*;
+import com.joshiminh.wgcinema.utils.ResourceUtil;
 
 public class TransactionHistory extends JFrame {
     private static final Color BACKGROUND_COLOR = new Color(30, 30, 30);
 
     public TransactionHistory(String url, String email) {
         setTitle("Your Ticket History");
-        setDefaultLookAndFeelDecorated(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(500, 600);
         setLocationRelativeTo(null);
         setIconImage(ResourceUtil.loadAppIcon());
 
         JPanel transactionsPanel = createTransactionsPanel(url, email);
-        transactionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         transactionsPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         JScrollPane scrollPane = new JScrollPane(transactionsPanel);
@@ -42,14 +42,18 @@ public class TransactionHistory extends JFrame {
 
         try (ResultSet rs = DAO.fetchTransactionHistory(url, email)) {
             boolean hasRows = false;
-            while (rs.next()) {
+            while (rs != null && rs.next()) {
                 hasRows = true;
                 int movieId = rs.getInt("movie_id");
                 try (ResultSet movieRs = DAO.fetchMovieDetails(url, movieId)) {
-                    if (movieRs.next()) {
+                    if (movieRs != null && movieRs.next()) {
                         panel.add(createTransactionEntryPanel(
                             movieRs.getString("title"),
-                            movieRs.getString("poster")
+                            movieRs.getString("poster"),
+                            movieRs.getString("age_rating"),
+                            rs.getString("transaction_date"),
+                            rs.getString("amount"),
+                            rs.getString("seats_preserved")
                         ));
                         panel.add(Box.createRigidArea(new Dimension(0, 10)));
                     }
@@ -68,7 +72,7 @@ public class TransactionHistory extends JFrame {
         return panel;
     }
 
-    private JPanel createTransactionEntryPanel(String movieTitle, String posterUrl) {
+    private JPanel createTransactionEntryPanel(String movieTitle, String posterUrl, String ageRating, String transactionDate, String amount, String seatsPreserved) {
         JPanel entryPanel = new JPanel(new BorderLayout());
         entryPanel.setBackground(new Color(40, 40, 40));
         entryPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -78,28 +82,27 @@ public class TransactionHistory extends JFrame {
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
             )
         ));
-        entryPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
-        entryPanel.add(createPosterPanel(movieTitle, posterUrl), BorderLayout.WEST);
-        entryPanel.add(createButtonPanel(), BorderLayout.EAST);
+        entryPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 160));
+        entryPanel.add(createPosterPanel(movieTitle, posterUrl, ageRating), BorderLayout.WEST);
+        entryPanel.add(createDetailsPanel(transactionDate, amount, seatsPreserved), BorderLayout.CENTER);
         return entryPanel;
     }
 
-    @SuppressWarnings("deprecation")
-    private JPanel createPosterPanel(String movieTitle, String posterUrl) {
+    private JPanel createPosterPanel(String movieTitle, String posterUrl, String ageRating) {
         JPanel posterPanel = new JPanel();
         posterPanel.setLayout(new BoxLayout(posterPanel, BoxLayout.Y_AXIS));
         posterPanel.setBackground(new Color(40, 40, 40));
 
         JLabel posterLabel = new JLabel();
-        posterLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         posterLabel.setPreferredSize(new Dimension(80, 120));
         posterLabel.setMaximumSize(new Dimension(80, 120));
         if (posterUrl != null && !posterUrl.isEmpty()) {
             try {
-                BufferedImage img = ImageIO.read(new URL(posterUrl));
+                URL imageUrl = new URI(posterUrl).toURL();
+                BufferedImage img = ImageIO.read(imageUrl);
                 Image scaledImg = img.getScaledInstance(80, 120, Image.SCALE_SMOOTH);
                 posterLabel.setIcon(new ImageIcon(scaledImg));
-            } catch (IOException e) {
+            } catch (IOException | URISyntaxException e) {
                 posterLabel.setText("[No Image]");
                 posterLabel.setForeground(Color.LIGHT_GRAY);
             }
@@ -111,30 +114,43 @@ public class TransactionHistory extends JFrame {
         JLabel titleLabel = new JLabel(movieTitle);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+
+        JLabel ageRatingLabel = new JLabel("Age Rating: " + ageRating);
+        ageRatingLabel.setForeground(Color.LIGHT_GRAY);
+        ageRatingLabel.setFont(new Font("Arial", Font.PLAIN, 12));
 
         posterPanel.add(posterLabel);
         posterPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         posterPanel.add(titleLabel);
+        posterPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        posterPanel.add(ageRatingLabel);
 
         return posterPanel;
     }
 
-    private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(new Color(40, 40, 40));
+    private JPanel createDetailsPanel(String transactionDate, String amount, String seatsPreserved) {
+        JPanel detailsPanel = new JPanel();
+        detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
+        detailsPanel.setBackground(new Color(40, 40, 40));
 
-        JButton qrButton = new JButton("Download QR");
-        qrButton.setBackground(new Color(0, 123, 255));
-        qrButton.setForeground(Color.WHITE);
-        qrButton.setFont(new Font("Arial", Font.BOLD, 12));
-        qrButton.setFocusPainted(false);
-        qrButton.setBorder(BorderFactory.createEmptyBorder(6, 16, 6, 16));
-        qrButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        JLabel dateLabel = new JLabel("Date: " + transactionDate);
+        dateLabel.setForeground(Color.LIGHT_GRAY);
+        dateLabel.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        buttonPanel.add(qrButton);
+        JLabel seatsLabel = new JLabel("Seats: " + seatsPreserved);
+        seatsLabel.setForeground(Color.LIGHT_GRAY);
+        seatsLabel.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        return buttonPanel;
+        JLabel amountLabel = new JLabel("Amount: $" + amount);
+        amountLabel.setForeground(new Color(0, 200, 0));
+        amountLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        detailsPanel.add(dateLabel);
+        detailsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        detailsPanel.add(seatsLabel);
+        detailsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        detailsPanel.add(amountLabel);
+
+        return detailsPanel;
     }
 }

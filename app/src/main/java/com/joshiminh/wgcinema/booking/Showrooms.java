@@ -225,7 +225,7 @@ public class Showrooms extends JFrame {
         bookButton.setBackground(new Color(51, 255, 102));
         bookButton.setForeground(Color.WHITE);
 
-        bookButton.addActionListener(e -> {
+        bookButton.addActionListener(_ -> {
             String selectedSeats = selectedCells.stream()
                     .map(cell -> ((JLabel) cell.getComponent(0)).getText())
                     .collect(Collectors.joining(", "));

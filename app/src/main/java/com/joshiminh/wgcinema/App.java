@@ -30,7 +30,7 @@ public class App extends JFrame {
 
     public App() {
         setTitle("Login");
-        setSize(600, 450);
+        setSize(700, 450);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setIconImage(ResourceUtil.loadAppIcon());

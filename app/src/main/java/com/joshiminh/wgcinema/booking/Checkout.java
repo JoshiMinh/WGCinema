@@ -94,9 +94,9 @@ public class Checkout extends JFrame {
 
         JButton bookButton = new JButton("CONFIRM");
         bookButton.setForeground(Color.WHITE);
-        bookButton.setBackground(Color.BLUE);
+        bookButton.setBackground(new Color(0, 102, 204));
         bookButton.setFont(bookButton.getFont().deriveFont(Font.BOLD, 25));
-        bookButton.addActionListener(e -> book());
+        bookButton.addActionListener(_ -> book());
 
         JPanel southPanel = new JPanel(new BorderLayout());
         southPanel.setPreferredSize(new Dimension(50, 60));
@@ -111,7 +111,7 @@ public class Checkout extends JFrame {
         northCenterPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         JLabel priceLabel = new JLabel("Total Price: " + calculateTotalPrice(selectedSeats));
-        priceLabel.setForeground(Color.GREEN);
+        priceLabel.setForeground(new Color(0, 204, 0));
         priceLabel.setFont(priceLabel.getFont().deriveFont(Font.BOLD, 15));
         northCenterPanel.add(priceLabel);
         innerPanel.add(northCenterPanel, BorderLayout.NORTH);
@@ -124,7 +124,7 @@ public class Checkout extends JFrame {
         southCenterPanel.setBackground(new Color(51, 51, 51));
         southCenterPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         JLabel scanLabel = new JLabel("SCAN TO PAY");
-        scanLabel.setForeground(Color.GREEN);
+        scanLabel.setForeground(new Color(0, 204, 0));
         scanLabel.setFont(scanLabel.getFont().deriveFont(Font.BOLD, 20));
         southCenterPanel.add(scanLabel);
         innerPanel.add(southCenterPanel, BorderLayout.SOUTH);
