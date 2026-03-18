@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <link rel="icon" type="image/x-icon" href="wglogo.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      body {
+        background: url("img/background.png") center/cover no-repeat fixed;
+      }
+      .container {
+        max-width: 400px;
+        transform: translateY(30%);
+      }
+      .form-control:focus {
+        box-shadow: none;
+      }
+      .btn {
+        width: 100%;
+      }
+      .container {
+        font-family: "Sirin Stencil", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="js/validation.js"></script>
+    <header class="header">
+      <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+          <a class="navbar-brand me-auto text-light" href="index.html">
+            <img src="wglogo.png" alt="" width="40px" />
+          </a>
+          <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasnavbar" aria-labelledby="offcanvasnavbarlabel">
+            <div class="offcanvas-header">
+              <h5 class="offcanvas-title" id="offcanvasnavbarlabel"><a href="index.html"><img src="wglogo.png" alt="" width="40px"/></a></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+              <ul class="navbar-nav flex-grow-1 pe-3">
+                <li class="nav-item">
+                  <a class="nav-link mx-lg-2" href="showingmovies.html">Phim Đang Chiếu</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link mx-lg-2" href="upcomingmovies.html">Phim Sắp Chiếu</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link mx-lg-2" href="about.html">Về Chúng Tôi</a>
+                </li>
+                <li class="nav-item align-self-center">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" checked id="flexswitchcheckdefault" />
+                    <label class="form-check-label" for="flexswitchcheckdefault">Chế Độ Tối</label>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <a href="login.html" class="login-button left-bt-login">Đăng nhập</a>
+          <a href="register.html" class="login-button right-bt-sign">Đăng ký</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasnavbar" aria-controls="offcanvasnavbar" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+      </nav>
+    </header>
+    <div class="container">
+      <div class="card">
+        <div class="card-body">
+          <h1 class="text-center mb-4">
+            <a class="text-decoration-none" href="index.html">
+              <img src="wglogo.png" alt="WG Logo" width="50" />
+            </a>
+            <span style="color: #2056e0; font-weight: bolder;">Đăng ký</span>
+          </h1>
+          <form id="registerform" onsubmit="return reg(event);">
+            <div class="mb-3 input-group">
+              <span class="input-group-text"><i class="fa fa-user"></i></span>
+              <input type="text" name="username" oninvalid="InvalidUser(this);" class="form-control" placeholder="Tên đăng nhập" required/>
+            </div>
+            <div class="mb-3 input-group">
+              <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+              <input name="email" oninvalid="InvalidEmail(this);" type="email" class="form-control" placeholder="Email" required />
+            </div>
+            <div class="mb-3 input-group">
+              <span class="input-group-text"><i class="fa fa-lock"></i></span>
+              <input type="password" id="password" name="password" oninvalid="InvalidPass(this);" class="form-control" placeholder="Mật khẩu" required/>
+            </div>
+            <div class="mb-3 input-group">
+              <span class="input-group-text"><i class="fa fa-lock"></i></span>
+              <input type="password" oninput="InvalidConfirmPass();" name="confirm_password" id="confirm_password" class="form-control" placeholder="Xác nhận mật khẩu" required="required"/>
+            </div>
+            <div class="mb-3 text-center">
+              <a href="login.html" class="text-decoration-none ">Bạn đã có tài khoản?</a>
+            </div>
+            <button type="submit" class="btn btn-primary">Đăng ký</button>
+          </form>
+          <hr class="" />
+          <div class="text-center">
+            <h5 class="mb-3 ">Hoặc đăng ký với</h5>
+            <a href="#" class="mx-2 "><i class="fab fa-google fa-2x"></i></a>
+            <a href="#" class="mx-2 "><i class="fab fa-facebook fa-2x"></i></a>
+            <a href="#" class="mx-2 "><i class="fab fa-twitter fa-2x"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function reg(event) {
+        event.preventDefault();
+        var username = document.forms["registerform"]["username"].value;
+        var email = document.forms["registerform"]["email"].value;
+        var password = document.forms["registerform"]["password"].value;
+        var confirmPassword = document.forms["registerform"]["confirm_password"].value;
+        if (username && email && password && confirmPassword && password === confirmPassword) {
+          Swal.fire({
+            title: "Đăng ký thành công",
+            text: "Chào mừng bạn!",
+            icon: "success"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              document.getElementById("registerform").submit();
+            }
+          });
+        } else {
+          Swal.fire({
+            title: "Lỗi",
+            text: "Vui lòng nhập đầy đủ thông tin và đảm bảo mật khẩu khớp",
+            icon: "error"
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
