@@ -1,0 +1,322 @@
+[
+  {
+    "id": 1,
+    "category": "MoviesShowing",
+    "movieTitle": "Furiosa Câu Truyện Max Điên",
+    "imageFileName": "Furiosa Câu Truyện Max Điên.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/nVVungjjsfY",
+    "rating": "T18",
+    "releaseDate": "14/05/2024",
+    "description": "Tiền truyện của Mad Max: Fury Road, tập trung vào sự trỗi dậy của Furiosa. Khám phá những sự kiện đã hình thành nên chiến binh dũng mãnh và không sợ hãi này trong một thế giới hậu tận thế, nơi mà sự sống còn phụ thuộc vào trí tuệ, sức mạnh và quyết tâm không lay chuyển."
+  },
+  {
+    "id": 2,
+    "category": "MoviesShowing",
+    "movieTitle": "Gia Tài Của Ngoại",
+    "imageFileName": "Gia Tài Của Ngoại.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/Y_qYJ6To93k",
+    "rating": "P",
+    "releaseDate": "10/06/2024",
+    "description": "Phim hài về một gia đình khám phá ra tài sản ẩn giấu của người bà lập dị. Họ giải mã những manh mối bí ẩn và khám phá những bí mật bị chôn vùi từ lâu, từ đó gia đình càng gắn kết và học được những bài học quý giá về tình yêu, đoàn kết và ý nghĩa thật sự của sự giàu có."
+  },
+  {
+    "id": 3,
+    "category": "MoviesShowing",
+    "movieTitle": "Hành Tinh Khỉ Vương Quốc Mới",
+    "imageFileName": "Hành Tinh Khỉ Vương Quốc Mới.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/Z0EL1PDgPS0",
+    "rating": "T13",
+    "releaseDate": "08/07/2024",
+    "description": "Những con khỉ đấu tranh để chung sống với con người sau một cuộc chiến tàn khốc. Bộ phim theo chân lãnh đạo của loài khỉ khi anh ta điều hướng những âm mưu chính trị, sự phản bội và cuộc tìm kiếm sự hòa hợp lâu dài giữa các loài."
+  },
+  {
+    "id": 4,
+    "category": "MoviesShowing",
+    "movieTitle": "Linh Hồn Vũ Nữ 2 Nghi Thức Hồi Sinh",
+    "imageFileName": "Linh Hồn Vũ Nữ 2 Nghi Thức Hồi Sinh.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/pXZ52-ItVjY",
+    "rating": "T16",
+    "releaseDate": "27/05/2024",
+    "description": "Phù thủy trở lại trong một cuộc phiêu lưu ma quái mới."
+  },
+  {
+    "id": 5,
+    "category": "MoviesShowing",
+    "movieTitle": "Lật Mặt 7 Một Điều Ước",
+    "imageFileName": "Lật Mặt 7 Một Điều Ước.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/d1ZHdosjNX8",
+    "rating": "K",
+    "releaseDate": "12/05/2024",
+    "description": ""
+  },
+  {
+    "id": 6,
+    "category": "MoviesShowing",
+    "movieTitle": "Mèo Béo Siêu Quậy",
+    "imageFileName": "Mèo Béo Siêu Quậy.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/hlBA_G5_PGk",
+    "rating": "P",
+    "releaseDate": "20/05/2024",
+    "description": "Một con mèo mập nghịch ngợm gây ra hỗn loạn. Bộ phim nhẹ nhàng và vui nhộn này phù hợp cho mọi lứa tuổi, thể hiện khả năng của chú mèo đáng yêu này biến cuộc sống hàng ngày thành một chuỗi các cuộc phiêu lưu hài hước."
+  },
+  {
+    "id": 7,
+    "category": "MoviesShowing",
+    "movieTitle": "Móng Vuốt",
+    "imageFileName": "Móng Vuốt.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/FHN9VR1OOik",
+    "rating": "T16",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 8,
+    "category": "MoviesShowing",
+    "movieTitle": "Ngôi Đền Kỳ Quái 4",
+    "imageFileName": "Ngôi Đền Kỳ Quái 4.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/w0olAmjfses",
+    "rating": "K",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 9,
+    "category": "MoviesShowing",
+    "movieTitle": "Những Gã Trai Hư",
+    "imageFileName": "Những Gã Trai Hư.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/RGnBFA_g0rg",
+    "rating": "T18",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 10,
+    "category": "MoviesShowing",
+    "movieTitle": "Những Người Bạn Tưởng Tượng",
+    "imageFileName": "Những Người Bạn Tưởng Tượng.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/8qcmU5NatvQ",
+    "rating": "P",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 11,
+    "category": "MoviesShowing",
+    "movieTitle": "Nobita Và Bản Giao Hưởng Địa Cầu",
+    "imageFileName": "Nobita Và Bản Giao Hưởng Địa Cầu.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/Yug8gbDd5EQ",
+    "rating": "P",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 12,
+    "category": "MoviesShowing",
+    "movieTitle": "Stalker Tội Ác Hoàn Hảo",
+    "imageFileName": "Stalker Tội Ác Hoàn Hảo.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/3q0-A-JEs4k",
+    "rating": "T16",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 13,
+    "category": "MoviesShowing",
+    "movieTitle": "Totto Chan Cô Bé Bên Cửa Sổ",
+    "imageFileName": "Totto Chan Cô Bé Bên Cửa Sổ.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/f-tRSG3Rm5c",
+    "rating": "P",
+    "releaseDate": "01/06/2024",
+    "description": "Dựa trên tiểu thuyết Nhật Bản được yêu thích, bộ phim này theo chân câu chuyện ấm áp của Totto Chan, một cô bé tò mò và nhiệt huyết, người có nền giáo dục phi truyền thống tại một ngôi trường độc đáo mở ra một thế giới của những khả năng. Một câu chuyện về sự ngây thơ, khám phá và niềm vui học tập."
+  },
+  {
+    "id": 14,
+    "category": "MoviesShowing",
+    "movieTitle": "Vây Hãm Kẻ Trừng Phạt",
+    "imageFileName": "Vây Hãm Kẻ Trừng Phạt.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/kwOgIPZvdgg",
+    "rating": "T18",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 15,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Bẫy Nuốt Mạng",
+    "imageFileName": "Bẫy Nuốt Mạng.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/Xq6ZGkDOUbg",
+    "rating": "T16",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 16,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Cửu Long Thành Trại Vây Thành",
+    "imageFileName": "Cửu Long Thành Trại Vây Thành.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/hHKxd-dC8pU",
+    "rating": "T16",
+    "releaseDate": "23/06/2024",
+    "description": "Cảnh sát và tội phạm đụng độ trong thành phố cổ Cửu Long, Hồng Kông."
+  },
+  {
+    "id": 17,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Harold Và Cây Bút Phép Thuật",
+    "imageFileName": "Harold Và Cây Bút Phép Thuật.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/4czuJSq9EFA",
+    "rating": "P",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 18,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Không Nói Điều Dữ",
+    "imageFileName": "Không Nói Điều Dữ.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/VypozL0dbj4",
+    "rating": "T13",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 19,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Kẻ Trộm Mặt Trăng",
+    "imageFileName": "Kẻ Trộm Mặt Trăng.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/S1dnnQsY0QU",
+    "rating": "P",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 20,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Lốc Xoáy Tử Thần",
+    "imageFileName": "Lốc Xoáy Tử Thần.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/dvycs6rXILc",
+    "rating": "T13",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 21,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Mufasa Vua Sư Tử",
+    "imageFileName": "Mufasa Vua Sư Tử.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/2NlyiSQRsCU",
+    "rating": "P",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 22,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Mùa Hè Đẹp Nhất",
+    "imageFileName": "Mùa Hè Đẹp Nhất.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/agLVNJ_v7Jo",
+    "rating": "P",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 23,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Ngày Xưa Một Truyện Tình",
+    "imageFileName": "Ngày Xưa Một Truyện Tình.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/wGMq-JNTxC4",
+    "rating": "K",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 24,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Nhà Gia Tiên",
+    "imageFileName": "Nhà Gia Tiên.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/BYq0AQJ7Y-Q",
+    "rating": "T13",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 25,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Những Kẻ Theo Dõi",
+    "imageFileName": "Những Kẻ Theo Dõi.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/MOjh9K6lo0M",
+    "rating": "T16",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 26,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Những Mảnh Ghép Cảm Xúc 2",
+    "imageFileName": "Những Mảnh Ghép Cảm Xúc 2.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/AfOlW2OrzqE",
+    "rating": "P",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 27,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Nếu Gặp Lại Em Trên Đồi Hoa Nở",
+    "imageFileName": "Nếu Gặp Lại Em Trên Đồi Hoa Nở.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/UEdxgdPB-Eo",
+    "rating": "K",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 28,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Quái Vật Không Gian",
+    "imageFileName": "Quái Vật Không Gian.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/UmDVjN7EetM",
+    "rating": "T16",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 29,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Robot Hoang Dã",
+    "imageFileName": "Robot Hoang Dã.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/2l8_FNIBWLM",
+    "rating": "T13",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 30,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Transformers Một",
+    "imageFileName": "Transformers Một.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/WLqCKr2h1BI",
+    "rating": "T13",
+    "releaseDate": "",
+    "description": ""
+  },
+  {
+    "id": 31,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Venom The Last Dance",
+    "imageFileName": "Venom The Last Dance.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/STScKOUpXR8",
+    "rating": "T18",
+    "releaseDate": "05/10/2024",
+    "description": "Người bảo vệ chết người Venom trở lại cho trận chiến cuối cùng."
+  },
+  {
+    "id": 32,
+    "category": "MoviesUpcoming",
+    "movieTitle": "Vùng Đất Câm Lặng Ngày Một",
+    "imageFileName": "Vùng Đất Câm Lặng Ngày Một.jpg",
+    "trailerUrl": "https://www.youtube.com/embed/9wVj8AxpT8A",
+    "rating": "T16",
+    "releaseDate": "",
+    "description": ""
+  }
+]

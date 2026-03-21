@@ -19,9 +19,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="js/theme.js"></script>
+    <script src="scripts/main.js"></script>
   </head>
-  <body>
+  <body class="modern-theme">
     <header class="header">
       <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container-fluid">
@@ -36,10 +36,10 @@
             <div class="offcanvas-body">
               <ul class="navbar-nav flex-grow-1 pe-3">
                 <li class="nav-item">
-                  <a class="nav-link mx-lg-2" href="showingmovies.html">Phim Đang Chiếu</a>
+                  <a class="nav-link mx-lg-2" href="index.html#pills-home">Phim Đang Chiếu</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link mx-lg-2" href="upcomingmovies.html">Phim Sắp Chiếu</a>
+                  <a class="nav-link mx-lg-2" href="index.html#pills-sub">Phim Sắp Chiếu</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link mx-lg-2" href="about.html">Về Chúng Tôi</a>
@@ -128,7 +128,7 @@
         </div>
       </div>
     </div>
-    <footer class="text-center text-lg-start bg-primary-subtle">
+    <footer class="text-center text-lg-start glass-footer mt-5">
       <section class="">
         <div class="container text-center pt-4 text-md-start mt-5">
           <div class="row mt-3">
@@ -204,48 +204,34 @@
       document.addEventListener("DOMContentLoaded", function () {
         const lineNumber = localStorage.getItem('clickedMovieLineNumber');
         if (lineNumber) {
-          fetch('movies.txt')
-            .then(response => response.text())
-            .then(data => {
-              const movieLines = data.split('\n').map(line => line.trim()).filter(Boolean);
-              const clickedMovieLine = movieLines[parseInt(lineNumber) - 1];
-              if (clickedMovieLine) {
-                const parts = clickedMovieLine.split(' - ');
-                const [path, youtubeLink, age, releaseDate, description] = parts;
-                const [category, imageFileName] = path.split('\\');
-                const movieTitle = imageFileName.replace(/\.jpg$/, '');
+          fetch('scripts/movies.json')
+            .then(response => response.json())
+            .then(movies => {
+              const clickedMovie = movies.find(m => m.id === parseInt(lineNumber));
+              if (clickedMovie) {
                 const movieTitleElements = document.getElementsByClassName('movie-title');
                 for (let i = 0; i < movieTitleElements.length; i++) {
-                  movieTitleElements[i].textContent = movieTitle;
+                  movieTitleElements[i].textContent = clickedMovie.movieTitle;
                 }
-                document.getElementById('movie-image').src = `${category}/${imageFileName}`;
-                document.getElementById('youtube-iframe').src = `${youtubeLink}`;
-                document.getElementById('release-date').innerHTML = `${releaseDate || 'N/A'}`;
+                document.getElementById('movie-image').src = `images/movies/${clickedMovie.imageFileName}`;
+                document.getElementById('youtube-iframe').src = clickedMovie.trailerUrl;
+                document.getElementById('release-date').innerHTML = clickedMovie.releaseDate || 'N/A';
+                
                 const ageRestrictionElement = document.getElementById('age-restriction');
-                ageRestrictionElement.innerHTML = `${age || 'N/A'}`;
-                switch (age) {
-                  case 'T18':
-                    ageRestrictionElement.style.color = 'red';
-                    break;
-                  case 'T13':
-                    ageRestrictionElement.style.color = 'yellow';
-                    break;
-                  case 'T16':
-                    ageRestrictionElement.style.color = 'orange';
-                    break;
-                  case 'K':
-                    ageRestrictionElement.style.color = 'blue';
-                    break;
-                  case 'P':
-                    ageRestrictionElement.style.color = 'green';
-                    break;
-                  default:
-                    ageRestrictionElement.style.color = 'black';
+                ageRestrictionElement.innerHTML = clickedMovie.rating || 'N/A';
+                switch (clickedMovie.rating) {
+                  case 'T18': ageRestrictionElement.style.color = 'red'; break;
+                  case 'T13': ageRestrictionElement.style.color = 'yellow'; break;
+                  case 'T16': ageRestrictionElement.style.color = 'orange'; break;
+                  case 'K': ageRestrictionElement.style.color = 'blue'; break;
+                  case 'P': ageRestrictionElement.style.color = 'green'; break;
+                  default: ageRestrictionElement.style.color = 'black';
                 }
-                document.getElementById('description').textContent = `${description || 'Không có mô tả.'}`;
+                document.getElementById('description').textContent = clickedMovie.description || 'Không có mô tả.';
               }
             })
-            .catch(error => console.error('Error:', error));
+            .then(response => response.text())
+            .catch(error => console.error('Error fetching movies:', error));
         }
       });
     </script>

@@ -1,0 +1,18 @@
+# Node.js (website)
+website/node_modules/
+website/npm-debug.log
+website/yarn-error.log
+
+# Java/Gradle (java-app)
+java-app/.gradle/
+java-app/build/
+java-app/*.iml
+java-app/*.log
+
+# IDE files
+.idea/
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
