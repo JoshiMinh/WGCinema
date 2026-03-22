@@ -1,394 +1,262 @@
 <!DOCTYPE html>
-<html lang="vn">
+<html lang="vn" data-bs-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>wg cinema home page</title>
-    <link rel="icon" type="image/x-icon" href="wglogo.ico" />
-    <link rel="stylesheet" href="style.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <title>WG Cinema - Trang Chủ</title>
+    <link rel="icon" type="image/x-icon" href="../icon.ico" />
+    <link rel="stylesheet" href="scripts/style.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link rel="stylesheet" href="./owlcarousel/assets/owl.carousel.min.css" />
     <link rel="stylesheet" href="./owlcarousel/assets/owl.theme.default.css" />
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="./owlcarousel/owl.carousel.min.js"></script>
-    <script src="scripts/main.js"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="scripts/main.js"></script>
   </head>
   <body class="modern-theme">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Animated Background -->
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+    <div class="bg-shape bg-shape-3"></div>
 
     <header class="header">
       <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container-fluid">
           <a class="navbar-brand me-auto text-light" href="index.html">
-            <img src="wglogo.png" alt="" width="40px" />
+            <img src="../icon.ico" alt="WG Logo" width="45px" />
           </a>
-          <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+          <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
             <div class="offcanvas-header">
-              <h5 class="offcanvas-title" id="offcanvasNavbarLabel"><a href="index.html"><img src="wglogo.png" alt="" width="40px"/></a></h5>
-              <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+              <h5 class="offcanvas-title"><img src="../icon.ico" alt="" width="45px"/></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
             </div>
             <div class="offcanvas-body">
               <ul class="navbar-nav flex-grow-1 pe-3">
-                <li class="nav-item">
-                  <a class="nav-link mx-lg-2" href="index.html#pills-home">phim đang chiếu</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link mx-lg-2" href="index.html#pills-sub">phim sắp chiếu</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link mx-lg-2" href="about.html">về chúng tôi</a>
-                </li>
+                <li class="nav-item"><a class="nav-link mx-lg-2" href="#pills-home">Phim Đang Chiếu</a></li>
+                <li class="nav-item"><a class="nav-link mx-lg-2" href="#pills-sub">Phim Sắp Chiếu</a></li>
+                <li class="nav-item"><a class="nav-link mx-lg-2" href="about.html">Về Chúng Tôi</a></li>
                 <li class="nav-item align-self-center">
-                  <div class="form-check form-switch">
+                  <div class="form-check form-switch ms-3">
                     <input class="form-check-input" type="checkbox" role="switch" checked id="flexSwitchCheckDefault" />
-                    <label class="form-check-label" for="flexSwitchCheckDefault">chế độ tối</label>
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Chế Độ Tối</label>
                   </div>
                 </li>
               </ul>
             </div>
           </div>
-          <a href="login.html" class="login-button left-bt-login">đăng nhập</a>
-          <a href="register.html" class="login-button right-bt-sign">đăng ký</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+          <a href="auth.html?mode=login" class="login-button left-bt-login">Đăng nhập</a>
+          <a href="auth.html?mode=register" class="login-button right-bt-sign">Đăng ký</a>
+          <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
             <span class="navbar-toggler-icon"></span>
           </button>
         </div>
       </nav>
     </header>
-    <div class="content">
-      <div class="content1">
-        <script>
-          $(document).ready(function () {
-            $("#owl-carousel1").owlCarousel({
-              stagePadding: 200,
-              loop: true,
-              margin: 40,
-              nav: true,
-              navText: ['<i class="fa-solid fa-angle-left bg-primary"></i>', '<i class="fa-solid fa-angle-right bg-primary"></i>'],
-              dotsEach: true,
-              autoplay: true,
-              autoplayTimeout: 5000,
-              responsive: {
-                0: {
-                  items: 1,
-                  stagePadding: 0,
-                },
-                600: {
-                  items: 1,
-                  stagePadding: 0,
-                },
-                1000: {
-                  items: 1,
-                  stagePadding: 0,
-                },
-                1100: {
-                  items: 1,
-                  stagePadding: 100,
-                },
-                1360: {
-                  stagePadding: 200,
-                  items: 1,
-                },
-                1920: {
-                  stagePadding: 300,
-                  items: 1,
-                },
-              },
-            });
-          });
-        </script>
+
+    <div class="content container">
+      <div class="content1 glass-panel p-3 mb-5 mt-5">
         <div id="owl-carousel1" class="owl-carousel owl-theme">
-          <div class="item">
-            <h4><img src="owlcarousel/1.jpg" class="d-block" alt="" /></h4>
-          </div>
-          <div class="item">
-            <h4><img src="owlcarousel/2.jpg" class="d-block" alt="" /></h4>
-          </div>
-          <div class="item">
-            <h4><img src="owlcarousel/3.jpg" class="d-block" alt="" /></h4>
-          </div>
-        </div>
-        <div class="slider2">
-          <div id="carouselSlidesOnly" class="carousel slide" data-bs-ride="carousel">
-            <div id="carouselIndicators" class="carousel slide" data-bs-ride="carousel">
-              <div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="slide 1"></button>
-                <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="1" aria-label="slide 2"></button>
-                <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="2" aria-label="slide 3"></button>
-              </div>
-              <div class="carousel-inner">
-                <div class="carousel-item active" data-bs-interval="5000">
-                  <img src="https://img.websosanh.vn/v10/users/review/images/71lfkzep6qyvw/cvdgvxp-770x403.jpg?compress=85" class="d-block" alt="" />
-                </div>
-                <div class="carousel-item" data-bs-interval="5000">
-                  <img src="https://cdn.galaxycine.vn/media/2024/4/15/galaxy-da-co-1800x1200_1713168778020.jpg" class="d-block" alt="" />
-                </div>
-                <div class="carousel-item" data-bs-interval="5000">
-                  <img src="https://promacprinting.com/wp-content/uploads/2020/10/in-voucher-rap-chieu-phim.jpg" class="d-block" alt="" />
-                </div>
-              </div>
-              <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon bg-danger" aria-hidden="true"></span>
-                <span class="visually-hidden">previous</span>
-              </button>
-              <button class="carousel-control-next" type="button" data-bs-target="#carouselIndicators" data-bs-slide="next">
-                <span class="carousel-control-next-icon bg-danger" aria-hidden="true"></span>
-                <span class="visually-hidden">next</span>
-              </button>
-            </div>
-          </div>
+          <div class="item"><img src="images/carousel/1.jpg" class="d-block w-100 rounded-4" alt="" /></div>
+          <div class="item"><img src="images/carousel/2.jpg" class="d-block w-100 rounded-4" alt="" /></div>
+          <div class="item"><img src="images/carousel/3.jpg" class="d-block w-100 rounded-4" alt="" /></div>
         </div>
       </div>
-      <div class="content2 my-3 container">
-        <div class="row row1">
-          <div class="col">
-            <h2>danh sách phim</h2>
-          </div>
+
+      <div class="content2 my-5">
+        <div class="text-center mb-5">
+          <h2 class="gradient-text text-uppercase fw-bold" style="font-size: 2.5rem;">Danh Sách Phim</h2>
+          <p class="text-muted-custom">Khám phá các bộ phim bom tấn đang và sắp ra mắt tại hệ thống rạp toàn quốc</p>
         </div>
-        <ul class="nav nav-underline mb-3" id="pills-tab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">đang chiếu</button>
+        
+        <ul class="nav nav-pills justify-content-center mb-5" id="pills-tab" role="tablist">
+          <li class="nav-item me-3" role="presentation">
+            <button class="nav-link active px-4 py-2 fw-bold" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab">Đang chiếu</button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="pills-sub-tab" data-bs-toggle="pill" data-bs-target="#pills-sub" type="button" role="tab" aria-controls="pills-sub" aria-selected="false">sắp chiếu</button>
+            <button class="nav-link px-4 py-2 fw-bold" id="pills-sub-tab" data-bs-toggle="pill" data-bs-target="#pills-sub" type="button" role="tab">Sắp chiếu</button>
           </li>
         </ul>
+
         <div class="tab-content" id="pills-tabContent">
-          <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-            <div class="row row2" id="showing-movies-container">
-            </div>
+          <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
+            <div class="row" id="showing-movies-container"></div>
           </div>
+          <div class="tab-pane fade" id="pills-sub" role="tabpanel">
+            <div class="row" id="upcoming-movies-container"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="tab-pane fade" id="pills-sub" role="tabpanel" aria-labelledby="pills-profile-tab">
-            <div class="row row2" id="upcoming-movies-container">
-            </div>
-          </div>
+    <!-- Recommendations Section -->
+    <div class="top-movie2 container my-5 py-5 border-top border-secondary border-opacity-25">
+      <div class="text-center mb-5">
+        <h2 class="gradient-text text-uppercase fw-bold" style="font-size: 2.5rem;">Top Phim Nổi Bật</h2>
+        <p class="text-muted-custom">Những tựa phim thu hút hàng triệu lượt xem trên toàn quốc</p>
+      </div>
 
-        </div>
-      </div>
-    </div>
-    <div class="top-movie2">
-      <h1 class="top-movie-title">top phim đang chiếu</h1>
-      <script>
-        $(document).ready(function () {
-          $("#owl-carousel3").owlCarousel({
-            loop: true,
-            margin: 10,
-            nav: false,
-            responsive: {
-              0: {
-                items: 1,
-              },
-              668: {
-                items: 2,
-              },
-              991: {
-                items: 3,
-              },
-              1300: {
-                items: 4,
-              },
-            },
-          });
-        });
-        $(document).ready(function () {
-          $("[data-fancybox]").fancybox({
-            type: 'iframe',
-            iframe: {
-              preload: false
-            },
-            buttons: ["close"]
-          });
-        });
-      </script>
-      <div id="owl-carousel3" class="owl-carousel owl-theme mt-4 pb-4">
-        <div class="item" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">
-          <h4>
-            <div class="box m-auto">
-              <img src="moviesshowing/furiosa câu truyện max điên.jpg" height="400px" alt="" />
-              <div class="overlay">
-                <h3>furiosa câu truyện max điên</h3>
-                <p>
-                  câu chuyện bắt đầu từ lúc thế giới sụp đổ, furiosa phải tự cứu lấy mình để trở về nhà. một cuộc phiêu lưu hành động độc lập khốc liệt, tiền truyện về quái nữ đồng hành với max rockatansky ra rạp 2024.
-                </p>
-                <a data-fancybox data-type="iframe" data-src="https://www.youtube.com/embed/nVVungjjsfY" href="javascript:;" class="fancybox">xem trailer</a>
-              </div>
-            </div>
-          </h4>
-        </div>
-        <div class="item" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">
-          <div class="box m-auto">
-            <img src="moviesshowing/hành tinh khỉ vương quốc mới.jpg" height="400px" alt="" />
-            <div class="overlay">
-              <h3>hành tinh khỉ vương quốc mới</h3>
-              <p>
-                lấy bối cảnh nhiều đời sau sự ra đi của vua khỉ caesar, một chú vượn trẻ bắt đầu cuộc hành trình khiến cậu đặt câu hỏi về tất cả những gì cậu đã được dạy về quá khứ và đưa ra những lựa chọn sẽ xác định tương lai cho loài khỉ cũng như con người.
-              </p>
-              <a data-fancybox data-type="iframe" data-src="https://www.youtube.com/embed/Z0EL1PDgPS0" href="javascript:;" class="fancybox">xem trailer</a>
+      <div id="owl-carousel3" class="owl-carousel owl-theme pb-4">
+        <!-- Reusing original static top movies but wrapped nicely -->
+        <div class="item p-2" data-aos="fade-up" data-aos-duration="1000">
+          <div class="card bg-transparent border-0 h-100 glass-panel overflow-hidden text-center position-relative group">
+            <img src="moviesshowing/furiosa câu truyện max điên.jpg" class="w-100 object-fit-cover" style="height:400px;" alt=""/>
+            <div class="card-body position-absolute bottom-0 w-100" style="background: linear-gradient(to top, #000 70%, transparent); opacity: 0; transition: 0.4s; height: 100%; display:flex; flex-direction:column; justify-content:flex-end;">
+              <h5 class="fw-bold text-white mb-2">Furiosa</h5>
+              <p class="small text-light mb-4">Câu chuyện từ lúc thế giới sụp đổ...</p>
+              <a data-fancybox data-type="iframe" data-src="https://www.youtube.com/embed/nVVungjjsfY" class="btn btn-gradient btn-sm mx-auto mb-3">Xem Trailer</a>
             </div>
           </div>
         </div>
-        <div class="item" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">
-          <div class="box m-auto">
-            <img src="moviesshowing/nobita và bản giao hưởng địa cầu.jpg" height="400px" alt="" />
-            <div class="overlay">
-              <h3>nobita và bản giao hưởng địa cầu</h3>
-              <p>
-                đôrêmon và những người bạn thực hiện chuyến phiêu lưu để gặp gỡ những người bạn mới, kết nối mọi người bằng âm nhạc và cứu thế giới khỏi khủng hoảng. liệu những người bạn nhỏ có thể cứu được "tương lai âm nhạc" và cả địa cầu này?
-              </p>
-              <a data-fancybox data-type="iframe" data-src="https://www.youtube.com/embed/Yug8gbDd5EQ" href="javascript:;" class="fancybox">xem trailer</a>
+        <div class="item p-2" data-aos="fade-up" data-aos-duration="1200">
+          <div class="card bg-transparent border-0 h-100 glass-panel overflow-hidden text-center position-relative group">
+            <img src="moviesshowing/hành tinh khỉ vương quốc mới.jpg" class="w-100 object-fit-cover" style="height:400px;" alt=""/>
+            <div class="card-body position-absolute bottom-0 w-100" style="background: linear-gradient(to top, #000 70%, transparent); opacity: 0; transition: 0.4s; height: 100%; display:flex; flex-direction:column; justify-content:flex-end;">
+              <h5 class="fw-bold text-white mb-2">Hành Tinh Khỉ</h5>
+              <p class="small text-light mb-4">Vương quốc mới sau sự ra đi của Caesar.</p>
+              <a data-fancybox data-type="iframe" data-src="https://www.youtube.com/embed/Z0EL1PDgPS0" class="btn btn-gradient btn-sm mx-auto mb-3">Xem Trailer</a>
             </div>
           </div>
         </div>
-        <div class="item" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">
-          <div class="box m-auto">
-            <img src="moviesshowing/lật mặt 7 một điều ước.jpg" height="400px" alt="" />
-            <div class="overlay">
-              <h3>lật mặt 7 một điều ước</h3>
-              <p>
-                một câu chuyện lần đầu được kể bằng tất cả tình yêu, và từ tất cả những hồi ức xao xuyến nhất của đấng sinh thành.
-              </p>
-              <a data-fancybox data-type="iframe" data-src="https://www.youtube.com/embed/d1ZHdosjNX8" href="javascript:;" class="fancybox">xem trailer</a>
+        <div class="item p-2" data-aos="fade-up" data-aos-duration="1400">
+          <div class="card bg-transparent border-0 h-100 glass-panel overflow-hidden text-center position-relative group">
+            <img src="moviesshowing/nobita và bản giao hưởng địa cầu.jpg" class="w-100 object-fit-cover" style="height:400px;" alt=""/>
+            <div class="card-body position-absolute bottom-0 w-100" style="background: linear-gradient(to top, #000 70%, transparent); opacity: 0; transition: 0.4s; height: 100%; display:flex; flex-direction:column; justify-content:flex-end;">
+              <h5 class="fw-bold text-white mb-2">Doraemon</h5>
+              <p class="small text-light mb-4">Bản giao hưởng địa cầu đầy ma thuật.</p>
+              <a data-fancybox data-type="iframe" data-src="https://www.youtube.com/embed/Yug8gbDd5EQ" class="btn btn-gradient btn-sm mx-auto mb-3">Xem Trailer</a>
+            </div>
+          </div>
+        </div>
+        <div class="item p-2" data-aos="fade-up" data-aos-duration="1600">
+          <div class="card bg-transparent border-0 h-100 glass-panel overflow-hidden text-center position-relative group">
+            <img src="moviesshowing/lật mặt 7 một điều ước.jpg" class="w-100 object-fit-cover" style="height:400px;" alt=""/>
+            <div class="card-body position-absolute bottom-0 w-100" style="background: linear-gradient(to top, #000 70%, transparent); opacity: 0; transition: 0.4s; height: 100%; display:flex; flex-direction:column; justify-content:flex-end;">
+              <h5 class="fw-bold text-white mb-2">Lật Mặt 7</h5>
+              <p class="small text-light mb-4">Một điều ước từ đấng sinh thành.</p>
+              <a data-fancybox data-type="iframe" data-src="https://www.youtube.com/embed/d1ZHdosjNX8" class="btn btn-gradient btn-sm mx-auto mb-3">Xem Trailer</a>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <script>
-      AOS.init({
-        duration: 3000,
-      });
-    </script>
-    <div class="container discount">
-      <div class="background-overlay background-overlay1">
-        <div class="text">
-          giảm giá cho người mới và học sinh, sinh viên
-        </div>
+    <style>
+      #owl-carousel3 .glass-panel:hover .card-body { opacity: 1 !important; }
+      #owl-carousel3 .glass-panel:hover img { transform: scale(1.1); filter: brightness(40%); }
+    </style>
+
+    <!-- Promos -->
+    <div class="container discount py-5">
+      <div class="text-center mb-5">
+        <h2 class="gradient-text fw-bold">Khuyến Mãi & Trải Nghiệm</h2>
       </div>
-      <div class="background-overlay background-overlay2">
-        <div class="text">
-          ghế ngồi thoải mái, xem phim chân thực
+      <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="background-overlay background-overlay1">
+            <div class="text fs-4">Gói Ưu Đãi Sinh Viên</div>
+          </div>
         </div>
-      </div>
-      <div class="background-overlay background-overlay3">
-        <div class="text">
-          nhiều phim và chương trình khuyến mãi luôn đón chờ
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="background-overlay background-overlay2">
+            <div class="text fs-4">Ghế Ngồi Siêu Thực</div>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="background-overlay background-overlay3">
+            <div class="text fs-4">Combo Bắp Nước Hấp Dẫn</div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="information container">
-      <div class="row">
-        <div class="col-lg-4">
-          <h2>bạn hỏi, chúng tôi sẽ trả lời</h2>
-          <br />
-          <h6>nếu bạn có thắc mắc nào, hãy liên lạc với chúng tôi thông qua email: <a href="mailto:minhnb.23ai@vku.udn.vn">minhnb.23ai@vku.udn.vn</a></h6>
+
+    <!-- FAQ -->
+    <div class="information container py-5 my-5">
+      <div class="row align-items-center">
+        <div class="col-lg-5 mb-5 mb-lg-0 text-center text-lg-start" data-aos="fade-right">
+          <h2 class="fw-bold gradient-text display-5 mb-4">Bạn Hỏi,<br>Chúng Tôi Sẽ Trả Lời</h2>
+          <p class="text-muted-custom fs-5 mb-4">Mọi thắc mắc của bạn đều được đội ngũ chăm sóc khách hàng của WG Cinema hỗ trợ tận tình.</p>
+          <a href="mailto:minhnb.23ai@vku.udn.vn" class="btn btn-gradient px-4 py-2"><i class="fas fa-envelope me-2"></i> Gửi Email Ngay</a>
         </div>
-        <div class="col-lg-8">
+        <div class="col-lg-7" data-aos="fade-left">
           <div class="accordion accordion-flush" id="accordionFlushExample">
             <div class="accordion-item">
-              <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                  lợi ích của việc mua vé xem phim tại wg
-                </button>
-              </h2>
+              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne">Lợi ích của việc mua vé xem phim tại WG?</button></h2>
               <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                <div class="accordion-body">nhanh chóng, trực quan, tiết kiệm thời gian và tiện lợi cùng những chương trình khuyến mãi với giá vô cùng cùng hấp dẫn</div>
+                <div class="accordion-body">Nhanh chóng, trực quan, tiết kiệm thời gian và tiện lợi cùng những chương trình khuyến mãi với giá vô cùng cùng hấp dẫn. Giao diện trực quan và cao cấp nhất.</div>
               </div>
             </div>
             <div class="accordion-item">
-              <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                  vé xem phim có được đổi trả, hoàn hủy không?
-                </button>
-              </h2>
+              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo">Vé xem phim có được đổi trả, hoàn hủy không?</button></h2>
               <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                <div class="accordion-body">các vé xem phim khi tra cứu lịch chiếu phim tại wg hiện tại không hỗ trợ đổi trả hay hoàn hủy vé.</div>
+                <div class="accordion-body">Các vé xem phim khi tra cứu lịch chiếu phim tại WG hiện tại không hỗ trợ đổi trả hay hoàn hủy vé.</div>
               </div>
             </div>
             <div class="accordion-item">
-              <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-                  xem phim tại wg có những gì?
-                </button>
-              </h2>
+              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree">Xem phim tại WG có những gì đặc sắc?</button></h2>
               <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                <div class="accordion-body">
-                  rạp chiếu phim wg đem đến cho bạn trải nghiệm xem phim phê nhất từ dàn loa dolby atmos 7.1, kèm màn hình rộng bằng một sân bóng, đủ để khiến bạn mê đắm trong suốt thời gian xem.
-                </div>
+                <div class="accordion-body">Rạp chiếu phim WG đem đến cho bạn trải nghiệm xem phim phê nhất từ dàn loa Dolby Atmos 7.1, kèm màn hình rộng bằng một sân bóng, đủ để khiến bạn mê đắm trong suốt thời gian xem.</div>
               </div>
             </div>
             <div class="accordion-item">
-              <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseThree">
-                  có thể mua vé xem phim kèm bắp nước hay không?
-                </button>
-              </h2>
+              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour">Có thể mua vé xem phim kèm bắp nước không?</button></h2>
               <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                <div class="accordion-body">
-                  hiện tại wg có hỗ trợ mua bắp nước ngay khi đặt vé. nếu bạn muốn tăng size, đổi mùi vị bắp nước chỉ cần đến quầy và trả thêm tiền cho thu ngân. bắp nước đã mua không hỗ trợ đổi trả.
-                </div>
+                <div class="accordion-body">Hiện tại WG có hỗ trợ mua bắp nước ngay khi đặt vé. Nếu bạn muốn tăng size, đổi mùi vị bắp nước chỉ cần đến quầy và trả thêm tiền cho thu ngân.</div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <footer class="text-center text-lg-start glass-footer mt-5">
-      <section class="">
-        <div class="container text-center pt-4 text-md-start mt-5">
-          <div class="row mt-3">
-            <div class="col-md-3 col-lg-5 col-xl-3 mx-auto mb-4">
-              <h6 class="text-uppercase mb-4" style="font-weight: bold;"><i class="fas fa-star me-2"></i>giới thiệu</h6>
-              <p>
-                wg cinema là rạp chiếu phim với mức giá rẻ nhất thị trường việt nam.<br />
-                cam kết đem lại cho quý khác trải nghiêm xem phim hay nhất.
-              </p>
-            </div>
-            <div class="col-md-3 col-lg-3 col-xl-2 mx-auto mb-4">
-              <h6 class="text-uppercase mb-4" style="font-weight: bold;">
-                <i class="fas fa-user me-2"></i>
-                mạng xã hội
-              </h6>
-              <p>
-                <a href="https://www.facebook.com/joshi.minh52" class="text-reset">
-                  <i class="fab fa-facebook"></i>
-                  facebook
-                </a>
-              </p>
-              <p>
-                <a href="#!" class="text-reset">
-                  <i class="fab fa-twitter"></i>
-                  twitter
-                </a>
-              </p>
-            </div>
-            <div class="col-md-4 col-lg-4 col-xl-3 mx-auto">
-              <h6 class="text-uppercase mb-4" style="font-weight: bold;"><i class="fas fa-phone me-2"></i>liên lạc</h6>
-              <p>
-                <i class="fas fa-envelope me-3"></i>
-                minhnb.23ai@vku.udn.vn
-              </p>
-              <p><i class="fas fa-phone me-3"></i> +84 907 067 721</p>
+
+    <!-- Footer -->
+    <footer class="glass-footer py-5 mt-auto">
+      <div class="container text-center text-md-start">
+        <div class="row pt-4">
+          <div class="col-md-5 col-lg-4 mx-auto mb-4">
+            <h5 class="text-uppercase fw-bold mb-4 gradient-text"><i class="fas fa-video me-2"></i> WG Cinema</h5>
+            <p class="text-muted-custom">
+              Hệ thống rạp chiếu phim với mức giá rẻ nhất, nhưng chất lượng cao cấp và hiện đại bậc nhất thị trường Việt Nam.
+            </p>
+          </div>
+          <div class="col-md-3 col-lg-2 mx-auto mb-4">
+            <h6 class="text-uppercase fw-bold mb-4 gradient-text">Kết Nối</h6>
+            <div class="d-flex flex-column gap-3">
+              <a href="#" class="text-reset text-decoration-none"><i class="fab fa-facebook me-2 text-primary"></i> Facebook</a>
+              <a href="#" class="text-reset text-decoration-none"><i class="fab fa-instagram me-2 text-danger"></i> Instagram</a>
+              <a href="#" class="text-reset text-decoration-none"><i class="fab fa-twitter me-2 text-info"></i> Twitter</a>
             </div>
           </div>
+          <div class="col-md-4 col-lg-3 mx-auto mb-4">
+            <h6 class="text-uppercase fw-bold mb-4 gradient-text">Liên Hệ</h6>
+            <ul class="list-unstyled text-muted-custom">
+              <li class="mb-3"><i class="fas fa-map-marker-alt me-3 text-danger"></i> 123 Ngũ Hành Sơn, Đà Nẵng</li>
+              <li class="mb-3"><i class="fas fa-envelope me-3 text-success"></i> minhnb.23ai@vku.udn.vn</li>
+              <li class="mb-3"><i class="fas fa-phone me-3 text-primary"></i> +84 907 067 721</li>
+            </ul>
+          </div>
         </div>
-      </section>
+      </div>
     </footer>
+
+    <script>
+      $(document).ready(function () {
+        AOS.init({ duration: 1000, once: true });
+        $("#owl-carousel1").owlCarousel({
+          loop: true, margin: 20, stagePadding: 100, nav: false, dots: true, autoplay: true, autoplayTimeout: 5000,
+          responsive: { 0: { items: 1, stagePadding: 0 }, 1000: { items: 1, stagePadding: 150 } }
+        });
+        $("#owl-carousel3").owlCarousel({
+          loop: true, margin: 20, nav: false, dots: false, autoplay: true, autoplayTimeout: 3000,
+          responsive: { 0: { items: 1 }, 768: { items: 2 }, 1024: { items: 4 } }
+        });
+      });
+    </script>
   </body>
 </html>

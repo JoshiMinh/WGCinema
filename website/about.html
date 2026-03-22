@@ -1,46 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vn" data-bs-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="scripts/main.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <title>WG Cinema - Về Chúng Tôi</title>
+  <link rel="icon" type="image/x-icon" href="../icon.ico" />
+  <link rel="stylesheet" href="scripts/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body class="modern-theme">
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+  <!-- Interactive Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="scripts/main.js"></script>
+
+  <!-- Animated Background Shapes -->
+  <div class="bg-shape bg-shape-1"></div>
+  <div class="bg-shape bg-shape-2"></div>
+  <div class="bg-shape bg-shape-3"></div>
+
+  <!-- Header -->
   <header class="header">
     <nav class="navbar navbar-expand-lg fixed-top">
       <div class="container-fluid">
         <a class="navbar-brand me-auto text-light" href="index.html">
-          <img src="WGLogo.png" alt="" width="40px">
+          <img src="../icon.ico" alt="WG Logo" width="45px">
         </a>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
           <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">
-              <a href="index.html">
-                <img src="WGLogo.png" alt="" width="40px">
-              </a>
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <h5 class="offcanvas-title"><img src="../icon.ico" alt="" width="45px"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
           </div>
           <div class="offcanvas-body">
             <ul class="navbar-nav flex-grow-1 pe-3">
-              <li class="nav-item">
-                <a class="nav-link mx-lg-2" href="index.html#pills-home">Phim Đang Chiếu</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link mx-lg-2" href="index.html#pills-sub">Phim Sắp Chiếu</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link mx-lg-2" href="about.html">Về Chúng Tôi</a>
-              </li>
+              <li class="nav-item"><a class="nav-link mx-lg-2" href="index.html#pills-home">Phim Đang Chiếu</a></li>
+              <li class="nav-item"><a class="nav-link mx-lg-2" href="index.html#pills-sub">Phim Sắp Chiếu</a></li>
+              <li class="nav-item"><a class="nav-link mx-lg-2 active" href="about.html">Về Chúng Tôi</a></li>
               <li class="nav-item align-self-center">
-                <div class="form-check form-switch">
+                <div class="form-check form-switch ms-3">
                   <input class="form-check-input" type="checkbox" role="switch" checked id="flexSwitchCheckDefault">
                   <label class="form-check-label" for="flexSwitchCheckDefault">Chế Độ Tối</label>
                 </div>
@@ -48,105 +45,99 @@
             </ul>
           </div>
         </div>
-        <a href="login.html" class="login-button left-bt-login">Đăng Nhập</a>
-        <a href="register.html" class="login-button right-bt-sign">Đăng Ký</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+        <a href="auth.html?mode=login" class="login-button left-bt-login">Đăng Nhập</a>
+        <a href="auth.html?mode=register" class="login-button right-bt-sign">Đăng Ký</a>
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
           <span class="navbar-toggler-icon"></span>
         </button>
       </div>
     </nav>
   </header>
-  <div class="container mt-5 about">
-    <br>
-    <br>
-    <div class="row">
-      <div class="col-lg-6">
-        <img src="img/movie-theater-popcorn.webp" class="img-fluid rounded" alt="Cinema">
-      </div>
-      <div class="col-lg-6">
-        <h1>Về rạp <i style="color: #4170e7;">WG</i></h1>
-        <p>Tại rạp chiếu phim WG, chúng tôi cam đoan rằng sẽ mang đến trải nghiệm xem phim tuyệt vời cho khách hàng. Cơ sở vật chất và trang thiết bị của chúng tôi được trang bị với công nghệ mới nhất, mang đến trải nghiệm xem phim chân thật với hình ảnh siêu nét và âm thanh sống động.</p>
-        <p>Chúng tôi luôn mang đến cho mọi người những bộ phim đang và sắp chiếu trên toàn thế giới với mọi thể loại. Với ghế ngồi thoải mái, hàng ngàn đồ ăn snacks và dịch vụ chăm sóc khách hàng tuyệt vời, chúng tôi luôn muốn mọi người có một trải nghiệm đáng nhớ và thoải mái nhất.</p>
-        <p>Chúng tôi cũng có những chính sách ưu đãi với khách hàng mới và cũ, luôn có những khuyến mãi trong những khung giờ đặc biệt và mức giá vé phải chăng, nhằm mong muốn tất cả mọi người ai cũng có thể đi xem phim với trải nghiệm tuyệt vời về giá cả và chất lượng.</p>
-      </div>
-    </div>
-  </div>
-  <div class="container mt-5 about-why">
-    <h2 class="text-center">Tại sao lại chọn chúng tôi?</h2>
-    <div class="row text-center mt-4">
-      <div class="col-md-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">Công nghệ tân tiến</h5>
-            <p class="card-text">Chúng tôi trang bị thiết bị hình ảnh và âm thanh hiện đại nhất để mang đến trải nghiệm tốt nhất.</p>
-          </div>
+
+  <!-- About Hero -->
+  <div class="container my-5 pt-5">
+    <div class="glass-panel p-4 p-md-5 my-5">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0 text-center">
+          <img src="img/movie-theater-popcorn.webp" class="img-fluid rounded-4 shadow-lg w-100 object-fit-cover" style="height: 400px;" alt="Cinema Popcorn">
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">Ghế ngồi thoải mái</h5>
-            <p class="card-text">Ghế ngồi của chúng tôi mang đến cảm giác thoải mái và thư giản trong trải nghiệm xem phim</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">Rất nhiều phim đón chờ</h5>
-            <p class="card-text">WG mang đến đa dạng thể loại phim và từ lớn tới nhỏ cho tất cả mọi người thưởng thức.</p>
-          </div>
+        <div class="col-lg-6 ps-lg-5">
+          <h1 class="display-4 fw-bold mb-4">Về rạp chiếu phim <span class="gradient-text">WG</span></h1>
+          <p class="text-muted-custom fs-5 mb-4">Tại rạp chiếu phim WG, chúng tôi cam đoan sẽ mang đến trải nghiệm xem phim tuyệt vời nhất. Cơ sở vật chất và trang thiết bị của chúng tôi tích hợp các công nghệ tân tiến nhất để tái tạo hình ảnh siêu nét 4K HDR và âm thanh vòm sống động chuẩn điện ảnh Dolby Atmos.</p>
+          <p class="text-muted-custom fs-6 mb-4">Với không gian ghế ngồi rộng rãi, hệ thống snack bar phòng phú và dịch vụ khách hàng 5 sao, WG luôn tự hào biến mỗi trải nghiệm 120 phút của bạn thành một chuyến đi đáng nhớ.</p>
+          <a href="index.html" class="btn btn-gradient px-4 py-3 fw-bold"><i class="fas fa-ticket-alt me-2"></i> Đặt Vé Ngay Hôm Nay</a>
         </div>
       </div>
     </div>
   </div>
-  <hr class="container">
-  <div class="map mt-5 container">
-    <h2>Địa chỉ của chúng tôi</h2>
-    <br>
-    <figure>
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d678.067675054702!2d108.25250969227571!3d15.975469826113516!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142108997dc971f%3A0x1295cb3d313469c9!2sVietnam%20-%20Korea%20University%20of%20Information%20and%20Communication%20Technology!5e0!3m2!1sen!2s!4v1709226176214!5m2!1sen!2s" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </figure>
-  </div>
-  <footer class="text-center text-lg-start glass-footer mt-5">
-    <section>
-      <div class="container text-center pt-4 text-md-start mt-5">
-        <div class="row mt-3">
-          <div class="col-md-3 col-lg-5 col-xl-3 mx-auto mb-4">
-            <h6 class="text-uppercase mb-4" style="font-weight: bold;">
-              <i class="fas fa-star me-2"></i>Giới thiệu
-            </h6>
-            <p>WG Cinema là rạp chiếu phim với mức giá rẻ nhất thị trường Việt Nam. Cam kết đem lại cho quý khác trải nghiêm xem phim hay nhất.</p>
-          </div>
-          <div class="col-md-3 col-lg-3 col-xl-2 mx-auto mb-4">
-            <h6 class="text-uppercase mb-4" style="font-weight: bold;">
-              <i class="fas fa-user me-2"></i>Mạng xã hội
-            </h6>
-            <p>
-              <a href="https://www.facebook.com/joshi.minh52" class="text-reset">
-                <i class="fab fa-facebook"></i>Facebook
-              </a>
-            </p>
-            <p>
-              <a href="#!" class="text-reset">
-                <i class="fab fa-twitter"></i>Twitter
-              </a>
-            </p>
-          </div>
-          <div class="col-md-4 col-lg-4 col-xl-3 mx-auto">
-            <h6 class="text-uppercase mb-4" style="font-weight: bold;">
-              <i class="fas fa-phone me-2"></i>Liên Lạc
-            </h6>
-            <p>
-              <i class="fas fa-envelope me-3"></i>minhnb.23ai@vku.udn.vn
-            </p>
-            <p>
-              <i class="fas fa-phone me-3"></i>+84 907 067 721
-            </p>
-          </div>
+
+  <!-- Why Choose Us -->
+  <div class="container my-5 py-5">
+    <div class="text-center mb-5">
+      <h2 class="display-6 fw-bold gradient-text text-uppercase">Tại sao lại chọn chúng tôi?</h2>
+      <p class="text-muted-custom">Hệ thống dịch vụ đỉnh cao cam kết sự hài lòng tuyệt đối.</p>
+    </div>
+    <div class="row g-4 text-center">
+      <div class="col-md-4">
+        <div class="glass-panel h-100 p-4 hover-lift" style="transition: transform 0.3s; cursor:pointer;" onMouseOver="this.style.transform='translateY(-10px)'" onMouseOut="this.style.transform='translateY(0)'">
+          <div class="display-4 gradient-text mb-4 mt-2"><i class="fas fa-tv"></i></div>
+          <h4 class="fw-bold text-white mb-3">Công nghệ tân tiến</h4>
+          <p class="text-muted-custom">Chuỗi phòng chiếu IMAX thế hệ mới mang lại góc nhìn vô cực và âm thanh đa chiều xuất sắc.</p>
         </div>
       </div>
-    </section>
+      <div class="col-md-4">
+        <div class="glass-panel h-100 p-4 hover-lift" style="transition: transform 0.3s; cursor:pointer;" onMouseOver="this.style.transform='translateY(-10px)'" onMouseOut="this.style.transform='translateY(0)'">
+          <div class="display-4 gradient-text mb-4 mt-2"><i class="fas fa-couch"></i></div>
+          <h4 class="fw-bold text-white mb-3">Ghế ngồi thượng hạng</h4>
+          <p class="text-muted-custom">Thiết kế ghế Sofa bọc da chuẩn công thái học, ngả lưng linh hoạt tạo sự thư giãn tối đa.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="glass-panel h-100 p-4 hover-lift" style="transition: transform 0.3s; cursor:pointer;" onMouseOver="this.style.transform='translateY(-10px)'" onMouseOut="this.style.transform='translateY(0)'">
+          <div class="display-4 gradient-text mb-4 mt-2"><i class="fas fa-film"></i></div>
+          <h4 class="fw-bold text-white mb-3">Kho phim đồ sộ</h4>
+          <p class="text-muted-custom">Cập nhật nhanh nhất và độc quyền chiếu sớm mọi bom tấn từ Hollywood, Châu Á và Việt Nam.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Map Section -->
+  <div class="container my-5 pb-5">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold gradient-text">Địa chỉ của chúng tôi</h2>
+    </div>
+    <div class="glass-panel p-2">
+      <iframe class="rounded-4 w-100 shadow-sm" style="height: 500px; filter: grayscale(80%) invert(90%) hue-rotate(180deg);" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d678.067675054702!2d108.25250969227571!3d15.975469826113516!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142108997dc971f%3A0x1295cb3d313469c9!2sVietnam%20-%20Korea%20University%20of%20Information%20and%20Communication%20Technology!5e0!3m2!1sen!2s!4v1709226176214!5m2!1sen!2s" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="glass-footer py-5 mt-auto">
+    <div class="container text-center text-md-start">
+      <div class="row pt-4">
+        <div class="col-md-5 col-lg-4 mx-auto mb-4">
+          <h5 class="text-uppercase fw-bold mb-4 gradient-text"><i class="fas fa-video me-2"></i> WG Cinema</h5>
+          <p class="text-muted-custom">Hệ thống rạp chiếu phim với mức giá rẻ nhất, nhưng chất lượng cao cấp và hiện đại bậc nhất thị trường Việt Nam.</p>
+        </div>
+        <div class="col-md-3 col-lg-2 mx-auto mb-4">
+          <h6 class="text-uppercase fw-bold mb-4 gradient-text">Kết Nối</h6>
+          <div class="d-flex flex-column gap-3">
+            <a href="#" class="text-reset text-decoration-none"><i class="fab fa-facebook me-2 text-primary"></i> Facebook</a>
+            <a href="#" class="text-reset text-decoration-none"><i class="fab fa-instagram me-2 text-danger"></i> Instagram</a>
+            <a href="#" class="text-reset text-decoration-none"><i class="fab fa-twitter me-2 text-info"></i> Twitter</a>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg-3 mx-auto mb-4">
+          <h6 class="text-uppercase fw-bold mb-4 gradient-text">Liên Hệ</h6>
+          <ul class="list-unstyled text-muted-custom">
+            <li class="mb-3"><i class="fas fa-map-marker-alt me-3 text-danger"></i> 123 Ngũ Hành Sơn, Đà Nẵng</li>
+            <li class="mb-3"><i class="fas fa-envelope me-3 text-success"></i> minhnb.23ai@vku.udn.vn</li>
+            <li class="mb-3"><i class="fas fa-phone me-3 text-primary"></i> +84 907 067 721</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </footer>
 </body>
 </html>

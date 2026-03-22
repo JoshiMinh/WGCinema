@@ -1,5 +1,31 @@
-document.addEventListener('DOMContentLoaded', (event) => {
-    // 1. Theme configuration
+/**
+ * WGCinema Main Script
+ * Handles Theme Toggle, Movie Rendering, and Auth interactions.
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Theme Configuration
+    initTheme();
+
+    // 2. Fetch and Render Movies
+    fetchMoviesAndRender();
+
+    // 3. Handle Auto-tabs
+    if (window.location.hash) {
+        const targetTab = document.querySelector(`button[data-bs-target="${window.location.hash}"]`);
+        if (targetTab) {
+            targetTab.click();
+        }
+    }
+
+    // 4. Initialize Auth Page if on it
+    initAuthPage();
+});
+
+// ========================
+// Theme Toggle Logic
+// ========================
+function initTheme() {
     const htmlElement = document.documentElement;
     const switchElement = document.getElementById('flexSwitchCheckDefault');
     const switchLabel = document.querySelector('.form-check-label[for="flexSwitchCheckDefault"]');
@@ -22,18 +48,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
         });
     }
+}
 
-    // 2. Fetch logic for dynamic movie loading
-    fetchMoviesAndRender();
-
-    if (window.location.hash) {
-        const targetTab = document.querySelector(`button[data-bs-target="${window.location.hash}"]`);
-        if (targetTab) {
-            targetTab.click();
-        }
-    }
-});
-
+// ========================
+// Movie Rendering Logic
+// ========================
 function fetchMoviesAndRender() {
     const showingContainer = document.getElementById('showing-movies-container');
     const upcomingContainer = document.getElementById('upcoming-movies-container');
@@ -56,100 +75,142 @@ function fetchMoviesAndRender() {
 }
 
 const movieCardTemplate = (movie) => `
-  <div class="col-lg-3 col-sm-6">
-    <div class="card border-0" style="width: 15; margin: auto;">
+  <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+    <div class="card h-100 border-0 text-center">
       <a href="movieinfo.html" onClick="storeMovieInfo(${movie.id})">
-        <img src="images/movies/${movie.imageFileName}" class="card-img-top" />
+        <img src="images/movies/${movie.imageFileName}" class="card-img-top w-100" alt="${movie.movieTitle}" />
       </a>
+      <div class="btn-book">
+         <a href="#qr-code-${movie.id}" class="btn btn-gradient" data-fancybox><i class="fas fa-ticket-alt me-2"></i> Đặt Vé</a>
+      </div>
       <div class="card-body">
-        <p class="card-text text-center">${movie.movieTitle}</p>
+        <p class="card-text">${movie.movieTitle}</p>
       </div>
     </div>
-    <div class="d-flex justify-content-center align-items-center">
-      <a href="#qr-code-${movie.id}" class="btn btn-primary mb-3" data-fancybox>Đặt Vé</a>
-    </div>
-  </div>
-  <div style="display: none;" id="qr-code-${movie.id}">
-    <h3 style="text-align: center; color: #000;">Số tiền cần thanh toán: 70.000 VNĐ</h3>
-    <img width="600px" style="max-width: 100%; height: auto;" src="images/QR-code.jpg" alt="QR Code" onerror="this.src='images/seat.jpg'"/>
-    <div class="d-flex justify-content-center mt-3">
-          <button class="btn btn-success mx-2" onclick="confirmBooking()">Xác nhận</button>
-          <button class="btn btn-danger mx-2" onclick="$.fancybox.close()">Hủy</button>
+    
+    <!-- Fancybox QR Modal -->
+    <div style="display: none;" id="qr-code-${movie.id}" class="fancybox-content">
+      <h3 class="text-center mb-4 gradient-text">Số tiền cần thanh toán: 70.000 VNĐ</h3>
+      <div class="text-center mb-4">
+        <img width="300px" class="rounded shadow" src="images/QR-code.jpg" alt="QR Code" onerror="this.src='images/seat.jpg'"/>
+      </div>
+      <div class="d-flex justify-content-center gap-3">
+            <button class="btn btn-gradient px-4" onclick="confirmBooking()">Xác nhận</button>
+            <button class="btn btn-outline-danger px-4" style="border-radius: 50px;" onclick="$.fancybox.close()">Hủy</button>
+      </div>
     </div>
   </div>
 `;
 
-function storeMovieInfo(id) {
+window.storeMovieInfo = function(id) {
     localStorage.setItem('clickedMovieId', id);
-}
+    // Backward compatibility with legacy code
+    localStorage.setItem('clickedMovieLineNumber', id);
+};
 
-$(document).ready(function() {
-    if ($.fn.fancybox) {
-        $('[data-fancybox]').fancybox({
-            buttons: ["zoom", "close"]
-        });
-    }
-});
-
-function confirmBooking() {
+window.confirmBooking = function() {
     if (typeof Swal !== 'undefined') {
       Swal.fire({
           icon: 'success',
           title: 'Đã đặt vé thành công',
+          text: 'Vui lòng kiểm tra email để lấy vé.',
           showConfirmButton: false,
-          timer: 2000
+          timer: 2000,
+          background: 'var(--glass-bg)',
+          color: 'var(--text-main)'
       });
     } else {
       alert('Đã đặt vé thành công!');
     }
-    if ($.fancybox) {
+    if (typeof $ !== 'undefined' && $.fancybox) {
         $.fancybox.close();
     }
+};
+
+if (typeof $ !== 'undefined') {
+    $(document).ready(function() {
+        if ($.fn.fancybox) {
+            $('[data-fancybox]').fancybox({
+                buttons: ["close"],
+                animationEffect: "zoom-in-out"
+            });
+        }
+    });
 }
 
-// 3. Validation Logic
-window.InvalidEmail = function(textbox) {
-    if (textbox.value === '') { 
-        textbox.setCustomValidity('Bạn phải nhập địa chỉ email!'); 
-    } else if (textbox.validity.typeMismatch) { 
-        textbox.setCustomValidity('Địa chỉ email không đúng định dạng!'); 
-    } else { 
-        textbox.setCustomValidity(''); 
-    } 
-    return true; 
+// ========================
+// Auth Page Interaction
+// ========================
+function initAuthPage() {
+    if (!document.querySelector('.auth-page')) return;
+    
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get('mode') || 'login';
+    switchAuthTab(mode);
 }
 
-window.InvalidUser = function(textbox) {
-    if (textbox.value === '') { 
-        textbox.setCustomValidity('Bạn phải nhập tên đăng nhập');
-    } else {
-        textbox.setCustomValidity(''); 
-    } 
-    return true; 
-}
+window.switchAuthTab = function(mode) {
+    // Update Tabs
+    document.getElementById('tab-login')?.classList.remove('active');
+    document.getElementById('tab-register')?.classList.remove('active');
+    document.getElementById(`tab-${mode}`)?.classList.add('active');
 
-window.InvalidPass = function(textbox) {
-    if (textbox.value === '') { 
-        textbox.setCustomValidity('Bạn phải nhập mật khẩu');
-    } else {
-        textbox.setCustomValidity(''); 
-    } 
-    return true;
-}
-
-window.InvalidConfirmPass = function() {
-    var password = document.getElementById("password").value;
-    var confirmPassword = document.getElementById("confirm_password").value;
-    var confirmPasswordField = document.getElementById("confirm_password");
-
-    if (!confirmPasswordField) return true;
-
-    if (confirmPassword === '') {
-        confirmPasswordField.setCustomValidity('Bạn phải xác nhận mật khẩu');
-    } else if (confirmPassword !== password) {
-        confirmPasswordField.setCustomValidity('Mật khẩu xác nhận không khớp');
-    } else {
-        confirmPasswordField.setCustomValidity('');
+    // Update Forms
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    
+    if (loginForm && registerForm) {
+        if (mode === 'login') {
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+            loginForm.classList.add('active');
+        } else {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            registerForm.classList.add('active');
+        }
     }
-    return true;
 }
+
+window.handleLogin = function(event) {
+    event.preventDefault();
+    const user = document.getElementById('login-username').value;
+    const pass = document.getElementById('login-password').value;
+    if(user && pass) {
+        Swal.fire({
+            title: "Đăng nhập thành công",
+            text: "Chào mừng bạn trở lại!",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500
+        }).then(() => {
+            window.location.href = 'index.html';
+        });
+    }
+};
+
+window.handleRegister = function(event) {
+    event.preventDefault();
+    const user = document.getElementById('reg-username').value;
+    const pass = document.getElementById('reg-password').value;
+    const conf = document.getElementById('reg-confirm-password').value;
+    
+    if (pass !== conf) {
+        Swal.fire({
+            title: "Lỗi",
+            text: "Mật khẩu xác nhận không khớp!",
+            icon: "error"
+        });
+        return;
+    }
+    
+    Swal.fire({
+        title: "Đăng ký thành công",
+        text: "Tài khoản của bạn đã được tạo.",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500
+    }).then(() => {
+        window.location.href = 'index.html';
+    });
+};
