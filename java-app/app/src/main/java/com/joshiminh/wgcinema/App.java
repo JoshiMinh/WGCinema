@@ -1,19 +1,19 @@
 package com.joshiminh.wgcinema;
 
 import javax.swing.*;
-import com.joshiminh.wgcinema.booking.*;
-import com.joshiminh.wgcinema.dashboard.*;
-import com.joshiminh.wgcinema.data.DAO;
-import com.joshiminh.wgcinema.utils.ResourceUtil;
+import com.joshiminh.wgcinema.ui.dashboard.*;
+import com.joshiminh.wgcinema.ui.booking.*;
+import com.joshiminh.wgcinema.dao.*;
+import com.joshiminh.wgcinema.auth.RegistrationFrame;
+import com.joshiminh.wgcinema.util.ResourceManager;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.Properties;
-import static com.joshiminh.wgcinema.utils.AgentStyles.*; // Import AgentStyles
+import static com.joshiminh.wgcinema.util.AgentStyles.*; // Import AgentStyles
 
-@SuppressWarnings("unused")
 public class App extends JFrame {
     private JPanel mainPanel;
     private JPasswordField passwordField;
@@ -34,18 +34,18 @@ public class App extends JFrame {
         setSize(500, 450); // Giữ chiều ngang 500, chiều cao 450
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        setIconImage(ResourceUtil.loadAppIcon());
+        setIconImage(ResourceManager.loadAppIcon());
 
         mainPanel = new JPanel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                Image bg = ResourceUtil.loadImage("/images/background.jpg");
+                Image bg = ResourceManager.loadImage("/images/background.jpg");
                 g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
             }
         };
         mainPanel.setLayout(new GridBagLayout());
 
-        logoLabel = new JLabel(new ImageIcon(ResourceUtil.loadImage("/images/icon.png").getScaledInstance(70, 65, Image.SCALE_SMOOTH)));
+        logoLabel = new JLabel(new ImageIcon(ResourceManager.loadImage("/images/icon.png").getScaledInstance(70, 65, Image.SCALE_SMOOTH)));
 
         emailField = new JTextField(18); // Thu hẹp chiều ngang trường email
         passwordField = new JPasswordField(18); // Thu hẹp chiều ngang trường password
@@ -168,7 +168,7 @@ public class App extends JFrame {
     private void performLogin() {
         String email = emailField.getText().trim();
         String password = new String(passwordField.getPassword());
-        try (ResultSet rs = DAO.fetchAccountByEmail(DB_URL, email)) {
+        try (ResultSet rs = AccountDAO.fetchAccountByEmail(DB_URL, email)) {
             if (rs.next()) {
                 String hash = rs.getString("password_hash");
                 int adminValueFromDb = rs.getInt("admin");
@@ -187,7 +187,7 @@ public class App extends JFrame {
                             showError("You are not an admin.", "Access Denied");
                         }
                     } else {
-                        new MovieList(DB_URL, email).setVisible(true);
+                        new MovieGridPanel(DB_URL, email).setVisible(true);
                         dispose();
                     }
                 } else {
@@ -253,7 +253,7 @@ public class App extends JFrame {
     }
 
     private void resetPassword(String email, String newPassword) {
-        int updated = DAO.updateAccountPassword(DB_URL, email, hashPassword(newPassword));
+        int updated = AccountDAO.updateAccountPassword(DB_URL, email, hashPassword(newPassword));
         if (updated > 0) {
             JOptionPane.showMessageDialog(this, "Password reset successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -278,9 +278,9 @@ public class App extends JFrame {
     }
 
     private void openRegisterFrame() {
-        JFrame registerFrame = new Register(DB_URL);
+        JFrame registerFrame = new RegistrationFrame(DB_URL);
         registerFrame.setVisible(true);
-        registerFrame.setIconImage(ResourceUtil.loadAppIcon());
+        registerFrame.setIconImage(ResourceManager.loadAppIcon());
     }
 
     private void saveUserCredentials(String email, String password) {

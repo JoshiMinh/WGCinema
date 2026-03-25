@@ -17,7 +17,7 @@ yarn-debug.log*
 yarn-error.log*
 dist/
 
-# Environment/Secrets
+# Environment / Secrets
 .env
 .env.local
 .env.development.local
@@ -37,6 +37,6 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Temporary/Backup
+# Temporary / Backup
 *.swp
 *~

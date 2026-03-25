@@ -21,7 +21,7 @@ java {
 }
 
 application {
-    mainClass = 'com.joshiminh.wgcinema.App'
+    mainClass = 'com.joshiminh.wgcinema.MainApp'
 }
 
 tasks.named('test') {
