@@ -5,7 +5,8 @@ import java.sql.ResultSet;
 public class MovieDAO extends BaseDAO {
 
     public static ResultSet fetchMovieDetails(String connectionString, int movieId) {
-        String sql = "SELECT * FROM movies WHERE id = ?";
+        String cols = "id, title, director, release_date, duration, language, age_rating, trailer, poster, description";
+        String sql = "SELECT " + cols + " FROM movies WHERE id = ?";
         return select(connectionString, sql, movieId);
     }
 

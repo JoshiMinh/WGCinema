@@ -14,6 +14,8 @@ import java.text.NumberFormat;
 import java.text.ParseException; // Import ParseException
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.math.BigDecimal;
+import com.joshiminh.wgcinema.util.PriceUtils;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import static com.joshiminh.wgcinema.util.AgentStyles.*; // Import AgentStyles
@@ -31,6 +33,7 @@ public class CheckoutDialog extends JFrame {
     private String connectionString;
     private String initialSelectedSeats;
     private String currentUserEmail;
+    private final PriceUtils priceUtils = new PriceUtils(); // optional, but we can call static methods
 
     public CheckoutDialog(String connectionString, int showroomID, Time time, int movieId, Date date, String movieTitle, String movieRating, String movieLink, int showtimeID, String selectedSeats, SeatSelectionFrame showroomsFrame) {
         this.showtimeID = showtimeID;
@@ -166,7 +169,7 @@ public class CheckoutDialog extends JFrame {
         northCenterPanel.add(priceLabel);
         innerPanel.add(northCenterPanel, BorderLayout.NORTH);
 
-        ImageIcon qrIcon = new ImageIcon(ResourceManager.loadImage("/images/QR.jpg"));
+        ImageIcon qrIcon = new ImageIcon(ResourceManager.loadImage("/images/payment_qr.jpg"));
         JLabel qrLabel = new JLabel(qrIcon);
         innerPanel.add(qrLabel, BorderLayout.CENTER);
 
@@ -200,65 +203,34 @@ public class CheckoutDialog extends JFrame {
         setVisible(true);
     }
 
-    public static boolean checkBooked(String chairsBooked, String selectedSeats) {
-        String[] bookedSeats = chairsBooked.split(" ");
-        String[] selectedSeatArray = selectedSeats.split(", ");
-        for (String selectedSeat : selectedSeatArray) {
-            for (String bookedSeat : bookedSeats) {
-                if (selectedSeat.equals(bookedSeat)) return true;
-            }
-        }
-        return false;
-    }
-
     public String calculateTotalPrice(String selectedSeats) {
         int totalPrice = 0;
         if (selectedSeats == null || selectedSeats.trim().isEmpty()) {
-            return formatPrice(0);
+            return PriceUtils.formatPrice(0);
         }
         String[] seats = selectedSeats.split(", ");
         for (String seat : seats) {
             if (seat.trim().isEmpty()) {
                 continue;
             }
-            char row = seat.charAt(0);
-            if (row >= 'A' && row <= 'F') totalPrice += this.regularSeatPrice;
-            else if (row >= 'G' && row <= 'L') totalPrice += this.vipSeatPrice;
+            String type = PriceUtils.getSeatType(seat);
+            if (type.equals("regular")) totalPrice += this.regularSeatPrice;
+            else if (type.equals("vip")) totalPrice += this.vipSeatPrice;
         }
-        return formatPrice(totalPrice);
+        return PriceUtils.formatPrice(totalPrice);
     }
 
-    private static String formatPrice(int price) {
-        @SuppressWarnings("deprecation")
-        NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-        return numberFormat.format(price) + "vnđ";
-    }
+    // Redundant formatPrice removed, use PriceUtils.formatPrice instead
 
     private void book() {
         try {
             String selectedSeatsToBook = initialSelectedSeats;
+            String totalPriceString = calculateTotalPrice(selectedSeatsToBook);
+            
+            // Perform atomic booking via TransactionDAO
+            boolean success = TransactionDAO.recordTransaction(connectionString, showtimeID, currentUserEmail, totalPriceString, selectedSeatsToBook);
 
-            ResultSet chairsResult = ShowtimeDAO.fetchShowtimeDetails(connectionString, showtimeID);
-
-            if (chairsResult != null && chairsResult.next()) {
-                String chairsBooked = chairsResult.getString("chairs_booked");
-                if (chairsBooked == null) chairsBooked = ""; // Ensure it's not null
-                if (checkBooked(chairsBooked, selectedSeatsToBook)) {
-                    JOptionPane.showMessageDialog(this, "Some selected seats are already booked!", "Error", JOptionPane.ERROR_MESSAGE);
-                    chairsResult.close();
-                    return;
-                }
-            } else {
-                if (chairsResult != null) chairsResult.close();
-                return;
-            }
-            chairsResult.close();
-
-            // Add seats to booked
-            int reservedCount = selectedSeatsToBook.split(", ").length;
-            int updatedRows = ShowtimeDAO.updateShowtimeSeats(connectionString, reservedCount, selectedSeatsToBook, showtimeID);
-
-            if (updatedRows > 0) {
+            if (success) {
                 // Delete from seat_selections table (successful booking)
                 ShowtimeDAO.deleteSeatSelection(connectionString, showtimeID, currentUserEmail);
 
@@ -266,25 +238,18 @@ public class CheckoutDialog extends JFrame {
                 showSuccessImage();
                 bookingSuccessful = true;
 
-                // Parse the price string using Vietnamese locale to correctly handle thousands separator
-                String totalPriceString = calculateTotalPrice(selectedSeatsToBook);
-                @SuppressWarnings("deprecation")
-                NumberFormat parser = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-                double revenue = parser.parse(totalPriceString.replace("vnđ", "").trim()).doubleValue();
+                // Parse the price using PriceUtils
+                BigDecimal revenueBD = PriceUtils.parsePrice(totalPriceString);
+                double revenue = revenueBD.doubleValue();
                 int tickets = selectedSeatsToBook.split(", ").length;
 
-                System.out.println("Checkout: Revenue before insert/update: " + revenue + " (from '" + totalPriceString + "')");
+                System.out.println("Checkout: Revenue recorded: " + revenue + " (from '" + totalPriceString + "')");
 
-                TransactionDAO.insertTransaction(connectionString, movieId, totalPriceString, selectedSeatsToBook, showroomID, currentUserEmail, showtimeID);
-
-                // Update current month sales for the user
+                // Update current month sales for the user (already handled by total_amount in DB, but we keep the account stats updated)
                 AccountDAO.updateAccountCurrentMonthSales(connectionString, currentUserEmail, tickets, revenue);
             } else {
-                JOptionPane.showMessageDialog(this, "Booking failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Booking failed. Some seats may have been taken or an error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (ParseException e) { // Catch ParseException here
-            JOptionPane.showMessageDialog(this, "Error parsing total price: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "An error occurred during booking: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -298,7 +263,7 @@ public class CheckoutDialog extends JFrame {
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setBackground(PRIMARY_BACKGROUND); // Use PRIMARY_BACKGROUND
         JLabel imageLabel = new JLabel();
-        ImageIcon imageIcon = new ImageIcon(ResourceManager.loadImage("/images/TicketBooked.png"));
+        ImageIcon imageIcon = new ImageIcon(ResourceManager.loadImage("/images/booking_success.png"));
         Image scaledImage = imageIcon.getImage().getScaledInstance(350, 350, Image.SCALE_SMOOTH);
         imageLabel.setIcon(new ImageIcon(scaledImage));
         centerPanel.add(imageLabel, new GridBagConstraints());

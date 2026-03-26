@@ -47,19 +47,19 @@ function initTheme() {
     }
 }
 
-window.confirmBooking = function() {
+window.confirmBooking = function () {
     if (typeof Swal !== 'undefined') {
-      Swal.fire({
-          icon: 'success',
-          title: 'Đã đặt vé thành công',
-          text: 'Vui lòng kiểm tra email để lấy vé.',
-          showConfirmButton: false,
-          timer: 2000,
-          background: 'var(--glass-bg)',
-          color: 'var(--text-main)'
-      });
+        Swal.fire({
+            icon: 'success',
+            title: 'Đã đặt vé thành công',
+            text: 'Vui lòng kiểm tra email để lấy vé.',
+            showConfirmButton: false,
+            timer: 2000,
+            background: 'var(--glass-bg)',
+            color: 'var(--text-main)'
+        });
     } else {
-      alert('Đã đặt vé thành công!');
+        alert('Đã đặt vé thành công!');
     }
     if (typeof $ !== 'undefined' && $.fancybox) {
         $.fancybox.close();
@@ -67,7 +67,7 @@ window.confirmBooking = function() {
 };
 
 if (typeof $ !== 'undefined') {
-    $(document).ready(function() {
+    $(document).ready(function () {
         if ($.fn.fancybox) {
             $('[data-fancybox]').fancybox({
                 buttons: ["close"],
@@ -82,13 +82,13 @@ if (typeof $ !== 'undefined') {
 // ========================
 function initAuthPage() {
     if (!document.querySelector('.auth-page')) return;
-    
+
     const params = new URLSearchParams(window.location.search);
     const mode = params.get('mode') || 'login';
     switchAuthTab(mode);
 }
 
-window.switchAuthTab = function(mode) {
+window.switchAuthTab = function (mode) {
     // Update Tabs
     document.getElementById('tab-login')?.classList.remove('active');
     document.getElementById('tab-register')?.classList.remove('active');
@@ -97,7 +97,7 @@ window.switchAuthTab = function(mode) {
     // Update Forms
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
-    
+
     if (loginForm && registerForm) {
         if (mode === 'login') {
             registerForm.style.display = 'none';

@@ -10,6 +10,11 @@ CREATE TABLE `accounts` (
   `membership`      TINYINT(1)   NOT NULL DEFAULT 0,
   `password_hash`   CHAR(64)     COLLATE utf8mb4_general_ci NOT NULL,
   `admin`           TINYINT(1)   NOT NULL DEFAULT 0,
+  `total_tickets_sold_current_month` INT NOT NULL DEFAULT 0,
+  `total_revenue_current_month`      DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `total_tickets_sold_last_month`    INT NOT NULL DEFAULT 0,
+  `total_revenue_last_month`         DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `last_reset_date` DATE DEFAULT NULL,
   PRIMARY KEY (`account_email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -84,13 +89,27 @@ CREATE TABLE `transactions` (
   `transaction_date` DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `account_email`    VARCHAR(255)      COLLATE utf8mb4_general_ci NOT NULL,
   `showtime_id`      SMALLINT UNSIGNED NOT NULL,
-  `total_amount`     DECIMAL(10,2)     NOT NULL,
+  `total_amount`     DECIMAL(15,2)     NOT NULL,
   PRIMARY KEY (`transaction_id`),
   KEY `idx_account_email` (`account_email`),
   KEY `idx_showtime_id`  (`showtime_id`),
   CONSTRAINT `fk_transactions_account`  FOREIGN KEY (`account_email`) REFERENCES `accounts`  (`account_email`) ON DELETE CASCADE,
   CONSTRAINT `fk_transactions_showtime` FOREIGN KEY (`showtime_id`)   REFERENCES `showtimes` (`showtime_id`)   ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ===========================
+-- Drop and Recreate Seat Selections Table
+-- ===========================
+DROP TABLE IF EXISTS `seat_selections`;
+CREATE TABLE `seat_selections` (
+  `showtime_id` SMALLINT UNSIGNED NOT NULL,
+  `user_email`  VARCHAR(255)      COLLATE utf8mb4_general_ci NOT NULL,
+  `selected_seats` TEXT           COLLATE utf8mb4_general_ci NOT NULL,
+  `selection_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`showtime_id`, `user_email`),
+  CONSTRAINT `fk_seat_selections_showtime` FOREIGN KEY (`showtime_id`) REFERENCES `showtimes` (`showtime_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_seat_selections_account`  FOREIGN KEY (`user_email`)  REFERENCES `accounts`  (`account_email`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ===========================
 -- Drop and Recreate Tickets Table
@@ -101,7 +120,7 @@ CREATE TABLE `tickets` (
   `transaction_id` INT UNSIGNED      NOT NULL,
   `seat_identifier` VARCHAR(10)      COLLATE utf8mb4_general_ci NOT NULL,
   `seat_type`      ENUM('regular', 'vip') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'regular',
-  `price`          DECIMAL(10,2)     NOT NULL,
+  `price`          DECIMAL(15,2)     NOT NULL,
   PRIMARY KEY (`ticket_id`),
   KEY `idx_transaction_id` (`transaction_id`),
   CONSTRAINT `fk_tickets_transaction` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`transaction_id`) ON DELETE CASCADE

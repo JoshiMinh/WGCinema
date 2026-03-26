@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaseDAO {
+    /**
+     * Executes a SELECT query. 
+     * IMPORTANT: The caller is responsible for closing the returned ResultSet and its associated Statement/Connection.
+     */
     protected static ResultSet select(String connectionString, String sql, Object... params) {
         try {
             Connection connection = DriverManager.getConnection(connectionString);
@@ -18,7 +22,7 @@ public class BaseDAO {
             }
             return preparedStatement.executeQuery();
         } catch (SQLException e) {
-            System.err.println("DAO Select Error: " + e.getMessage());
+            System.err.println("DAO Select Error: " + e.getMessage() + " | SQL: " + sql);
             e.printStackTrace();
             return null;
         }
@@ -33,10 +37,9 @@ public class BaseDAO {
                 preparedStatement.setObject(i + 1, params[i]);
             }
             int rowsAffected = preparedStatement.executeUpdate();
-            System.out.println("DAO Update/Delete: Rows Affected = " + rowsAffected);
             return rowsAffected;
         } catch (SQLException e) {
-            System.err.println("DAO Update/Delete Error: " + e.getMessage());
+            System.err.println("DAO Update/Delete Error: " + e.getMessage() + " | SQL: " + sql);
             e.printStackTrace();
             return 0;
         }
@@ -51,6 +54,7 @@ public class BaseDAO {
             }
             return names.toArray(new String[0]);
         } catch (SQLException e) {
+            System.err.println("DAO getColumnNames Error: " + e.getMessage());
             return new String[0];
         }
     }

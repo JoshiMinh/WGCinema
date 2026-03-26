@@ -22,7 +22,7 @@ public class ResourceManager {
      * @return The app icon or null if not found.
      */
     public static Image loadAppIcon() {
-        return loadImage("/images/icon.png");
+        return loadImage("/images/app_icon.png");
     }
 
     /**

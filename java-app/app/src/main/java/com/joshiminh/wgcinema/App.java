@@ -39,13 +39,13 @@ public class App extends JFrame {
         mainPanel = new JPanel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                Image bg = ResourceManager.loadImage("/images/background.jpg");
+                Image bg = ResourceManager.loadImage("/images/app_background.jpg");
                 g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
             }
         };
         mainPanel.setLayout(new GridBagLayout());
 
-        logoLabel = new JLabel(new ImageIcon(ResourceManager.loadImage("/images/icon.png").getScaledInstance(70, 65, Image.SCALE_SMOOTH)));
+        logoLabel = new JLabel(new ImageIcon(ResourceManager.loadImage("/images/app_icon.png").getScaledInstance(70, 65, Image.SCALE_SMOOTH)));
 
         emailField = new JTextField(18); // Thu hẹp chiều ngang trường email
         passwordField = new JPasswordField(18); // Thu hẹp chiều ngang trường password

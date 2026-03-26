@@ -5,12 +5,14 @@ import java.sql.ResultSet;
 public class ShowroomDAO extends BaseDAO {
 
     public static ResultSet fetchShowroomDetails(String connectionString, int showroomId) {
-        String sql = "SELECT * FROM showrooms WHERE showroom_id = ?";
+        String cols = "showroom_id, showroom_name, max_chairs, row_count, column_count";
+        String sql = "SELECT " + cols + " FROM showrooms WHERE showroom_id = ?";
         return select(connectionString, sql, showroomId);
     }
 
     public static ResultSet fetchAllShowrooms(String connectionString) {
-        String sql = "SELECT * FROM showrooms";
+        String cols = "showroom_id, showroom_name, max_chairs, row_count, column_count";
+        String sql = "SELECT " + cols + " FROM showrooms";
         return select(connectionString, sql);
     }
 

@@ -2,8 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once '../lib/config.php';
-require_once '../lib/functions.php';
+require_once __DIR__ . '/../lib/config.php';
+require_once __DIR__ . '/../lib/functions.php';
 
 if (!isset($pageTitle)) {
     $pageTitle = 'WG Cinema';
@@ -15,7 +15,7 @@ if (!isset($pageTitle)) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><?php echo h($pageTitle); ?></title>
-    <link rel="icon" type="image/x-icon" href="../icon.ico" />
+    <link rel="icon" type="image/x-icon" href="icon.ico" />
     <link rel="stylesheet" href="assets/css/style.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -32,21 +32,21 @@ if (!isset($pageTitle)) {
   <body class="modern-theme">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+ 
     <!-- Animated Background -->
     <div class="bg-shape bg-shape-1"></div>
     <div class="bg-shape bg-shape-2"></div>
     <div class="bg-shape bg-shape-3"></div>
-
+ 
     <header class="header">
       <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container-fluid">
           <a class="navbar-brand me-auto text-light" href="index.php">
-            <img src="../icon.ico" alt="WG Logo" width="45px" />
+            <img src="icon.ico" alt="WG Logo" width="45px" />
           </a>
           <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
             <div class="offcanvas-header">
-              <h5 class="offcanvas-title"><img src="../icon.ico" alt="" width="45px"/></h5>
+              <h5 class="offcanvas-title"><img src="icon.ico" alt="" width="45px"/></h5>
               <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
             </div>
             <div class="offcanvas-body">

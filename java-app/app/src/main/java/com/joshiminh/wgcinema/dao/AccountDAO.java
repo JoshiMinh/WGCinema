@@ -6,7 +6,8 @@ import java.time.LocalDate;
 public class AccountDAO extends BaseDAO {
 
     public static ResultSet fetchAccountByEmail(String connectionString, String email) {
-        String sql = "SELECT * FROM accounts WHERE account_email = ?";
+        String cols = "account_email, name, gender, date_of_birth, membership, password_hash, admin, total_tickets_sold_current_month, total_revenue_current_month, total_tickets_sold_last_month, total_revenue_last_month, last_reset_date";
+        String sql = "SELECT " + cols + " FROM accounts WHERE account_email = ?";
         return select(connectionString, sql, email);
     }
 
@@ -65,7 +66,7 @@ public class AccountDAO extends BaseDAO {
                         int prevMonthTickets = 0;
                         double prevMonthRevenue = 0.0;
                         String calculatePrevMonthSalesSql = """
-                         SELECT COUNT(*) AS total_tickets, SUM(amount) AS total_revenue
+                         SELECT COUNT(*) AS total_tickets, SUM(total_amount) AS total_revenue
                          FROM transactions
                          WHERE account_email = ?
                          AND transaction_date >= ? AND transaction_date <= ?
@@ -85,7 +86,7 @@ public class AccountDAO extends BaseDAO {
                         int currentMonthTickets = 0;
                         double currentMonthRevenue = 0.0;
                         String calculateCurrentMonthSalesSql = """
-                         SELECT COUNT(*) AS total_tickets, SUM(amount) AS total_revenue
+                         SELECT COUNT(*) AS total_tickets, SUM(total_amount) AS total_revenue
                          FROM transactions
                          WHERE account_email = ?
                          AND transaction_date >= ? AND transaction_date <= ?

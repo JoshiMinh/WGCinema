@@ -123,27 +123,12 @@ public class SeatSelectionFrame extends JFrame {
     private void refreshSeatStatus() {
         SwingUtilities.invokeLater(() -> {
             try {
-                // Get updated seat status
-                String newChairsBooked = "";
+                // Get updated seat status from the new tables
+                String newChairsBooked = ShowtimeDAO.getSeatsBooked(connectionString, showtimeID);
                 String newChairsSelecting = ShowtimeDAO.getSelectingSeats(connectionString, showtimeID);
-
-                // Get updated booked seats
-                try (ResultSet rs = ShowtimeDAO.fetchShowtimeDetails(connectionString, showtimeID)) {
-                    if (rs != null && rs.next()) {
-                        newChairsBooked = rs.getString("chairs_booked");
-                        if (newChairsBooked == null) newChairsBooked = "";
-                    }
-                } catch (SQLException ex) {
-                    System.err.println("Error fetching showtime details: " + ex.getMessage());
-                    return;
-                }
 
                 boolean hasChanges = !newChairsBooked.equals(chairsBooked) ||
                         !newChairsSelecting.equals(lastChairsSelecting);
-
-                System.out.println("Refresh: Current booked: '" + chairsBooked + "', new booked: '" + newChairsBooked + "'");
-                System.out.println("Refresh: Current selecting: '" + lastChairsSelecting + "', new selecting: '" + newChairsSelecting + "'");
-                System.out.println("Refresh: Has changes? " + hasChanges);
 
                 if (hasChanges) {
                     System.out.println("Seat status changed - refreshing display");
@@ -180,9 +165,8 @@ public class SeatSelectionFrame extends JFrame {
         try (ResultSet rs = ShowtimeDAO.fetchShowtimeDetails(connectionString, showtimeID)) {
             if (rs != null && rs.next()) {
                 date = rs.getDate("date");
-                chairsBooked = rs.getString("chairs_booked");
-                if (chairsBooked == null) chairsBooked = "";
-                System.out.println("SeatSelectionFrame: Initial chairsBooked from DB: '" + chairsBooked + "'");
+                chairsBooked = ShowtimeDAO.getSeatsBooked(connectionString, showtimeID);
+                System.out.println("SeatSelectionFrame: Initial chairsBooked from tickets table: '" + chairsBooked + "'");
 
                 time = rs.getTime("time");
                 movieId = rs.getInt("movie_id");

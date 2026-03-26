@@ -6,21 +6,23 @@ import java.sql.SQLException;
 public class ShowtimeDAO extends BaseDAO {
 
     public static ResultSet fetchShowtimeDetails(String connectionString, int showtimeId) {
-        String sql = "SELECT *, regular_price, vip_price FROM showtimes WHERE showtime_id = ?";
-        try {
-            ResultSet rs = select(connectionString, sql, showtimeId);
-            if (rs != null && rs.next()) {
-                try {
-                    rs.getString("chairs_selecting");
-                    rs.beforeFirst();
-                    return rs;
-                } catch (SQLException e) {
-                    rs.close();
-                }
+        String cols = "showtime_id, time, movie_id, date, showroom_id, regular_price, vip_price";
+        String sql = "SELECT " + cols + " FROM showtimes WHERE showtime_id = ?";
+        return select(connectionString, sql, showtimeId);
+    }
+ 
+    public static String getSeatsBooked(String connectionString, int showtimeId) {
+        String sql = "SELECT seat_identifier FROM tickets t JOIN transactions tr ON t.transaction_id = tr.transaction_id WHERE tr.showtime_id = ?";
+        StringBuilder bookedSeats = new StringBuilder();
+        try (ResultSet rs = select(connectionString, sql, showtimeId)) {
+            while (rs != null && rs.next()) {
+                if (bookedSeats.length() > 0) bookedSeats.append(", ");
+                bookedSeats.append(rs.getString("seat_identifier"));
             }
         } catch (SQLException e) {
+            System.err.println("Error fetching booked seats: " + e.getMessage());
         }
-        return select(connectionString, sql, showtimeId);
+        return bookedSeats.toString();
     }
 
     public static String getSelectingSeats(String connectionString, int showtimeId) {
@@ -55,7 +57,8 @@ public class ShowtimeDAO extends BaseDAO {
     }
 
     public static ResultSet fetchAllShowtimes(String connectionString) {
-        String sql = "SELECT * FROM showtimes";
+        String cols = "showtime_id, time, movie_id, date, showroom_id, regular_price, vip_price";
+        String sql = "SELECT " + cols + " FROM showtimes";
         return select(connectionString, sql);
     }
 
@@ -65,14 +68,6 @@ public class ShowtimeDAO extends BaseDAO {
         return update(connectionString, sql, (Object[]) values);
     }
 
-    public static int updateShowtimeSeats(String connectionString, int reservedCount, String selectedSeats, int showtimeId) {
-        String sql = """
-         UPDATE showtimes
-         SET reserved_chairs = reserved_chairs + ?, chairs_booked = CONCAT(chairs_booked, ?)
-         WHERE showtime_id = ?
-         """;
-        return update(connectionString, sql, reservedCount, " " + selectedSeats, showtimeId);
-    }
 
     public static int updateShowtimeColumn(String connectionString, String columnName, Object value, Object showtimeId) {
         String sql = "UPDATE showtimes SET " + columnName + " = ? WHERE showtime_id = ?";

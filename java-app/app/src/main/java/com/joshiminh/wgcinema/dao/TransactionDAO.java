@@ -9,92 +9,104 @@ import java.sql.Statement;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
+import java.math.BigDecimal;
+import com.joshiminh.wgcinema.util.PriceUtils;
 
 public class TransactionDAO extends BaseDAO {
 
     public static ResultSet fetchTransactionHistory(String connectionString, String email) {
-        String sql = "SELECT * FROM transactions WHERE account_email = ? ORDER BY transaction_date DESC";
+        String cols = "transaction_id, transaction_date, account_email, showtime_id, total_amount";
+        String sql = "SELECT " + cols + " FROM transactions WHERE account_email = ? ORDER BY transaction_date DESC";
         return select(connectionString, sql, email);
     }
 
     public static ResultSet fetchEmployeeTransactions(String connectionString, String employeeEmail) {
-        String sql = """
-         SELECT amount, seats_preserved
-         FROM transactions
-         WHERE account_email = ?
-         """;
+        String sql = "SELECT total_amount FROM transactions WHERE account_email = ?";
         return select(connectionString, sql, employeeEmail);
     }
 
     public static int insertTransaction(String connectionString, int movieId, String totalPrice, String selectedSeats, int showroomId, String accountEmail, int showtimeId) {
-        String sql = """
-         INSERT INTO transactions (movie_id, amount, seats_preserved, showroom_id, account_email, showtime_id)
-         VALUES (?, ?, ?, ?, ?, ?)
-         """;
-        try {
-            NumberFormat parser = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-            Number parsedNumber = parser.parse(totalPrice.replace("vnđ", "").trim());
-            java.math.BigDecimal amount = new java.math.BigDecimal(parsedNumber.doubleValue());
-            return update(
-                    connectionString,
-                    sql,
-                    movieId,
-                    amount,
-                    selectedSeats,
-                    showroomId,
-                    accountEmail,
-                    showtimeId
-            );
-        } catch (ParseException e) {
-            System.err.println("Error parsing price: " + e.getMessage());
-            e.printStackTrace();
-            return 0;
+        return recordTransaction(connectionString, showtimeId, accountEmail, totalPrice, selectedSeats) ? 1 : 0;
+    }
+ 
+    /**
+     * Inserts a transaction and its associated tickets into the database.
+     * This method ensures both transaction and tickets are created atomically.
+     */
+    public static boolean recordTransaction(String connectionString, int showtimeId, String accountEmail, String priceString, String selectedSeats) {
+        try (Connection conn = DriverManager.getConnection(connectionString)) {
+            conn.setAutoCommit(false);
+            try {
+                // Parse Price using PriceUtils
+                BigDecimal totalAmount = PriceUtils.parsePrice(priceString);
+ 
+                // 1. Insert Transaction
+                String transSql = "INSERT INTO transactions (account_email, showtime_id, total_amount) VALUES (?, ?, ?)";
+                int transactionId = -1;
+                try (PreparedStatement psTrans = conn.prepareStatement(transSql, Statement.RETURN_GENERATED_KEYS)) {
+                    psTrans.setString(1, accountEmail);
+                    psTrans.setInt(2, showtimeId);
+                    psTrans.setBigDecimal(3, totalAmount);
+                    psTrans.executeUpdate();
+                    try (ResultSet rs = psTrans.getGeneratedKeys()) {
+                        if (rs.next()) {
+                            transactionId = rs.getInt(1);
+                        }
+                    }
+                }
+ 
+                if (transactionId == -1) throw new SQLException("Failed to create transaction.");
+ 
+                // 2. Insert Tickets
+                String ticketSql = "INSERT INTO tickets (transaction_id, seat_identifier, seat_type, price) VALUES (?, ?, ?, ?)";
+                String[] seats = selectedSeats.split(", ");
+                try (PreparedStatement psTicket = conn.prepareStatement(ticketSql)) {
+                    for (String seat : seats) {
+                        psTicket.setInt(1, transactionId);
+                        psTicket.setString(2, seat);
+                        
+                        // Determine seat type and price via PriceUtils
+                        String type = PriceUtils.getSeatType(seat);
+                        
+                        BigDecimal seatPrice = getSeatPriceFromShowtime(conn, showtimeId, type);
+                        
+                        psTicket.setString(3, type);
+                        psTicket.setBigDecimal(4, seatPrice);
+                        psTicket.addBatch();
+                    }
+                    psTicket.executeBatch();
+                }
+ 
+                conn.commit();
+                return true;
+            } catch (Exception e) {
+                conn.rollback();
+                System.err.println("Transaction Record Error: " + e.getMessage());
+                e.printStackTrace();
+                return false;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            System.err.println("Connection Error: " + e.getMessage());
+            return false;
         }
     }
-
-    public static int insertTransactionReturnId(
-            String connectionString,
-            int movieId,
-            String totalPrice,
-            String selectedSeats,
-            int showroomId,
-            String accountEmail,
-            int showtimeId) throws SQLException {
-
-        String sql = """
-     INSERT INTO transactions
-       (movie_id, amount, seats_preserved, showroom_id, account_email, showtime_id)
-     VALUES (?, ?, ?, ?, ?, ?)
-     """;
-
-        try (
-                Connection conn = DriverManager.getConnection(connectionString);
-                PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-        ) {
-            NumberFormat parser = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-            Number parsedNumber = parser.parse(totalPrice.replace("vnđ", "").trim());
-            java.math.BigDecimal amount = new java.math.BigDecimal(parsedNumber.doubleValue());
-            ps.setInt(1, movieId);
-            ps.setBigDecimal(2, amount);
-            ps.setString(3, selectedSeats);
-            ps.setInt(4, showroomId);
-            ps.setString(5, accountEmail);
-            ps.setInt(6, showtimeId);
-
-            int affected = ps.executeUpdate();
-            if (affected == 0) {
-                throw new SQLException("Creating transaction failed, no rows affected.");
-            }
-
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) {
-                    return keys.getInt(1);
-                } else {
-                    throw new SQLException("Creating transaction failed, no ID obtained.");
+ 
+    private static BigDecimal getSeatPriceFromShowtime(Connection conn, int showtimeId, String type) throws SQLException {
+        String sql = "SELECT regular_price, vip_price FROM showtimes WHERE showtime_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, showtimeId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBigDecimal(type.equals("vip") ? "vip_price" : "regular_price");
                 }
             }
-        } catch (ParseException e) {
-            throw new SQLException("Error parsing price: " + e.getMessage(), e);
         }
+        return new BigDecimal(80000); // Fallback
+    }
+ 
+    public static int insertTransactionReturnId(String connectionString, int movieId, String totalPrice, String selectedSeats, int showroomId, String accountEmail, int showtimeId) throws SQLException {
+        return recordTransaction(connectionString, showtimeId, accountEmail, totalPrice, selectedSeats) ? 1 : 0;
     }
 }

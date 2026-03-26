@@ -83,7 +83,7 @@ public class MovieGridPanel extends JFrame {
         transactionHistoryButton.setFont(BASE_FONT.deriveFont(Font.BOLD, 16f));
         transactionHistoryButton.setHorizontalAlignment(SwingConstants.CENTER);
         transactionHistoryButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        transactionHistoryButton.addActionListener(_ -> new TransactionHistoryDialog(url, email).setVisible(true));
+        transactionHistoryButton.addActionListener(e -> new TransactionHistoryDialog(url, email).setVisible(true));
         transactionHistoryButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -97,7 +97,7 @@ public class MovieGridPanel extends JFrame {
         });
 
         JLabel logo = new JLabel();
-        Image image = ResourceManager.loadImage("/images/icon.png").getScaledInstance(60, 54, Image.SCALE_SMOOTH);
+        Image image = ResourceManager.loadImage("/images/app_icon.png").getScaledInstance(60, 54, Image.SCALE_SMOOTH);
         logo.setIcon(new ImageIcon(image));
 
         // New: Search Panel
@@ -116,11 +116,11 @@ public class MovieGridPanel extends JFrame {
 
         searchButton = new JButton("Search");
         AgentStyles.styleButton(searchButton); // Apply consistent style
-        searchButton.addActionListener(_ -> performSearch());
+        searchButton.addActionListener(e -> performSearch());
 
         showAllButton = new JButton("Show All");
         AgentStyles.styleButton(showAllButton);
-        showAllButton.addActionListener(_ -> {
+        showAllButton.addActionListener(e -> {
             searchField.setText(""); // Clear search field
             performSearch(); // Show all movies
         });
@@ -321,7 +321,7 @@ public class MovieGridPanel extends JFrame {
         bookButton.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         bookButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         bookButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        bookButton.addActionListener(_ -> new ShowtimeBookingPanel(movieId, url).setVisible(true));
+        bookButton.addActionListener(e -> new ShowtimeBookingPanel(movieId, url).setVisible(true));
         bookButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {

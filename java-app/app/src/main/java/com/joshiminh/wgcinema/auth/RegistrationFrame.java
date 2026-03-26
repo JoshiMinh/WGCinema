@@ -146,13 +146,13 @@ public class RegistrationFrame extends JFrame {
             return;
         }
 
-        String sql = "INSERT INTO accounts (account_email, name, gender, date_of_birth, membership, transactions, password_hash, admin) VALUES (?, ?, ?, ?, 0, 0, ?, 0)";
+        String sql = "INSERT INTO accounts (account_email, name, gender, date_of_birth, membership, password_hash, admin) VALUES (?, ?, ?, ?, 0, ?, 0)";
         try (Connection conn = DriverManager.getConnection(dbUrl);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             stmt.setString(2, name);
             stmt.setString(3, gender);
-            stmt.setDate(4, Date.valueOf(dob.format(DB_FORMATTER)));
+            stmt.setDate(4, java.sql.Date.valueOf(dob)); 
             stmt.setString(5, hashPassword(password));
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(this, "Registration successful!", "Success", JOptionPane.INFORMATION_MESSAGE);

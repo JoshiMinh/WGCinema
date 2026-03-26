@@ -12,20 +12,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
 
-        $stmt = $pdo->prepare("SELECT * FROM accounts WHERE account_email = ?");
+        $stmt = $pdo->prepare("SELECT account_email, name, password_hash FROM accounts WHERE account_email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
         if ($user && hash('sha256', $password) === $user['password_hash']) {
-            if (session_status() === PHP_SESSION_NONE) session_start();
+            if (session_status() === PHP_SESSION_NONE)
+                session_start();
             $_SESSION['user_email'] = $user['account_email'];
             $_SESSION['user_name'] = $user['name'];
             header("Location: index.php");
             exit;
-        } else {
+        }
+        else {
             $error = 'Email hoặc mật khẩu không đúng.';
         }
-    } elseif ($action === 'register') {
+    }
+    elseif ($action === 'register') {
         $name = $_POST['name'] ?? '';
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
@@ -33,17 +36,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($password !== $confirm) {
             $error = 'Mật khẩu xác nhận không khớp.';
-        } else {
+        }
+        else {
             $stmt = $pdo->prepare("SELECT 1 FROM accounts WHERE account_email = ?");
             $stmt->execute([$email]);
             if ($stmt->fetch()) {
                 $error = 'Email này đã được đăng ký.';
-            } else {
+            }
+            else {
+                $gender = $_POST['gender'] ?? 'Other';
+                $dob = $_POST['dob'] ?? date('Y-m-d');
                 $passwordHash = hash('sha256', $password);
-                $stmt = $pdo->prepare("INSERT INTO accounts (account_email, name, password_hash, gender, date_of_birth) VALUES (?, ?, ?, 'Other', CURDATE())");
-                if ($stmt->execute([$email, $name, $passwordHash])) {
+                $stmt = $pdo->prepare("INSERT INTO accounts (account_email, name, password_hash, gender, date_of_birth) VALUES (?, ?, ?, ?, ?)");
+                if ($stmt->execute([$email, $name, $passwordHash, $gender, $dob])) {
                     $success = 'Đăng ký thành công! Vui lòng đăng nhập.';
-                } else {
+                }
+                else {
                     $error = 'Đã có lỗi xảy ra. Vui lòng thử lại.';
                 }
             }
@@ -72,13 +80,15 @@ include 'ui/header.php';
                         <div class="alert alert-danger bg-danger bg-opacity-10 border-danger text-danger mb-4" role="alert">
                             <?php echo h($error); ?>
                         </div>
-                    <?php endif; ?>
+                    <?php
+endif; ?>
 
                     <?php if ($success): ?>
                         <div class="alert alert-success bg-success bg-opacity-10 border-success text-success mb-4" role="alert">
                             <?php echo h($success); ?>
                         </div>
-                    <?php endif; ?>
+                    <?php
+endif; ?>
 
                     <div id="login-form">
                         <form action="auth.php" method="POST">
@@ -105,6 +115,20 @@ include 'ui/header.php';
                             <div class="mb-4">
                                 <label class="form-label text-muted-custom">Email</label>
                                 <input type="email" name="email" class="form-control bg-dark bg-opacity-50 border-secondary text-white py-2" placeholder="email@example.com" required>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted-custom">Giới tính</label>
+                                    <select name="gender" class="form-select bg-dark bg-opacity-50 border-secondary text-white py-2" required>
+                                        <option value="Male">Nam</option>
+                                        <option value="Female">Nữ</option>
+                                        <option value="Other">Khác</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted-custom">Ngày sinh</label>
+                                    <input type="date" name="dob" class="form-control bg-dark bg-opacity-50 border-secondary text-white py-2" required>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <label class="form-label text-muted-custom">Mật khẩu</label>

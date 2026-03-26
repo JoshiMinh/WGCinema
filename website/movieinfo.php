@@ -6,8 +6,8 @@ $movieId = isset($_GET['id']) ? (int)$_GET['id'] : 1;
 $movie = getMovieById($pdo, $movieId);
 
 if (!$movie) {
-    header("Location: index.php");
-    exit;
+  header("Location: index.php");
+  exit;
 }
 
 $pageTitle = "WG Cinema - " . $movie['title'];
@@ -16,11 +16,14 @@ include 'ui/header.php';
 // Prepare trailer URL
 $trailerUrl = $movie['trailer'];
 if (strpos($trailerUrl, 'watch?v=') !== false) {
-    $trailerUrl = str_replace('watch?v=', 'embed/', $trailerUrl);
+  $trailerUrl = str_replace('watch?v=', 'embed/', $trailerUrl);
 }
 if (strpos($trailerUrl, 'embed/') !== false && strpos($trailerUrl, 'autoplay=1') === false) {
-    $trailerUrl .= (strpos($trailerUrl, '?') === false ? '?' : '&') . 'autoplay=1&mute=1';
+  $trailerUrl .= (strpos($trailerUrl, '?') === false ? '?' : '&') . 'autoplay=1&mute=1';
 }
+
+$showtimes = getShowtimesByMovieId($pdo, $movieId);
+$defaultPrice = !empty($showtimes) ? $showtimes[0]['regular_price'] : 80000;
 ?>
 
     <!-- Movie Content Sections -->
@@ -62,9 +65,25 @@ if (strpos($trailerUrl, 'embed/') !== false && strpos($trailerUrl, 'autoplay=1')
                 </div>
               </div>
 
-              <h4 class="fw-bold gradient-text mb-4"><i class="fas fa-clock me-2"></i> Chọn Suất Chiếu</h4>
               <div class="showtimes-container bg-dark bg-opacity-25 p-4 rounded-4 border border-secondary border-opacity-25">
-                <p class="text-muted-custom">Tính năng chọn suất chiếu đang được cập nhật...</p>
+                <?php if (!empty($showtimes)): ?>
+                    <div class="row g-3">
+                        <?php foreach ($showtimes as $st): ?>
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="showtime-card p-3 rounded-3 border border-secondary text-center cursor-pointer hover-effect" onclick="selectShowtime(<?php echo $st['showtime_id']; ?>, <?php echo $st['regular_price']; ?>)">
+                                    <div class="fw-bold text-white"><?php echo date('H:i', strtotime($st['time'])); ?></div>
+                                    <div class="small text-muted-custom"><?php echo date('d/m', strtotime($st['date'])); ?></div>
+                                    <div class="extra-small text-info"><?php echo h($st['showroom_name']); ?></div>
+                                </div>
+                            </div>
+                        <?php
+  endforeach; ?>
+                    </div>
+                <?php
+else: ?>
+                    <p class="text-muted-custom">Hiện chưa có suất chiếu cho phim này.</p>
+                <?php
+endif; ?>
               </div>
               
               <button class="btn btn-gradient w-100 py-3 mt-4 fw-bold fs-5 text-uppercase shadow-lg d-block d-md-none" onclick="openQRCodeModal()"><i class="fas fa-ticket-alt me-2"></i> Đặt Vé Ngay</button>
@@ -75,7 +94,7 @@ if (strpos($trailerUrl, 'embed/') !== false && strpos($trailerUrl, 'autoplay=1')
 
       <div style="display: none;" id="qr-code-modal" class="fancybox-content text-center">
         <h3 class="fw-bold gradient-text mb-4">Thanh Toán Trực Tuyến</h3>
-        <p class="text-white mb-4">Số tiền: <strong class="fs-4">70.000 VNĐ</strong></p>
+        <p class="text-white mb-4">Số tiền: <strong class="fs-4" id="modal-price"><?php echo number_format($defaultPrice, 0, ',', '.'); ?> VNĐ</strong></p>
         <div class="bg-white p-3 d-inline-block rounded-4 shadow mb-4">
           <img width="300px" src="assets/images/QR-code.jpg" onerror="this.src='assets/images/background.png'" alt="QR Code" class="img-fluid" />
         </div>
@@ -93,6 +112,26 @@ if (strpos($trailerUrl, 'embed/') !== false && strpos($trailerUrl, 'autoplay=1')
       });
       window.openQRCodeModal = function() {
         $.fancybox.open({ src: '#qr-code-modal', type: 'inline', animationEffect: "zoom-in-out" });
+      };
+      var selectedShowtimeId = null;
+      window.selectShowtime = function(id, price) {
+          selectedShowtimeId = id;
+          $('.showtime-card').removeClass('border-primary shadow-glow').addClass('border-secondary');
+          $(event.currentTarget).removeClass('border-secondary').addClass('border-primary shadow-glow');
+          $('#modal-price').text(new Intl.NumberFormat('vi-VN').format(price) + ' VNĐ');
+          openQRCodeModal();
+      };
+      window.confirmBooking = function() {
+          if (!selectedShowtimeId) {
+              Swal.fire('Thông báo', 'Vui lòng chọn suất chiếu trước!', 'warning');
+              return;
+          }
+          Swal.fire({
+              title: 'Thành công!',
+              text: 'Yêu cầu đặt vé của bạn đã được gửi. Vui lòng kiểm tra email sau khi chúng tôi xác nhận thanh toán.',
+              icon: 'success',
+              confirmButtonText: 'Đóng'
+          });
       };
     </script>
 

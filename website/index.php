@@ -18,10 +18,13 @@ $carouselSlides = getCarouselSlides($pdo);
               <div class="item">
                 <img src="lib/image_display.php?type=carousel&id=<?php echo $slide['id']; ?>" class="d-block w-100 rounded-4" alt="<?php echo h($slide['title'] ?? ''); ?>" />
               </div>
-            <?php endforeach; ?>
-          <?php else: ?>
+            <?php
+  endforeach; ?>
+          <?php
+else: ?>
             <div class="item"><img src="assets/images/background.png" class="d-block w-100 rounded-4" alt="Cinema" /></div>
-          <?php endif; ?>
+          <?php
+endif; ?>
         </div>
       </div>
 
@@ -57,7 +60,8 @@ $carouselSlides = getCarouselSlides($pdo);
                             <p class="text-muted-custom small px-2 mb-0"><?php echo h($movie['duration']); ?> phút | <?php echo h($movie['age_rating'] ?? 'N/A'); ?></p>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                <?php
+endforeach; ?>
             </div>
           </div>
 
@@ -77,7 +81,8 @@ $carouselSlides = getCarouselSlides($pdo);
                             <p class="text-muted-custom small px-2 mb-0"><?php echo h($movie['duration']); ?> phút | <?php echo h($movie['age_rating'] ?? 'N/A'); ?></p>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                <?php
+endforeach; ?>
             </div>
           </div>
         </div>
