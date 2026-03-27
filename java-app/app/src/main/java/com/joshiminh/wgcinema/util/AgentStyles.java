@@ -14,7 +14,8 @@ public class AgentStyles {
 
     // --- Color Palette ---
     public static final Color PRIMARY_BACKGROUND = new Color(24, 24, 27); // Zinc 900 - Dark background
-    public static final Color SECONDARY_BACKGROUND = new Color(39, 39, 42); // Zinc 800 - Slightly lighter for cards/panels
+    public static final Color SECONDARY_BACKGROUND = new Color(39, 39, 42); // Zinc 800 - Slightly lighter for
+                                                                            // cards/panels
     public static final Color TEXT_COLOR = new Color(244, 244, 245); // Zinc 50 - Light text for dark backgrounds
     public static final Color LIGHT_TEXT_COLOR = new Color(161, 161, 170); // Zinc 400 - Lighter text for secondary info
     public static final Color ACCENT_BLUE = new Color(37, 99, 235); // Blue 600 - Primary accent color
@@ -36,11 +37,12 @@ public class AgentStyles {
     // --- Utility Methods ---
 
     /**
-     * Applies default styling to a JFrame, including background, icon, and basic setup.
+     * Applies default styling to a JFrame, including background, icon, and basic
+     * setup.
      *
-     * @param frame The JFrame to style.
-     * @param title The title for the frame.
-     * @param width The preferred width of the frame.
+     * @param frame  The JFrame to style.
+     * @param title  The title for the frame.
+     * @param width  The preferred width of the frame.
      * @param height The preferred height of the frame.
      */
     public static void applyFrameDefaults(JFrame frame, String title, int width, int height) {
@@ -81,7 +83,8 @@ public class AgentStyles {
         } else if (component instanceof JComboBox) {
             ((JComboBox<?>) component).setRenderer(new DefaultListCellRenderer() {
                 @Override
-                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                        boolean isSelected, boolean cellHasFocus) {
                     super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                     setBackground(isSelected ? ACCENT_BLUE.darker() : SECONDARY_BACKGROUND);
                     setForeground(TEXT_COLOR);
@@ -99,8 +102,7 @@ public class AgentStyles {
     public static Border componentBorder() {
         return BorderFactory.createCompoundBorder(
                 new LineBorder(BORDER_COLOR, 1),
-                BorderFactory.createEmptyBorder(8, 10, 8, 10)
-        );
+                BorderFactory.createEmptyBorder(8, 10, 8, 10));
     }
 
     /**
@@ -119,6 +121,7 @@ public class AgentStyles {
             public void mouseEntered(java.awt.event.MouseEvent e) {
                 button.setBackground(button.getBackground().brighter());
             }
+
             public void mouseExited(java.awt.event.MouseEvent e) {
                 // Reset to original color, assuming it's one of the defined constants
                 if (button.getBackground().equals(ACCENT_BLUE.brighter())) {

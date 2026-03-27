@@ -80,7 +80,8 @@ public abstract class BaseEditorDialog extends JFrame {
                 } else {
                     values[i] = "";
                 }
-            } else if (component instanceof JScrollPane pane && pane.getViewport().getView() instanceof JTextArea area) {
+            } else if (component instanceof JScrollPane pane
+                    && pane.getViewport().getView() instanceof JTextArea area) {
                 values[i] = area.getText();
             } else if (component instanceof JPasswordField pass) {
                 values[i] = new String(pass.getPassword());

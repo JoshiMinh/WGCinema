@@ -1,4 +1,5 @@
 package com.joshiminh.wgcinema.util;
+
 import java.awt.Color;
 
 public class AgeRatingColor {
@@ -8,12 +9,12 @@ public class AgeRatingColor {
         super();
     }
 
-    private static final String[] RATINGS = {"PG", "PG-13", "PG-16", "R"};
+    private static final String[] RATINGS = { "PG", "PG-13", "PG-16", "R" };
     private static final Color[] COLORS = {
-        new Color(102, 255, 102), // Bright Green
-        new Color(0, 128, 255),   // Bright Blue
-        Color.ORANGE,             // Orange
-        Color.RED                 // Red
+            new Color(102, 255, 102), // Bright Green
+            new Color(0, 128, 255), // Bright Blue
+            Color.ORANGE, // Orange
+            Color.RED // Red
     };
 
     /**

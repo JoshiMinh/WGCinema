@@ -1,4 +1,5 @@
 package com.joshiminh.wgcinema.ui.dashboard;
+
 import com.joshiminh.wgcinema.util.*;
 
 import java.awt.*;
@@ -11,7 +12,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-
 
 import com.joshiminh.wgcinema.dao.*;
 import com.joshiminh.wgcinema.ui.dashboard.*;
@@ -64,8 +64,8 @@ public class ShowroomsPanel {
      newButton.setForeground(TEXT_COLOR);
      newButton.setFocusPainted(false);
      newButton.setBorder(BorderFactory.createEmptyBorder(6, 18, 6, 18));
-     newButton.addActionListener(_ -> {
-         // Truyền callback để làm mới bảng và biểu đồ sau khi thêm thành công
+     newButton.addActionListener(e -> {
+         // Pass callback to refresh table and chart after successful addition
          new ShowroomEditorDialog(url, () -> refreshShowroomsPanel()).setVisible(true);
      });
      newButton.addMouseListener(new java.awt.event.MouseAdapter() {

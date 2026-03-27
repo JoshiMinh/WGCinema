@@ -1,4 +1,5 @@
 package com.joshiminh.wgcinema.ui.dashboard;
+
 import com.joshiminh.wgcinema.util.*;
 
 import java.awt.*;
@@ -6,9 +7,6 @@ import java.sql.*;
 import javax.swing.*;
 
 import com.joshiminh.wgcinema.dao.*;
-import com.joshiminh.wgcinema.ui.dashboard.*;
-import com.joshiminh.wgcinema.ui.booking.*;
-import com.joshiminh.wgcinema.ui.common.*;
 import com.joshiminh.wgcinema.util.ResourceManager;
 import static com.joshiminh.wgcinema.util.AgentStyles.*;
 

@@ -1,11 +1,11 @@
 package com.joshiminh.wgcinema.ui.dashboard;
-import com.joshiminh.wgcinema.util.*;
 
 import com.joshiminh.wgcinema.dao.AccountDAO;
 import com.joshiminh.wgcinema.util.BaseEditorDialog;
-import com.joshiminh.wgcinema.util.ResourceManager;
+
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
+
 import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,8 +13,6 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.joshiminh.wgcinema.util.AgentStyles.*;
 

@@ -16,12 +16,12 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(24)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
 application {
-    mainClass = 'com.joshiminh.wgcinema.MainApp'
+    mainClass = 'com.joshiminh.wgcinema.App'
 }
 
 tasks.named('test') {

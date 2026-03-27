@@ -8,7 +8,7 @@ import java.net.URL;
  * Utility class to manage resources like icons and images.
  */
 public class ResourceManager {
-    
+
     // Prevent instantiation
     private ResourceManager() {
         super();
@@ -50,7 +50,8 @@ public class ResourceManager {
      */
     public static ImageIcon loadResizedIcon(String path, int width, int height) {
         Image img = loadImage(path);
-        if (img == null) return null;
+        if (img == null)
+            return null;
         return new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
     }
 }

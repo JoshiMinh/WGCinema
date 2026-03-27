@@ -158,7 +158,7 @@ public class MovieDetailPanel extends JFrame {
                 watchTrailerButton.setBackground(ACCENT_BLUE);
             }
         });
-        watchTrailerButton.addActionListener(_ -> {
+        watchTrailerButton.addActionListener(e -> {
             if (trailerUrl != null && !trailerUrl.isEmpty()) {
                 try {
                     Desktop.getDesktop().browse(new URI(trailerUrl));
@@ -185,7 +185,7 @@ public class MovieDetailPanel extends JFrame {
                 bookTicketsButton.setBackground(ACCENT_TEAL);
             }
         });
-        bookTicketsButton.addActionListener(_ -> {
+        bookTicketsButton.addActionListener(e -> {
             new ShowtimeBookingPanel(movieId, url).setVisible(true);
             dispose(); // Close the detail view
         });

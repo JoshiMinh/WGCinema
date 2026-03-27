@@ -191,7 +191,7 @@ public class ShowtimeBookingPanel extends JFrame {
         btn.setFont(BUTTON_FONT);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         AgentStyles.styleButton(btn); // Use AgentStyles.styleButton for consistent styling
-        btn.addActionListener(_ -> SwingUtilities.invokeLater(() -> new SeatSelectionFrame(connStr, showtimeId)));
+        btn.addActionListener(e -> SwingUtilities.invokeLater(() -> new SeatSelectionFrame(connStr, showtimeId)));
         return btn;
     }
 }

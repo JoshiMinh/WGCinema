@@ -6,10 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.Locale;
 import java.math.BigDecimal;
+
 import com.joshiminh.wgcinema.util.PriceUtils;
 
 public class TransactionDAO extends BaseDAO {

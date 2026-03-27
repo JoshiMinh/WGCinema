@@ -149,10 +149,10 @@ public class TransactionHistoryDialog extends JFrame {
         seatsLabel.setForeground(LIGHT_TEXT_COLOR); // Use LIGHT_TEXT_COLOR
         seatsLabel.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        // Định dạng amount thành chuỗi tiền tệ Việt Nam
+        // Format amount as VND
         @SuppressWarnings("deprecation")
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-        String formattedAmount = currencyFormat.format(amount);
+        NumberFormat currencyFormat = NumberFormat.getNumberInstance(new Locale("en", "US"));
+        String formattedAmount = currencyFormat.format(amount) + "VND";
 
         JLabel amountLabel = new JLabel("Amount: " + formattedAmount);
         amountLabel.setForeground(ACCENT_TEAL); // Use ACCENT_TEAL

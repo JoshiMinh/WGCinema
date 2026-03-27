@@ -10,8 +10,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.io.*;
-import java.nio.file.*;
+
 import java.util.Properties;
+import com.joshiminh.wgcinema.util.SessionManager; // Import SessionManager
 import static com.joshiminh.wgcinema.util.AgentStyles.*; // Import AgentStyles
 
 public class App extends JFrame {
@@ -25,13 +26,14 @@ public class App extends JFrame {
 
     private static String DB_HOST, DB_NAME, DB_USERNAME, DB_PASSWORD, DB_URL;
     private static String SMTP_EMAIL, SMTP_APP_PASSWORD, SERVICE_NAME = "WG Cinema";
-    private static final Path USER_FILE = Paths.get("user.txt");
 
-    static { loadEnv(); }
+    static {
+        loadEnv();
+    }
 
     public App() {
         setTitle("Login");
-        setSize(500, 450); // Giữ chiều ngang 500, chiều cao 450
+        setSize(500, 450); // Keep width 500, height 450
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setIconImage(ResourceManager.loadAppIcon());
@@ -45,14 +47,16 @@ public class App extends JFrame {
         };
         mainPanel.setLayout(new GridBagLayout());
 
-        logoLabel = new JLabel(new ImageIcon(ResourceManager.loadImage("/images/app_icon.png").getScaledInstance(70, 65, Image.SCALE_SMOOTH)));
+        logoLabel = new JLabel(new ImageIcon(
+                ResourceManager.loadImage("/images/app_icon.png").getScaledInstance(70, 65, Image.SCALE_SMOOTH)));
 
-        emailField = new JTextField(18); // Thu hẹp chiều ngang trường email
-        passwordField = new JPasswordField(18); // Thu hẹp chiều ngang trường password
+        emailField = new JTextField(18); // Narrow email field width
+        passwordField = new JPasswordField(18); // Narrow password field width
         passwordField.setEchoChar('•');
         passwordField.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) performLogin();
+                if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                    performLogin();
             }
         });
 
@@ -62,11 +66,11 @@ public class App extends JFrame {
         loginButton = new JButton("Login");
         dashboardButton = new JButton("Admin Dashboard");
 
-        // Định nghĩa kích thước cho các nút
-        Dimension smallButtonSize = new Dimension(150, 36); // Kích thước cho Register và Login
-        Dimension largeButtonSize = new Dimension(320, 36); // Kích thước cho Admin Dashboard (150 + 20 + 150)
+        // Button sizes
+        Dimension smallButtonSize = new Dimension(150, 36); // Size for Register and Login
+        Dimension largeButtonSize = new Dimension(320, 36); // Size for Admin Dashboard (150 + 20 + 150)
 
-        JButton[] buttons = {registerButton, loginButton, dashboardButton};
+        JButton[] buttons = { registerButton, loginButton, dashboardButton };
         for (JButton btn : buttons) {
             btn.setForeground(TEXT_COLOR);
             btn.setBackground(ACCENT_BLUE);
@@ -85,11 +89,10 @@ public class App extends JFrame {
                 }
             });
         }
-        // Áp dụng kích thước cụ thể
+        // Apply specific sizes
         registerButton.setPreferredSize(smallButtonSize);
         loginButton.setPreferredSize(smallButtonSize);
         dashboardButton.setPreferredSize(largeButtonSize);
-
 
         registerButton.addActionListener(e -> openRegisterFrame());
         loginButton.addActionListener(e -> performLogin());
@@ -99,7 +102,8 @@ public class App extends JFrame {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 // Use SECONDARY_BACKGROUND with transparency
-                g.setColor(new Color(SECONDARY_BACKGROUND.getRed(), SECONDARY_BACKGROUND.getGreen(), SECONDARY_BACKGROUND.getBlue(), 220));
+                g.setColor(new Color(SECONDARY_BACKGROUND.getRed(), SECONDARY_BACKGROUND.getGreen(),
+                        SECONDARY_BACKGROUND.getBlue(), 220));
                 g.fillRoundRect(0, 0, getWidth(), getHeight(), 28, 28);
             }
         };
@@ -107,57 +111,69 @@ public class App extends JFrame {
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(14, 22, 10, 22);
-        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
         formPanel.add(logoLabel, gbc);
 
-        gbc.gridy++; gbc.gridwidth = 1; gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.EAST;
         JLabel emailLabel = new JLabel("Email:");
         emailLabel.setForeground(TEXT_COLOR);
         emailLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         formPanel.add(emailLabel, gbc);
 
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
         emailField.setBackground(PRIMARY_BACKGROUND);
         emailField.setForeground(TEXT_COLOR);
         emailField.setBorder(componentBorder());
         formPanel.add(emailField, gbc);
 
-        gbc.gridy++; gbc.gridx = 0; gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridy++;
+        gbc.gridx = 0;
+        gbc.anchor = GridBagConstraints.EAST;
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setForeground(TEXT_COLOR);
         passwordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         formPanel.add(passwordLabel, gbc);
 
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
         passwordField.setBackground(PRIMARY_BACKGROUND);
         passwordField.setForeground(TEXT_COLOR);
         passwordField.setBorder(componentBorder());
         formPanel.add(passwordField, gbc);
 
-        // Thay đổi cách sắp xếp nút để phù hợp với hình ảnh
-        gbc.gridy++; gbc.gridx = 0; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER;
+        // Adjust button layout to match UI design
+        gbc.gridy++;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
         JPanel buttonContainerPanel = new JPanel();
-        buttonContainerPanel.setLayout(new BoxLayout(buttonContainerPanel, BoxLayout.Y_AXIS)); // Xếp chồng theo chiều dọc
+        buttonContainerPanel.setLayout(new BoxLayout(buttonContainerPanel, BoxLayout.Y_AXIS)); // Stack vertically
         buttonContainerPanel.setOpaque(false);
 
         // Hàng 1: Register và Login
-        JPanel topButtonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0)); // Khoảng cách 20 giữa các nút
+        JPanel topButtonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0)); // Horizontal gap of 20
         topButtonRow.setOpaque(false);
         topButtonRow.add(registerButton);
         topButtonRow.add(loginButton);
-        topButtonRow.setAlignmentX(Component.CENTER_ALIGNMENT); // Căn giữa hàng nút
+        topButtonRow.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the button row
 
         // Hàng 2: Admin Dashboard
-        JPanel bottomButtonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Căn giữa, không có khoảng cách thêm
+        JPanel bottomButtonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Centered, no extra padding
         bottomButtonRow.setOpaque(false);
         bottomButtonRow.add(dashboardButton);
-        bottomButtonRow.setAlignmentX(Component.CENTER_ALIGNMENT); // Căn giữa hàng nút
+        bottomButtonRow.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the button row
 
         buttonContainerPanel.add(topButtonRow);
-        buttonContainerPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Khoảng cách dọc giữa 2 hàng nút
+        buttonContainerPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Vertical gap between rows
         buttonContainerPanel.add(bottomButtonRow);
 
-        formPanel.add(buttonContainerPanel, gbc); // Thêm container chứa các hàng nút vào formPanel
+        formPanel.add(buttonContainerPanel, gbc); // Add button container to form
 
         mainPanel.add(formPanel, new GridBagConstraints());
         add(mainPanel, BorderLayout.CENTER);
@@ -173,7 +189,7 @@ public class App extends JFrame {
                 String hash = rs.getString("password_hash");
                 int adminValueFromDb = rs.getInt("admin");
                 boolean isAdmin = adminValueFromDb == 1;
-                
+
                 System.out.println("Debug: Raw 'admin' value from DB for " + email + ": " + adminValueFromDb);
                 System.out.println("Debug: isAdmin (after comparison) for " + email + ": " + isAdmin);
 
@@ -242,7 +258,8 @@ public class App extends JFrame {
             });
             jakarta.mail.Message message = new jakarta.mail.internet.MimeMessage(session);
             message.setFrom(new jakarta.mail.internet.InternetAddress(SMTP_EMAIL, SERVICE_NAME));
-            message.setRecipients(jakarta.mail.Message.RecipientType.TO, jakarta.mail.internet.InternetAddress.parse(toEmail));
+            message.setRecipients(jakarta.mail.Message.RecipientType.TO,
+                    jakarta.mail.internet.InternetAddress.parse(toEmail));
             message.setSubject("Password Reset Code - " + SERVICE_NAME);
             message.setText("Your password reset code is: " + code);
             jakarta.mail.Transport.send(message);
@@ -255,7 +272,8 @@ public class App extends JFrame {
     private void resetPassword(String email, String newPassword) {
         int updated = AccountDAO.updateAccountPassword(DB_URL, email, hashPassword(newPassword));
         if (updated > 0) {
-            JOptionPane.showMessageDialog(this, "Password reset successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Password reset successful.", "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             showError("Failed to reset password.", "Error");
         }
@@ -268,7 +286,8 @@ public class App extends JFrame {
             StringBuilder hexString = new StringBuilder(2 * hash.length);
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
+                if (hex.length() == 1)
+                    hexString.append('0');
                 hexString.append(hex);
             }
             return hexString.toString();
@@ -284,26 +303,16 @@ public class App extends JFrame {
     }
 
     private void saveUserCredentials(String email, String password) {
-        try (BufferedWriter writer = Files.newBufferedWriter(USER_FILE)) {
-            writer.write(email);
-            writer.newLine();
-            writer.write(password);
-        } catch (IOException ignored) {}
+        SessionManager.saveSession(email, password);
     }
 
     private void preloadUserCredentials() {
-        if (Files.exists(USER_FILE)) {
-            try (BufferedReader reader = Files.newBufferedReader(USER_FILE)) {
-                String email = reader.readLine();
-                String password = reader.readLine();
-                if (email != null) emailField.setText(email);
-                if (password != null) passwordField.setText(password);
-            } catch (IOException ignored) {}
-        }
-        if (!Files.exists(USER_FILE)) {
-            try { Files.createFile(USER_FILE); }
-            catch (IOException e) { throw new RuntimeException("Failed to create user.txt file", e); }
-        }
+        String email = SessionManager.getEmail();
+        String password = SessionManager.getPassword();
+        if (email != null)
+            emailField.setText(email);
+        if (password != null)
+            passwordField.setText(password);
     }
 
     private static void loadEnv() {
@@ -311,7 +320,7 @@ public class App extends JFrame {
         try (InputStream in = new FileInputStream(".env")) {
             props.load(in);
         } catch (IOException e) {
-            System.err.println("Lỗi khi load file .env: " + e.getMessage());
+            System.err.println("Error loading .env file: " + e.getMessage());
             e.printStackTrace();
             throw new RuntimeException("Failed to load .env file", e);
         }

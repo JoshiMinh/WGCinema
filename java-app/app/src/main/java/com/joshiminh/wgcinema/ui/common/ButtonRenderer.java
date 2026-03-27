@@ -1,5 +1,4 @@
 package com.joshiminh.wgcinema.ui.common;
-import com.joshiminh.wgcinema.util.*;
 
 import java.awt.*;
 import javax.swing.*;

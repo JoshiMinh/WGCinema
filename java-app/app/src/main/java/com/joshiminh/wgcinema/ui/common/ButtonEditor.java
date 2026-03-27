@@ -1,8 +1,6 @@
 package com.joshiminh.wgcinema.ui.common;
-import com.joshiminh.wgcinema.util.*;
 
 import java.awt.*;
-import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.*;
 

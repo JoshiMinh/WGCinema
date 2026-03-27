@@ -1,42 +1,88 @@
-# Java
+# ==========================================
+# WGCinema Project Gitignore
+# ==========================================
+
+# --- Java & Gradle ---
+# Compiled class files
 *.class
+
+# Log files
 *.log
+*.txt
+java-app/*.log
+java-app/*.txt
+java-app/compile_errors.txt
+java-app/build_output.log
+
+# Package Files
 *.jar
 *.war
+*.nar
+*.ear
 *.zip
 *.tar.gz
-build/
-.gradle/
-bin/
-out/
+*.rar
 
-# Node.js
+# Gradle
+.gradle/
+build/
+app/build/
+app/bin/
+java-app/.gradle/
+java-app/app/build/
+java-app/app/bin/
+
+# Application generated
+app/user.txt
+java-app/app/user.txt
+
+# --- Web & Node ---
 node_modules/
+dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-dist/
+.parcel-cache
+.cache
 
-# Environment / Secrets
+# --- Environment & Secrets ---
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 *.secret
+*.pem
+*.key
 
-# IDE
+# --- IDEs & Editors ---
+# IntelliJ IDEA
 .idea/
 *.iml
+*.iws
+
+# Visual Studio Code
 .vscode/
+
+# Eclipse
 .project
 .classpath
 .settings/
 
-# OS
+# --- OS Specific ---
 .DS_Store
-Thumbs.db
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+thumbs.db
+Thumb.db
+desktop.ini
 
-# Temporary / Backup
+# --- Temporary & Backup ---
 *.swp
+*.swo
 *~
+*.tmp
+*.bak
+*.old

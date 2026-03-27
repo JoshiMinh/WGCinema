@@ -31,17 +31,17 @@ function initTheme() {
         const currentTheme = localStorage.getItem('bsTheme') || 'dark';
         htmlElement.setAttribute('data-bs-theme', currentTheme);
         switchElement.checked = currentTheme === 'dark';
-        switchLabel.textContent = currentTheme === 'dark' ? 'Chế Độ Tối' : 'Chế Độ Sáng';
+        switchLabel.textContent = currentTheme === 'dark' ? 'Dark Mode' : 'Light Mode';
 
         switchElement.addEventListener('change', function () {
             if (this.checked) {
                 htmlElement.setAttribute('data-bs-theme', 'dark');
                 localStorage.setItem('bsTheme', 'dark');
-                switchLabel.textContent = 'Chế Độ Tối';
+                switchLabel.textContent = 'Dark Mode';
             } else {
                 htmlElement.setAttribute('data-bs-theme', 'light');
                 localStorage.setItem('bsTheme', 'light');
-                switchLabel.textContent = 'Chế Độ Sáng';
+                switchLabel.textContent = 'Light Mode';
             }
         });
     }
@@ -51,15 +51,15 @@ window.confirmBooking = function () {
     if (typeof Swal !== 'undefined') {
         Swal.fire({
             icon: 'success',
-            title: 'Đã đặt vé thành công',
-            text: 'Vui lòng kiểm tra email để lấy vé.',
+            title: 'Booking successful',
+            text: 'Please check your email for your ticket.',
             showConfirmButton: false,
             timer: 2000,
             background: 'var(--glass-bg)',
             color: 'var(--text-main)'
         });
     } else {
-        alert('Đã đặt vé thành công!');
+        alert('Booking successful!');
     }
     if (typeof $ !== 'undefined' && $.fancybox) {
         $.fancybox.close();

@@ -1,18 +1,37 @@
 package com.joshiminh.wgcinema.auth;
 
-import com.joshiminh.wgcinema.util.AgentStyles;
-
-import javax.swing.*;
-import javax.swing.text.MaskFormatter;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
-import java.time.LocalDate;
+import java.time.LocalDate; // Import AgentStyles
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import static com.joshiminh.wgcinema.util.AgentStyles.*; // Import AgentStyles
-import com.joshiminh.wgcinema.util.ResourceManager;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.text.MaskFormatter;
+
+import com.joshiminh.wgcinema.util.AgentStyles;
+import static com.joshiminh.wgcinema.util.AgentStyles.FORM_PADDING;
+import static com.joshiminh.wgcinema.util.AgentStyles.LABEL_INSETS;
+import static com.joshiminh.wgcinema.util.AgentStyles.PRIMARY_BACKGROUND;
+import static com.joshiminh.wgcinema.util.AgentStyles.TEXT_COLOR;
+import static com.joshiminh.wgcinema.util.AgentStyles.componentBorder;
 
 public class RegistrationFrame extends JFrame {
     private final JTextField emailField = new JTextField(20);

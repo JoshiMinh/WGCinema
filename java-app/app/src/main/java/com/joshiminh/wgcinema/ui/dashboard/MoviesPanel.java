@@ -1,21 +1,15 @@
 package com.joshiminh.wgcinema.ui.dashboard;
-import com.joshiminh.wgcinema.util.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
+
 import org.jfree.chart.*;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
 
-
-
 import com.joshiminh.wgcinema.util.AgeRatingColor;
 import com.joshiminh.wgcinema.dao.*;
-import com.joshiminh.wgcinema.ui.dashboard.*;
-import com.joshiminh.wgcinema.ui.booking.*;
-import com.joshiminh.wgcinema.ui.common.*;
-import com.joshiminh.wgcinema.util.ResourceManager;
 import static com.joshiminh.wgcinema.util.AgentStyles.*;
 
 @SuppressWarnings("unused")
@@ -281,16 +275,19 @@ public class MoviesPanel {
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error loading language pie chart data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
-        try (ResultSet resultSet = MovieDAO.fetchLanguageCounts(url)) {
-            while (resultSet != null && resultSet.next()) {
-                String language = resultSet.getString("language");
-                double percentage = (resultSet.getInt("count") * 100.0) / totalMovies;
-                languageDataset.setValue(language, percentage);
+        if (totalMovies > 0) {
+            try (ResultSet resultSet = MovieDAO.fetchLanguageCounts(url)) {
+                while (resultSet != null && resultSet.next()) {
+                    String language = resultSet.getString("language");
+                    double percentage = (resultSet.getInt("count") * 100.0) / totalMovies;
+                    languageDataset.setValue(language, percentage);
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Error calculating language percentages: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error calculating language percentages: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         JFreeChart languageChart = ChartFactory.createPieChart("Movies by Language", languageDataset, true, true, false);

@@ -19,6 +19,7 @@ import com.joshiminh.wgcinema.util.PriceUtils;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import static com.joshiminh.wgcinema.util.AgentStyles.*; // Import AgentStyles
+import com.joshiminh.wgcinema.util.SessionManager; // Import SessionManager
 
 @SuppressWarnings("unused")
 public class CheckoutDialog extends JFrame {
@@ -43,16 +44,9 @@ public class CheckoutDialog extends JFrame {
         this.connectionString = connectionString;
         this.initialSelectedSeats = selectedSeats;
 
-        // Get current user email
-        try {
-            java.nio.file.Path USER_FILE = java.nio.file.Paths.get("user.txt");
-            java.util.List<String> lines = java.nio.file.Files.readAllLines(USER_FILE);
-            if (!lines.isEmpty()) {
-                currentUserEmail = lines.get(0).trim();
-            } else {
-                currentUserEmail = "guest@example.com";
-            }
-        } catch (Exception e) {
+        // Get current user email from Preferences
+        currentUserEmail = SessionManager.getEmail();
+        if (currentUserEmail == null) {
             currentUserEmail = "guest@example.com";
         }
 
@@ -138,7 +132,7 @@ public class CheckoutDialog extends JFrame {
         bookButton.setForeground(TEXT_COLOR); // Use TEXT_COLOR
         bookButton.setBackground(ACCENT_BLUE); // Use ACCENT_BLUE
         bookButton.setFont(bookButton.getFont().deriveFont(Font.BOLD, 25));
-        bookButton.addActionListener(_ -> book());
+        bookButton.addActionListener(e -> book());
         bookButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {

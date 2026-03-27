@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.swing.Timer;
+import com.joshiminh.wgcinema.util.SessionManager; // Import SessionManager
 
 import com.joshiminh.wgcinema.util.AgeRatingColor;
 import com.joshiminh.wgcinema.dao.*;
@@ -43,16 +44,9 @@ public class SeatSelectionFrame extends JFrame {
         this.showtimeID = showtimeID;
         this.connectionString = connectionString;
 
-        // Get current user email
-        try {
-            java.nio.file.Path USER_FILE = java.nio.file.Paths.get("user.txt");
-            java.util.List<String> lines = java.nio.file.Files.readAllLines(USER_FILE);
-            if (!lines.isEmpty()) {
-                currentUserEmail = lines.get(0).trim();
-            } else {
-                currentUserEmail = "guest@example.com";
-            }
-        } catch (Exception e) {
+        // Get current user email from Preferences
+        currentUserEmail = SessionManager.getEmail();
+        if (currentUserEmail == null) {
             currentUserEmail = "guest@example.com";
         }
 
@@ -352,7 +346,7 @@ public class SeatSelectionFrame extends JFrame {
         bookButton.setBackground(ACCENT_BLUE);
         bookButton.setForeground(TEXT_COLOR);
 
-        bookButton.addActionListener(_ -> {
+        bookButton.addActionListener(e -> {
             String selectedSeats = selectedCells.stream()
                     .map(cell -> ((JLabel) cell.getComponent(0)).getText())
                     .collect(Collectors.joining(", "));
@@ -405,8 +399,8 @@ public class SeatSelectionFrame extends JFrame {
 
     private static String formatPrice(int price) {
         @SuppressWarnings("deprecation")
-        NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-        return numberFormat.format(price) + "vnđ";
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("en", "US"));
+        return numberFormat.format(price) + "VND";
     }
 
     private String updateMessage() {

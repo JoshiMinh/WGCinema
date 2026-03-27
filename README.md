@@ -1,10 +1,11 @@
 <div align="center">
-    <img src="icon.ico" width="90" alt="WGCinema Logo">
+    <img src="icon.ico" width="80" alt="WGCinema Logo">
     <h1>WGCinema</h1>
 
 WGCinema is a university project collaboratively developed by our group, **"Wonderful Guys" (WG)**.
 
 This repository features a **dual-architecture** setup, containing two distinct applications that share a common codebase and a **MySQL** database.
+
 </div>
 
 ## 1. Java Desktop Application (`/java-app`)
